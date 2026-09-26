@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Yangi e'lon{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Yangi e'lon</h1>
+  <p>Faqat matn, faqat rasm yoki rasm + izoh yuborishingiz mumkin. Xabar "Texnik yordam markazi" nomidan, sizning ismingiz bilan boradi.</p></div>
+  <a class="btn ghost" href="/announcements">{{ icon('arrow-left', 16) }} Orqaga</a></div>
+<form class="card form-card" hx-post="/announcements/preview" hx-encoding="multipart/form-data" hx-target="#st" hx-swap="innerHTML" hx-disabled-elt="find button[type=submit]">
+  <label>Turi</label>
+  <div class="seg">
+    <label><input type="radio" name="kind" value="info" {{ 'checked' if not src or src.kind == 'info' }}> 📢 E'lon</label>
+    <label class="danger"><input type="radio" name="kind" value="important" {{ 'checked' if src and src.kind == 'important' }}> 🚨 Muhim ogohlantirish</label>
+    <label><input type="radio" name="kind" value="reminder" {{ 'checked' if src and src.kind == 'reminder' }}> ⏰ Eslatma</label>
+  </div>
+
+  <label>Sarlavha (ixtiyoriy)</label>
+  <input name="title" maxlength="120" value="{{ src.title if src and src.title else '' }}" placeholder="Masalan: Tizimda texnik ishlar">
+
+  <label>Matn / rasm izohi <span class="muted small" id="cnt"></span></label>
+  <textarea name="text" id="ann-text" rows="6" placeholder="Xabar matni. Rasm yuborsangiz, bu matn rasm izohi bo'ladi (jami 1024 belgigacha).">{{ src.text if src and src.text else '' }}</textarea>
+
+  <label>Rasm (ixtiyoriy)</label>
+  <input type="file" name="image" accept="image/*">
+  {% if src and src.image_file_id %}<label class="check"><input type="checkbox" name="keep_image" value="{{ src.id }}" checked> Oldingi e'londagi rasmni ishlatish</label>{% endif %}
+  <div class="muted small" style="margin-top:6px">{{ icon('paperclip', 13) }} 10 MB gacha. Rasm serverga yozilmaydi: to'g'ridan-to'g'ri Telegramga uzatiladi.</div>
+
+  <label>Kimlarga yuboriladi</label>
+  <div class="seg">
+    <label><input type="radio" name="aud_mode" value="all" checked> Hamma tasdiqlanganlarga</label>
+    <label><input type="radio" name="aud_mode" value="roles"> Rol bo'yicha</label>
+    <label><input type="radio" name="aud_mode" value="users"> Tanlangan xodimlarga</label>
+  </div>
+  <div id="aud-roles" class="chk-list" style="display:none;margin-top:10px"><div class="roles-grid">
+    {% for r in roles %}<label class="check"><input type="checkbox" name="roles" value="{{ r }}"> {{ r }}</label>{% endfor %}</div></div>
+  <div id="aud-users" style="display:none;margin-top:10px">
+    <input type="search" id="user-filter" placeholder="Xodimni qidirish..." style="margin-bottom:8px">
+    <div class="chk-list">{% for u in users %}<label class="check" data-name="{{ (u.full_name or '')|lower }} {{ (u.role or '')|lower }}"><input type="checkbox" name="users" value="{{ u.id }}"> {{ u.full_name }} <span class="muted small">· {{ u.role }}</span></label>
+      {% else %}<span class="muted">Tasdiqlangan xodim yo'q</span>{% endfor %}</div>
+  </div>
+
+  <label class="check"><input type="checkbox" name="ack"> "✅ Tushundim" tugmasi qo'shilsin (kim o'qiganini ko'rish uchun)</label>
+
+  <div class="row" style="margin-top:18px"><button type="submit">{{ icon('eye', 17) }} Oldindan ko'rish</button><span id="st"></span></div>
+</form>
+<script>
+(function () {
+  var roles = document.getElementById('aud-roles'), users = document.getElementById('aud-users');
+  function sync() {
+    var m = document.querySelector('input[name=aud_mode]:checked').value;
+    roles.style.display = m === 'roles' ? '' : 'none';
+    users.style.display = m === 'users' ? '' : 'none';
+  }
+  document.querySelectorAll('input[name=aud_mode]').forEach(function (r) { r.addEventListener('change', sync); });
+  sync();
+  document.getElementById('user-filter').addEventListener('input', function () {
+    var q = this.value.toLowerCase();
+    document.querySelectorAll('#aud-users label.check').forEach(function (l) { l.style.display = l.dataset.name.indexOf(q) > -1 ? '' : 'none'; });
+  });
+  var t = document.getElementById('ann-text'), c = document.getElementById('cnt');
+  function count() { c.textContent = t.value.length ? '(' + t.value.length + ' belgi)' : ''; }
+  t.addEventListener('input', count); count();
+})();
+</script>
+{% endblock %}

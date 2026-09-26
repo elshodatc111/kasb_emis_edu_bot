@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}E'lon #{{ a.id }}{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>E'lon #{{ a.id }}</h1>
+  <p><span class="kind-pill {{ a.kind }}">{{ {'info': "E'lon", 'important': 'Muhim ogohlantirish', 'reminder': 'Eslatma'}[a.kind] }}</span>
+    · {{ a.author }} · {{ a.created_at|local }}</p></div>
+  <a class="btn ghost" href="/announcements">{{ icon('arrow-left', 16) }} Orqaga</a></div>
+{% include "_notice.html" %}
+<div class="grid2">
+  <section class="card">
+    <h2>{{ icon('eye', 18) }} Telegramda shunday ko'rinadi</h2>
+    <div class="tg-wrap"><div class="tg-preview">{% if a.image_file_id %}<img src="/announcements/{{ a.id }}/image" alt="">{% endif %}{{ preview|safe }}{% if a.ack_required %}<div class="tg-btn">✅ Tushundim</div>{% endif %}</div></div>
+  </section>
+  <section class="card">
+    <h2>{{ icon('send', 18) }} Yuborish</h2>
+    <p class="small"><b>Auditoriya:</b> {{ a.aud|aud_label }}<br>
+      <b>Hozirgi qabul qiluvchilar soni:</b> {{ audience_n if a.status in ('draft', 'scheduled') else stats.total }} ta xodim<br>
+      <b>Holat:</b>
+      {% if a.status == 'sent' %}yuborilgan ({{ a.sent_at|local }}){% elif a.status == 'sending' %}yuborilmoqda...{% elif a.status == 'scheduled' %}rejalashtirilgan: {{ a.scheduled_at|local }}{% else %}qoralama (hali yuborilmagan){% endif %}</p>
+    {% if a.status in ('draft', 'scheduled') %}
+      <div class="row" style="margin:14px 0">
+        <button hx-post="/announcements/{{ a.id }}/send" hx-confirm="E'lon {{ audience_n }} ta xodimga hozir yuboriladi. Davom etasizmi?" hx-disabled-elt="this">{{ icon('send', 17) }} Hozir yuborish</button>
+      </div>
+      <form hx-post="/announcements/{{ a.id }}/schedule" hx-target="#sch-st" hx-swap="innerHTML">
+        <label>{{ icon('calendar', 14) }} Rejalashtirish ({{ tz }} vaqti bilan)</label>
+        <div class="row"><input type="datetime-local" name="when" required style="max-width:240px"><button class="ghost" type="submit">{{ icon('clock', 16) }} Rejalashtirish</button><span id="sch-st"></span></div>
+      </form>
+      {% if a.status == 'scheduled' %}<div class="row" style="margin-top:12px"><button class="ghost sm" hx-post="/announcements/{{ a.id }}/unschedule">Rejalashtirishni bekor qilish</button></div>{% endif %}
+      <div class="row" style="margin-top:16px"><button class="danger sm" hx-post="/announcements/{{ a.id }}/delete" hx-confirm="E'lonni o'chirasizmi?">{{ icon('trash', 15) }} O'chirish</button></div>
+    {% elif a.status == 'sent' %}
+      <div class="row" style="margin-top:14px"><a class="btn ghost" href="/announcements/new?copy={{ a.id }}">{{ icon('refresh', 16) }} Nusxa olib qayta yuborish</a>
+        <button class="danger sm" hx-post="/announcements/{{ a.id }}/delete" hx-confirm="Tarixdan o'chirasizmi? (Xodimlarga yuborilgan xabarlar o'chmaydi)">{{ icon('trash', 15) }}</button></div>
+    {% endif %}
+  </section>
+</div>
+{% if a.status in ('sending', 'sent') %}
+<h2 style="margin:6px 0 12px">Yetkazish hisoboti</h2>
+{% include "_ann_stats.html" %}
+{% endif %}
+{% endblock %}

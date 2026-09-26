@@ -235,3 +235,25 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
   h1 { font-size: 22px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ============ E'lonlar ============ */
+input[type=radio] { width: 18px; height: 18px; accent-color: var(--blue); padding: 0; }
+.seg { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.seg label { display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 14px; border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-weight: 600; cursor: pointer; transition: border-color .15s, background .15s; }
+.seg label:has(input:checked) { border-color: var(--blue); background: var(--blue-soft); box-shadow: var(--ring); }
+.seg label.danger:has(input:checked) { border-color: var(--red); background: var(--red-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 25%, transparent); }
+.chk-list { max-height: 260px; overflow: auto; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 6px 10px; background: var(--surface); }
+.chk-list label.check { margin: 0; padding: 7px 2px; border-bottom: 1px solid var(--line); font-size: 14px; }
+.chk-list label.check:last-child { border-bottom: 0; }
+.roles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 2px 14px; }
+.tg-preview { max-width: 420px; margin: 0 auto; padding: 14px; border-radius: 18px; background: var(--bubble-bot); border: 1px solid var(--line);
+  font-size: 14.5px; line-height: 1.5; box-shadow: var(--shadow-sm); white-space: pre-wrap; word-break: break-word; }
+.tg-preview img { display: block; width: calc(100% + 28px); max-width: none; margin: -14px -14px 12px; border-radius: 18px 18px 0 0; }
+.tg-preview .tg-btn { margin-top: 12px; text-align: center; padding: 9px; border-radius: 10px; background: var(--blue); color: #fff; font-weight: 600; white-space: normal; }
+.tg-wrap { background: var(--surface-2); border: 1px dashed var(--line-strong); border-radius: var(--radius); padding: 22px 14px; }
+.kind-pill { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 12.5px; padding: 2px 10px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); }
+.kind-pill.important { background: var(--red-soft); color: var(--red); }
+.kind-pill.reminder { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.progress { height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.progress i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--blue-600)); transition: width .4s; }

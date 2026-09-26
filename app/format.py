@@ -73,3 +73,27 @@ def admin_html(name: str, text: str) -> str:
 def system_html(text: str) -> str:
     """Bot xizmat xabarlari (javob topilmadi va h.k.) — nom bilan."""
     return f"🎓 <b>{html.escape(BOT_NAME, quote=False)}</b>\n━━━━━━━━━━━━━━\n\n{html.escape(text, quote=False)}"
+
+
+ANN_KINDS = {
+    "info": ("📢", "E'lon"),
+    "important": ("🚨", "MUHIM OGOHLANTIRISH"),
+    "reminder": ("⏰", "Eslatma"),
+}
+
+
+def visible_len(html_text: str) -> int:
+    """Telegram limitlari teglarsiz matn uzunligiga qaraydi."""
+    return len(html.unescape(re.sub(r"<[^>]+>", "", html_text)))
+
+
+def ann_html(kind: str, title: str | None, text: str | None, author: str) -> str:
+    """Ommaviy e'lon: nom, tur, sarlavha, matn va kim yuborgani."""
+    icon, label = ANN_KINDS.get(kind, ANN_KINDS["info"])
+    out = [f"🎓 <b>{html.escape(BOT_NAME, quote=False)}</b>", "━━━━━━━━━━━━━━", f"{icon} <b>{label}</b>"]
+    if title and title.strip():
+        out += ["", f"<b>{html.escape(title.strip(), quote=False)}</b>"]
+    if text and text.strip():
+        out += ["", _body_html(text.strip())]
+    out += ["", f"👤 <i>Admin: {html.escape(author, quote=False)}</i>"]
+    return "\n".join(out)

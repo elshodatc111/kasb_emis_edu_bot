@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}E'lonlar{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>E'lonlar va ogohlantirishlar</h1>
+  <p>Barcha xodimlarga (yoki tanlangan rol / xodimlarga) matn, rasm yoki rasm + izoh yuboring. Yuborishdan oldin ko'rib chiqasiz.</p></div>
+  <a class="btn" href="/announcements/new">{{ icon('plus', 17) }} Yangi e'lon</a></div>
+{% include "_notice.html" %}
+<div class="card table-wrap">
+<table>
+  <thead><tr><th>E'lon</th><th>Auditoriya</th><th>Holat</th><th>Yetkazildi</th><th>Tushundim</th><th></th></tr></thead>
+  {% for a in items %}
+  <tr>
+    <td><div class="who-cell"><span class="avatar">{{ icon('image' if a.image_file_id else 'megaphone', 18) }}</span>
+      <div><a href="/announcements/{{ a.id }}"><b>{{ a.title or (a.text or 'Rasm')[:60] }}</b></a>
+        <div class="small muted"><span class="kind-pill {{ a.kind }}">{{ {'info': "E'lon", 'important': 'Muhim', 'reminder': 'Eslatma'}[a.kind] }}</span> · {{ a.author }} · {{ a.created_at|local }}</div></div></div></td>
+    <td class="small">{{ a.aud|aud_label }}</td>
+    <td>{% if a.status == 'sent' %}<span class="tag ok">Yuborilgan</span>{% elif a.status == 'sending' %}<span class="tag">Yuborilmoqda</span>
+      {% elif a.status == 'scheduled' %}<span class="tag">{{ icon('clock', 12) }} {{ a.scheduled_at|local }}</span>{% else %}<span class="tag warn">Qoralama</span>{% endif %}</td>
+    <td>{% if a.total %}{{ a.delivered }}/{{ a.total }}{% if a.failed %} <span class="tag warn">{{ a.failed }} xato</span>{% endif %}{% else %}<span class="muted">—</span>{% endif %}</td>
+    <td>{% if a.ack_required %}{{ a.acked }}{% else %}<span class="muted">—</span>{% endif %}</td>
+    <td class="acts" style="justify-content:flex-end"><a class="btn sm ghost" href="/announcements/{{ a.id }}">Ochish</a></td>
+  </tr>
+  {% else %}<tr><td class="muted">Hali e'lon yo'q. "Yangi e'lon" tugmasini bosing.</td></tr>{% endfor %}
+</table>
+</div>
+{% endblock %}

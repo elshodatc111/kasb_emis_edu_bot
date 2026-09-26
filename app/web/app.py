@@ -20,6 +20,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
+from .. import announce as announce_mod
 from .. import faq as faq_mod
 from .. import kb as kb_mod
 from .. import quiz as quiz_mod
@@ -61,6 +62,16 @@ def _has_sensitive(value: str | None) -> bool:
     return mask_sensitive(value)[1] > 0
 
 
+def _aud_label(aud: dict) -> str:
+    mode = aud.get("mode", "all")
+    if mode == "roles":
+        return "Rollar: " + ", ".join(aud.get("roles") or [])
+    if mode == "users":
+        return f"Tanlangan xodimlar ({len(aud.get('users') or [])})"
+    return "Barcha tasdiqlangan xodimlar"
+
+
+templates.env.filters["aud_label"] = _aud_label
 templates.env.filters["local"] = _local
 templates.env.filters["md"] = _md
 templates.env.filters["has_sensitive"] = _has_sensitive
@@ -652,6 +663,128 @@ def create_app() -> FastAPI:
         n = await quiz_mod.prepare_pools()
         return _hx("/quiz?notice=" + quote(f"{n} ta yangi savol tayyorlandi."))
 
+
+    # ---------------- ommaviy e'lonlar ----------------
+    @app.get("/announcements", response_class=HTMLResponse)
+    async def announcements_page(request: Request, _: int = Depends(admin_required)):
+        return await render(request, "announcements.html", items=await get_ctx().db.list_announcements(), page="announce",
+                            notice=request.query_params.get("notice"))
+
+    @app.get("/announcements/new", response_class=HTMLResponse)
+    async def announcement_new(request: Request, copy: int = 0, _: int = Depends(admin_required)):
+        ctx = get_ctx()
+        users = await ctx.db.list_users("approved")
+        src = (await ctx.db.get_announcement(copy)) if copy else None
+        return await render(request, "announcement_new.html", users=users, roles=ROLES, page="announce", src=src)
+
+    @app.post("/announcements/preview", response_class=HTMLResponse)
+    async def announcement_preview(request: Request, admin_id: int = Depends(csrf_required)):
+        form = await request.form()
+        kind, title, text = str(form.get("kind", "info")), str(form.get("title", "")), str(form.get("text", ""))
+        mode = str(form.get("aud_mode", "all"))
+        aud = {"mode": mode if mode in ("all", "roles", "users") else "all",
+               "roles": [str(x) for x in form.getlist("roles")],
+               "users": [int(x) for x in form.getlist("users") if str(x).isdigit()]}
+        data, name = None, "image.jpg"
+        f = form.get("image")
+        if f is not None and getattr(f, "filename", ""):
+            ctype = f.content_type or mimetypes.guess_type(f.filename)[0] or ""
+            if not ctype.startswith("image/"):
+                return HTMLResponse('<span class="err">Faqat rasm (JPG/PNG) yuklash mumkin.</span>')
+            data, name = await f.read(), f.filename
+            if len(data) > MAX_IMAGE:
+                return HTMLResponse(f'<span class="err">Rasm juda katta (chegara: {MAX_IMAGE // 1024 // 1024} MB).</span>')
+        elif form.get("keep_image"):
+            src = await get_ctx().db.get_announcement(int(form.get("keep_image") or 0))
+            if src and src.get("image_file_id"):
+                try:
+                    fl = await get_ctx().bot.get_file(src["image_file_id"])
+                    buf = await get_ctx().bot.download_file(fl.file_path)
+                    data = buf.read() if hasattr(buf, "read") else bytes(buf)
+                except TelegramAPIError:
+                    return HTMLResponse('<span class="err">Eski rasmni olib bo\'lmadi, qayta yuklang.</span>')
+        try:
+            ann_id = await announce_mod.make_draft(kind, title, text, data, name, aud, bool(form.get("ack")), admin_id)
+        except ValueError as exc:
+            return HTMLResponse(f'<span class="err">{html.escape(str(exc))}</span>')
+        return _hx(f"/announcements/{ann_id}")
+
+    async def _ann_or_404(ann_id: int) -> dict:
+        ann = await get_ctx().db.get_announcement(ann_id)
+        if not ann:
+            raise HTTPException(404, "E'lon topilmadi")
+        return ann
+
+    @app.get("/announcements/{ann_id}", response_class=HTMLResponse)
+    async def announcement_page(request: Request, ann_id: int, _: int = Depends(admin_required)):
+        ctx = get_ctx()
+        ann = await _ann_or_404(ann_id)
+        audience = await ctx.db.audience_users(ann["aud"])
+        return await render(request, "announcement.html", a=ann, preview=announce_mod.render(ann), page="announce",
+                            stats=await ctx.db.announcement_stats(ann_id), audience_n=len(audience),
+                            recips=await ctx.db.announcement_recipients(ann_id), tz=ctx.settings.timezone,
+                            notice=request.query_params.get("notice"))
+
+    @app.get("/announcements/{ann_id}/stats", response_class=HTMLResponse)
+    async def announcement_stats(request: Request, ann_id: int, _: int = Depends(admin_required)):
+        ctx = get_ctx()
+        ann = await _ann_or_404(ann_id)
+        return await render(request, "_ann_stats.html", a=ann, stats=await ctx.db.announcement_stats(ann_id),
+                            recips=await ctx.db.announcement_recipients(ann_id))
+
+    @app.get("/announcements/{ann_id}/image")
+    async def announcement_image(ann_id: int, _: int = Depends(admin_required)):
+        ctx = get_ctx()
+        ann = await _ann_or_404(ann_id)
+        fid = ann.get("image_file_id")
+        if not fid:
+            raise HTTPException(404, "Rasm yo'q")
+        headers = {"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"}
+        cached = _cache.get(fid)
+        if cached:
+            return Response(cached[0], media_type=cached[1], headers=headers)
+        try:
+            f = await ctx.bot.get_file(fid)
+            buf = await ctx.bot.download_file(f.file_path)
+            data = buf.read() if hasattr(buf, "read") else bytes(buf)
+        except TelegramAPIError:
+            raise HTTPException(404, "Rasmni Telegramdan olib bo'lmadi")
+        ctype = mimetypes.guess_type(f.file_path or "")[0] or "image/jpeg"
+        _cache.put(fid, data, ctype)
+        return Response(data, media_type=ctype, headers=headers)
+
+    @app.post("/announcements/{ann_id}/send", response_class=HTMLResponse)
+    async def announcement_send(ann_id: int, _: int = Depends(csrf_required)):
+        await _ann_or_404(ann_id)
+        ok = await announce_mod.start(ann_id)
+        note = "Yuborish boshlandi." if ok else "Bu e'lon allaqachon yuborilgan yoki yuborilmoqda."
+        return _hx(f"/announcements/{ann_id}?notice=" + quote(note))
+
+    @app.post("/announcements/{ann_id}/schedule", response_class=HTMLResponse)
+    async def announcement_schedule(ann_id: int, when: str = Form(""), _: int = Depends(csrf_required)):
+        ctx = get_ctx()
+        await _ann_or_404(ann_id)
+        utc = announce_mod.to_utc(when, ctx.settings.timezone)
+        if not utc:
+            return HTMLResponse('<span class="err">Sana va vaqtni tanlang.</span>')
+        if utc <= datetime.now(timezone.utc).strftime(FMT):
+            return HTMLResponse('<span class="err">Vaqt kelajakda bo\'lishi kerak.</span>')
+        if not await announce_mod.schedule(ann_id, utc):
+            return HTMLResponse('<span class="err">Bu e\'lonni endi rejalashtirib bo\'lmaydi.</span>')
+        return _hx(f"/announcements/{ann_id}?notice=" + quote("Rejalashtirildi."))
+
+    @app.post("/announcements/{ann_id}/unschedule", response_class=HTMLResponse)
+    async def announcement_unschedule(ann_id: int, _: int = Depends(csrf_required)):
+        await announce_mod.unschedule(ann_id)
+        return _hx(f"/announcements/{ann_id}?notice=" + quote("Rejalashtirish bekor qilindi."))
+
+    @app.post("/announcements/{ann_id}/delete", response_class=HTMLResponse)
+    async def announcement_delete(ann_id: int, _: int = Depends(csrf_required)):
+        ann = await _ann_or_404(ann_id)
+        if ann["status"] == "sending":
+            return _hx(f"/announcements/{ann_id}?notice=" + quote("Yuborilayotgan e'lonni o'chirib bo'lmaydi."))
+        await get_ctx().db.delete_announcement(ann_id)
+        return _hx("/announcements?notice=" + quote("O'chirildi."))
 
     # ---------------- jonli hodisalar ----------------
     @app.websocket("/ws")

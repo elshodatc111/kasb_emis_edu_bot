@@ -98,6 +98,30 @@ CREATE TABLE IF NOT EXISTS quiz_answers (
     answered_at TEXT NOT NULL,
     UNIQUE(session_id, question_id)
 );
+CREATE TABLE IF NOT EXISTS announcements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    kind TEXT NOT NULL DEFAULT 'info',           -- info | important | reminder
+    title TEXT,
+    text TEXT,
+    image_file_id TEXT,                          -- faqat Telegram file_id (rasm diskka yozilmaydi)
+    audience TEXT NOT NULL,                      -- JSON: {"mode": all|roles|users, "roles": [...], "users": [...]}
+    ack_required INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'draft',        -- draft | scheduled | sending | sent
+    scheduled_at TEXT,
+    author TEXT,
+    created_at TEXT NOT NULL,
+    sent_at TEXT
+);
+CREATE TABLE IF NOT EXISTS announcement_recipients (
+    ann_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',      -- pending | sent | failed
+    tg_message_id INTEGER,
+    error TEXT,
+    sent_at TEXT,
+    acked_at TEXT,
+    PRIMARY KEY (ann_id, user_id)
+);
 """
 
 DEFAULT_TEMPLATES = [
@@ -389,3 +413,97 @@ class FeaturesMixin:
             " GROUP BY q.id HAVING COUNT(*)>=2 ORDER BY (CAST(SUM(a.is_correct) AS REAL)/COUNT(*)) ASC LIMIT 8", (since_day,))
         o["pool"] = await self._all("SELECT role, COUNT(*) n FROM quiz_questions GROUP BY role ORDER BY role")
         return o
+
+    # ---------- e'lonlar ----------
+    async def add_announcement(self, kind: str, title: str | None, text: str | None, image_file_id: str | None,
+                               audience: dict, ack_required: bool, author: str | None) -> int:
+        return await self._exec(
+            "INSERT INTO announcements (kind, title, text, image_file_id, audience, ack_required, author, created_at)"
+            " VALUES (?,?,?,?,?,?,?,?)",
+            (kind, title, text, image_file_id, json.dumps(audience, ensure_ascii=False), int(ack_required), author, ts()))
+
+    async def get_announcement(self, ann_id: int) -> dict | None:
+        row = await self._one("SELECT * FROM announcements WHERE id=?", (ann_id,))
+        if row:
+            row["aud"] = json.loads(row["audience"] or "{}")
+        return row
+
+    async def list_announcements(self, limit: int = 100) -> list[dict]:
+        rows = await self._all(
+            "SELECT a.*, (SELECT COUNT(*) FROM announcement_recipients r WHERE r.ann_id=a.id) AS total,"
+            " (SELECT COUNT(*) FROM announcement_recipients r WHERE r.ann_id=a.id AND r.status='sent') AS delivered,"
+            " (SELECT COUNT(*) FROM announcement_recipients r WHERE r.ann_id=a.id AND r.status='failed') AS failed,"
+            " (SELECT COUNT(*) FROM announcement_recipients r WHERE r.ann_id=a.id AND r.acked_at IS NOT NULL) AS acked"
+            " FROM announcements a ORDER BY a.id DESC LIMIT ?", (limit,))
+        for r in rows:
+            r["aud"] = json.loads(r["audience"] or "{}")
+        return rows
+
+    async def claim_announcement(self, ann_id: int, from_status: tuple[str, ...], to_status: str,
+                                 scheduled_at: str | None = None) -> bool:
+        """Holatni atomik o'zgartiradi (ikki marta yuborilib ketmasligi uchun)."""
+        assert self.conn
+        marks = ",".join("?" * len(from_status))
+        cur = await self.conn.execute(
+            f"UPDATE announcements SET status=?, scheduled_at=? WHERE id=? AND status IN ({marks})",
+            (to_status, scheduled_at, ann_id, *from_status))
+        await self.conn.commit()
+        return cur.rowcount > 0
+
+    async def finish_announcement(self, ann_id: int) -> None:
+        await self._exec("UPDATE announcements SET status='sent', sent_at=? WHERE id=?", (ts(), ann_id))
+
+    async def delete_announcement(self, ann_id: int) -> None:
+        await self._exec("DELETE FROM announcement_recipients WHERE ann_id=?", (ann_id,))
+        await self._exec("DELETE FROM announcements WHERE id=?", (ann_id,))
+
+    async def due_announcements(self, now: str) -> list[dict]:
+        return await self._all(
+            "SELECT * FROM announcements WHERE (status='scheduled' AND scheduled_at<=?) OR status='sending' ORDER BY id",
+            (now,))
+
+    async def audience_users(self, aud: dict) -> list[dict]:
+        rows = await self._all("SELECT * FROM users WHERE status='approved' ORDER BY full_name")
+        mode = aud.get("mode", "all")
+        if mode == "roles":
+            roles = set(aud.get("roles") or [])
+            rows = [r for r in rows if r.get("role") in roles]
+        elif mode == "users":
+            ids = {int(x) for x in aud.get("users") or []}
+            rows = [r for r in rows if r["id"] in ids]
+        return rows
+
+    async def add_recipients(self, ann_id: int, user_ids: list[int]) -> None:
+        assert self.conn
+        await self.conn.executemany("INSERT OR IGNORE INTO announcement_recipients (ann_id, user_id) VALUES (?,?)",
+                                    [(ann_id, u) for u in user_ids])
+        await self.conn.commit()
+
+    async def pending_recipients(self, ann_id: int) -> list[dict]:
+        return await self._all(
+            "SELECT r.user_id, u.tg_id FROM announcement_recipients r JOIN users u ON u.id=r.user_id"
+            " WHERE r.ann_id=? AND r.status='pending' ORDER BY r.user_id", (ann_id,))
+
+    async def mark_recipient(self, ann_id: int, user_id: int, status: str, tg_message_id: int | None = None,
+                             error: str | None = None) -> None:
+        await self._exec("UPDATE announcement_recipients SET status=?, tg_message_id=?, error=?, sent_at=?"
+                         " WHERE ann_id=? AND user_id=?", (status, tg_message_id, error, ts(), ann_id, user_id))
+
+    async def ack_announcement(self, ann_id: int, user_id: int) -> bool:
+        assert self.conn
+        cur = await self.conn.execute(
+            "UPDATE announcement_recipients SET acked_at=? WHERE ann_id=? AND user_id=? AND acked_at IS NULL",
+            (ts(), ann_id, user_id))
+        await self.conn.commit()
+        return cur.rowcount > 0
+
+    async def announcement_stats(self, ann_id: int) -> dict:
+        row = await self._one(
+            "SELECT COUNT(*) total, SUM(status='sent') sent, SUM(status='failed') failed, SUM(status='pending') pending,"
+            " SUM(acked_at IS NOT NULL) acked FROM announcement_recipients WHERE ann_id=?", (ann_id,))
+        return {k: int(v or 0) for k, v in (row or {}).items()}
+
+    async def announcement_recipients(self, ann_id: int) -> list[dict]:
+        return await self._all(
+            "SELECT r.*, u.full_name, u.role, u.tg_username FROM announcement_recipients r"
+            " JOIN users u ON u.id=r.user_id WHERE r.ann_id=? ORDER BY r.status DESC, u.full_name", (ann_id,))

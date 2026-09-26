@@ -13,7 +13,7 @@ from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMar
 from aiogram.utils.chat_action import ChatActionSender
 
 from .. import kb as kb_mod
-from .. import quiz, services
+from .. import announce, quiz, services
 from ..agent import AgentError
 from ..constants import ROLES, TOPICS
 from ..context import get_ctx
@@ -444,6 +444,29 @@ async def cb_quiz(cb: CallbackQuery):
         pass
     await cb.message.answer(nxt_text, parse_mode="HTML", reply_markup=nxt_kb)
     await cb.answer()
+
+
+@router.callback_query(F.data.startswith("ann:"))
+async def cb_announcement(cb: CallbackQuery):
+    """E'londagi "Tushundim" tugmasi."""
+    c = get_ctx()
+    user = await c.db.get_user_by_tg(cb.from_user.id)
+    if not user or user["status"] != "approved":
+        await cb.answer()
+        return
+    try:
+        ann_id = int(cb.data.split(":")[1])
+    except (ValueError, IndexError):
+        await cb.answer()
+        return
+    fresh = await announce.acknowledge(ann_id, user["id"])
+    if fresh:
+        await services.push({"type": "announcement", "id": ann_id})
+    try:
+        await cb.message.edit_reply_markup(reply_markup=None)
+    except Exception:  # noqa: BLE001
+        pass
+    await cb.answer("Rahmat, qabul qilindi ✅" if fresh else "Avval tasdiqlangan")
 
 
 # ------------------------------------------------------------------ rasm

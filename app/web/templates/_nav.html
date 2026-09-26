@@ -5,6 +5,7 @@
   <a href="/users" class="{{ 'on' if page == 'users' }}">{{ icon('users') }}<span class="grow">Foydalanuvchilar</span></a>
   <a href="/chats" class="{{ 'on' if page == 'chats' }}">{{ icon('message') }}<span class="grow">Suhbatlar</span>
     {% if counts and counts.attention %}<b class="badge warn">{{ counts.attention }}</b>{% elif counts and counts.unread %}<b class="badge">{{ counts.unread }}</b>{% endif %}</a>
+  <a href="/announcements" class="{{ 'on' if page == 'announce' }}">{{ icon('megaphone') }}<span class="grow">E'lonlar</span></a>
   <div class="nav-sep">Bilim va o'qitish</div>
   <a href="/kb" class="{{ 'on' if page == 'kb' }}">{{ icon('book-open') }}<span class="grow">Bilimlar bazasi</span></a>
   <a href="/faq" class="{{ 'on' if page == 'faq' }}">{{ icon('help') }}<span class="grow">Ko'p so'raladigan savollar</span>

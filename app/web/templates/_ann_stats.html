@@ -1,0 +1,20 @@
+<div id="ann-stats" {% if a.status == 'sending' %}hx-get="/announcements/{{ a.id }}/stats" hx-trigger="every 3s" hx-swap="outerHTML"{% endif %}>
+  {% set done = stats.sent + stats.failed %}
+  <div class="cards">
+    <div class="stat"><span>Qabul qiluvchilar</span><b>{{ stats.total }}</b><i class="ic">{{ icon('users', 20) }}</i></div>
+    <div class="stat ok"><span>Yetkazildi</span><b>{{ stats.sent }}</b><i class="ic">{{ icon('check-circle', 20) }}</i></div>
+    <div class="stat"><span>Yetmadi</span><b>{{ stats.failed }}</b><i class="ic">{{ icon('ban', 20) }}</i></div>
+    {% if a.ack_required %}<div class="stat"><span>Tushundim</span><b>{{ stats.acked }}</b><small>{{ (stats.acked * 100 // stats.sent) if stats.sent else 0 }}%</small><i class="ic">{{ icon('check', 20) }}</i></div>{% endif %}
+  </div>
+  {% if a.status == 'sending' %}<div class="progress" style="margin:0 0 16px"><i style="width:{{ (done * 100 // stats.total) if stats.total else 0 }}%"></i></div>
+  <p class="muted small">Yuborilmoqda: {{ done }} / {{ stats.total }}...</p>{% endif %}
+  {% if recips %}
+  <div class="card table-wrap"><table>
+    <thead><tr><th>Xodim</th><th>Holat</th>{% if a.ack_required %}<th>Tushundim</th>{% endif %}</tr></thead>
+    {% for r in recips %}<tr>
+      <td><b>{{ r.full_name }}</b> <span class="muted small">· {{ r.role }}</span></td>
+      <td>{% if r.status == 'sent' %}<span class="tag ok">Yetdi</span>{% elif r.status == 'failed' %}<span class="tag warn">Yetmadi</span> <span class="small muted">{{ r.error }}</span>{% else %}<span class="tag">Kutmoqda</span>{% endif %}</td>
+      {% if a.ack_required %}<td>{% if r.acked_at %}<span class="tag ok">{{ r.acked_at|local }}</span>{% else %}<span class="muted">—</span>{% endif %}</td>{% endif %}
+    </tr>{% endfor %}
+  </table></div>{% endif %}
+</div>

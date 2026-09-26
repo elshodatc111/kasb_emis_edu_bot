@@ -7,7 +7,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
-from . import faq, kb, quiz, reports, services
+from . import announce, faq, kb, quiz, reports, services
 from .context import get_ctx
 
 log = logging.getLogger(__name__)
@@ -54,6 +54,10 @@ async def job_faq():
     await faq.analyze(notify=True)
 
 
+async def job_announce():
+    await announce.tick()
+
+
 async def job_kb_sync():
     await kb.sync_to_vector_store()
 
@@ -83,4 +87,6 @@ def build_scheduler(settings) -> AsyncIOScheduler:
                 misfire_grace_time=3600, coalesce=True)
     sch.add_job(_safe, IntervalTrigger(minutes=5, timezone=tz), args=[job_kb_sync], id="kb_sync",
                 misfire_grace_time=300, coalesce=True, max_instances=1)
+    sch.add_job(_safe, IntervalTrigger(minutes=1, timezone=tz), args=[job_announce], id="announce",
+                misfire_grace_time=120, coalesce=True, max_instances=1)
     return sch
