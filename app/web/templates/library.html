@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Video kutubxona{% endblock %}
+{% block content %}
+<h1>Video kutubxona</h1>
+{% include "_notice.html" %}
+<p class="muted">Videolarni YouTube (yopiq havola) yoki boshqa joyga joylab, bu yerga faqat havolasini kiriting. Bot mos savolga javob berganda videoni o'zi taklif qiladi, xodimlar esa botdagi "Video darslar" tugmasidan ham ko'ra oladi.</p>
+<div class="card form-card">
+  <h2>{{ "Videoni tahrirlash" if form.id else "Yangi video" }}</h2>
+  <form hx-post="/library/save" hx-target="#st" hx-swap="innerHTML">
+    <input type="hidden" name="vid" value="{{ form.id }}">
+    <label>Sarlavha</label><input name="title" value="{{ form.title }}" required>
+    <label>Havola (URL)</label><input name="url" value="{{ form.url }}" placeholder="https://youtu.be/..." required>
+    <label>Mavzu</label><select name="topic">{% for t in topics %}<option {{ 'selected' if t == (form.topic or 'Boshqa') }}>{{ t }}</option>{% endfor %}</select>
+    <label>Qisqa tavsif (xodimga ko'rinadi)</label><textarea name="description" rows="2">{{ form.description or '' }}</textarea>
+    <label>Kalit so'zlar (bot mosligini aniqlashi uchun, vergul bilan)</label><input name="keywords" value="{{ form.keywords or '' }}" placeholder="o'quvchi qo'shish, guruhga biriktirish">
+    {% if form.id %}<label class="check"><input type="checkbox" name="active" value="1" {{ 'checked' if form.active }}> Faol (botda ko'rinadi)</label>{% endif %}
+    <div class="row" style="margin-top:12px"><button type="submit">Saqlash</button>
+      {% if form.id %}<a class="btn ghost" href="/library">Bekor qilish</a>{% endif %}<span id="st"></span></div>
+  </form>
+</div>
+<div class="card table-wrap">
+<table>
+  <thead><tr><th>Video</th><th>Mavzu</th><th>Ko'rilgan</th><th>Holat</th><th></th></tr></thead>
+  {% for v in videos %}
+  <tr>
+    <td><b>{{ v.title }}</b><div class="small"><a href="{{ v.url }}" target="_blank" rel="noopener noreferrer">{{ v.url }}</a></div>
+      {% if v.description %}<div class="muted small">{{ v.description }}</div>{% endif %}</td>
+    <td class="small">{{ v.topic }}</td><td class="num">{{ v.views }}</td>
+    <td>{% if v.active %}<span class="pill approved">faol</span>{% else %}<span class="pill blocked">o'chirilgan</span>{% endif %}</td>
+    <td class="acts">
+      <a class="btn sm ghost" href="/library?edit={{ v.id }}">Tahrirlash</a>
+      <button class="sm ghost" hx-post="/library/{{ v.id }}/toggle">{{ "O'chirib qo'yish" if v.active else "Yoqish" }}</button>
+      <button class="sm danger" hx-post="/library/{{ v.id }}/delete" hx-confirm="Videoni o'chirasizmi?">O'chirish</button>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="5" class="muted">Hali video qo'shilmagan</td></tr>{% endfor %}
+</table>
+</div>
+{% endblock %}

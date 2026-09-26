@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Bosh sahifa</h1>
+<div class="cards">
+  <a class="stat" href="/users?status=pending"><span>Kutilayotgan so'rovlar</span><b>{{ counts.pending }}</b></a>
+  <a class="stat {{ 'warn' if counts.attention }}" href="/chats?filter=attention"><span>Diqqat talab suhbatlar</span><b>{{ counts.attention }}</b></a>
+  <div class="stat"><span>Bugungi savollar</span><b>{{ counts.questions_today }}</b></div>
+  <div class="stat"><span>Bugun javobsiz</span><b>{{ counts.unanswered_today }}</b></div>
+  <a class="stat" href="/users?status=approved"><span>Ruxsat berilganlar</span><b>{{ counts.approved }}</b></a>
+  <a class="stat {{ 'warn' if counts.faq_pending }}" href="/faq"><span>FAQ tasdiq kutmoqda</span><b>{{ counts.faq_pending }}</b></a>
+  <a class="stat" href="/quiz?days=1"><span>Bugungi test</span><b>{{ quiz.done }} / {{ quiz.sessions }}</b><small>yakunlangan / yuborilgan</small></a>
+</div>
+
+<div class="grid2">
+  <section class="card">
+    <h2>Kutilayotgan so'rovlar</h2>
+    {% for u in pending %}
+      <a class="conv" href="/users?status=pending"><div class="top"><b>{{ u.full_name }}</b><span class="pill pending">Kutilmoqda</span></div>
+        <div class="sub">{{ u.role }} · {{ u.tech_name }}</div><div class="time">{{ u.created_at|local }}</div></a>
+    {% else %}<p class="muted">So'rovlar yo'q</p>{% endfor %}
+  </section>
+  <section class="card">
+    <h2>Javob kutayotgan suhbatlar</h2>
+    {% for c in attention %}
+      <a class="conv" href="/chats/{{ c.id }}"><div class="top"><b>{{ c.full_name }}</b><span class="dot"></span></div>
+        <div class="sub">{{ c.role }} · {{ c.tech_name }}</div>
+        <div class="prev">{% if c.last_kind == 'photo' %}[rasm]{% else %}{{ (c.last_text or '')[:80] }}{% endif %}</div></a>
+    {% else %}<p class="muted">Hammasi joyida.</p>{% endfor %}
+  </section>
+</div>
+<section class="card">
+  <h2>So'nggi hisobotlar</h2>
+  {% for r in reports %}<p><a href="/reports/{{ r.id }}">{{ {'daily':'Kunlik','weekly':'Haftalik','monthly':'Oylik'}[r.kind] }} hisobot</a>
+    <span class="muted"> · {{ r.created_at|local }}</span></p>
+  {% else %}<p class="muted">Hali hisobot yo'q. "Hisobotlar" bo'limidan yaratishingiz mumkin.</p>{% endfor %}
+</section>
+{% endblock %}

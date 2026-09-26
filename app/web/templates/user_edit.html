@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Foydalanuvchini tahrirlash{% endblock %}
+{% block content %}
+<h1>Foydalanuvchini tahrirlash</h1>
+<div class="card form-card">
+  <form hx-post="/users/{{ u.id }}/edit" hx-target="#st" hx-swap="innerHTML">
+    <label>F.I.SH.</label>
+    <input name="full_name" value="{{ u.full_name }}" required>
+    <label>Telefon</label>
+    <input name="phone" value="{{ u.phone or '' }}" placeholder="+998901234567">
+    <label>Texnikum</label>
+    <input name="tech_name" value="{{ u.tech_name or '' }}">
+    <label>Rol (lavozim)</label>
+    <select name="role">
+      {% if not u.role %}<option value="" selected>-</option>{% endif %}
+      {% for r in roles %}<option value="{{ r }}" {{ 'selected' if r == u.role }}>{{ r }}</option>{% endfor %}
+    </select>
+    <label>Holat</label>
+    <select name="status">
+      {% for k, v in {'pending':'Kutilmoqda','approved':'Ruxsat berilgan','rejected':'Rad etilgan','blocked':'Bloklangan'}.items() %}
+      <option value="{{ k }}" {{ 'selected' if k == u.status }}>{{ v }}</option>{% endfor %}
+    </select>
+    <div class="muted small" style="margin-top:8px">Telegram: {% if u.tg_username %}@{{ u.tg_username }} · {% endif %}ID {{ u.tg_id }} (o'zgartirib bo'lmaydi). Holat o'zgarsa, foydalanuvchiga Telegram orqali xabar boradi.</div>
+    <div class="row" style="margin-top:14px"><button type="submit">Saqlash</button><a class="btn ghost" href="/users">Bekor qilish</a><span id="st"></span></div>
+  </form>
+</div>
+{% endblock %}

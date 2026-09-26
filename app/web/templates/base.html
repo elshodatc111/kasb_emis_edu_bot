@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Texnikum yordamchi{% endblock %}</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/htmx.min.js"></script>
+</head>
+<body hx-headers='{"X-CSRF-Token": "{{ csrf }}"}' data-active-chat="{% block active_chat %}{% endblock %}">
+{% if admin_id %}
+<div class="shell">
+  <aside class="side">
+    <div class="brand">Texnikum yordamchi</div>
+    {% include "_nav.html" %}
+    <div class="side-foot">Admin ID: {{ admin_id }}<br><a href="/logout">Chiqish</a></div>
+  </aside>
+  <main class="main">{% block content %}{% endblock %}</main>
+</div>
+{% else %}
+<main class="center">{% block public %}{% endblock %}</main>
+{% endif %}
+<script src="/static/app.js"></script>
+</body>
+</html>

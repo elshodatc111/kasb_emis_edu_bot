@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ "So'rovlar" if status == 'pending' else "Foydalanuvchilar" }}</h1>
+{% include "_notice.html" %}
+<form class="filters" method="get" action="/users">
+  <select name="status" onchange="this.form.submit()">
+    <option value="" {{ 'selected' if not status }}>Hammasi</option>
+    {% for k, v in {'pending':'Kutilmoqda','approved':'Ruxsat berilgan','rejected':'Rad etilgan','blocked':'Bloklangan'}.items() %}
+    <option value="{{ k }}" {{ 'selected' if status == k }}>{{ v }}</option>{% endfor %}
+  </select>
+  <input name="q" value="{{ q }}" placeholder="Ism, telefon, texnikum, ID...">
+  <button type="submit">Qidirish</button>
+</form>
+<div class="card table-wrap">
+<table>
+  <thead><tr><th>F.I.SH.</th><th>Rol / Texnikum</th><th>Telegram</th><th>Holat</th><th>So'rov sanasi</th><th></th></tr></thead>
+  <tbody>
+  {% for u in users %}{% include "_user_row.html" %}
+  {% else %}<tr><td colspan="6" class="muted">Foydalanuvchilar topilmadi</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

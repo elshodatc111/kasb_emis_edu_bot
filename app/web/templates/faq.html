@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Ko'p so'raladigan savollar{% endblock %}
+{% block content %}
+<h1>Ko'p so'raladigan savollar (FAQ)</h1>
+{% include "_notice.html" %}
+<p class="muted">AI har kuni kechqurun kelgan savollarni tahlil qilib, eng ko'p takrorlanganlarini "Kutilmoqda" ro'yxatiga qo'yadi. Siz tasdiqlaganingizdan keyin ular botdagi "Ko'p so'raladigan savollar" tugmasida ko'rinadi.</p>
+<div class="row" style="margin-bottom:12px">
+  <a class="btn {{ '' if status == 'pending' else 'ghost' }}" href="/faq?status=pending">Kutilmoqda ({{ counts_faq.pending }})</a>
+  <a class="btn {{ '' if status == 'approved' else 'ghost' }}" href="/faq?status=approved">Botda ko'rinadi ({{ counts_faq.approved }})</a>
+  <a class="btn {{ '' if status == 'hidden' else 'ghost' }}" href="/faq?status=hidden">Yashirilgan ({{ counts_faq.hidden }})</a>
+  <span style="flex:1"></span>
+  <button class="ghost" hx-post="/faq/analyze" hx-disabled-elt="this" hx-indicator="#spin">Hozir tahlil qilish</button>
+  <span id="spin" class="htmx-indicator muted">Tahlil qilinmoqda...</span>
+</div>
+
+{% for i in items %}
+<div class="card">
+  {% if edit == i.id %}
+  <form hx-post="/faq/save" hx-target="#st{{ i.id }}" hx-swap="innerHTML">
+    <input type="hidden" name="faq_id" value="{{ i.id }}">
+    <label>Savol</label><input name="question" value="{{ i.question }}" required>
+    <label>Javob</label><textarea name="answer" rows="6" required>{{ i.answer }}</textarea>
+    <label>Mavzu</label><select name="topic">{% for t in topics %}<option {{ 'selected' if t == i.topic }}>{{ t }}</option>{% endfor %}</select>
+    <div class="row" style="margin-top:12px"><button type="submit">Saqlash</button><a class="btn ghost" href="/faq?status={{ status }}">Bekor qilish</a><span id="st{{ i.id }}"></span></div>
+  </form>
+  {% else %}
+  <div class="row" style="justify-content:space-between;align-items:flex-start">
+    <div><b>{{ i.question }}</b> <span class="tag">{{ i.topic }}</span>
+      {% if i.ask_count %}<span class="tag">{{ i.ask_count }} marta so'ralgan</span>{% endif %}
+      {% if i.views %}<span class="tag">{{ i.views }} ko'rilgan</span>{% endif %}</div>
+    <div class="acts">
+      {% if status != 'approved' %}<button class="sm" hx-post="/faq/{{ i.id }}/status" hx-vals='{"status":"approved"}'>Tasdiqlash</button>{% endif %}
+      {% if status != 'hidden' %}<button class="sm ghost" hx-post="/faq/{{ i.id }}/status" hx-vals='{"status":"hidden"}'>Yashirish</button>{% endif %}
+      <a class="btn sm ghost" href="/faq?status={{ status }}&edit={{ i.id }}">Tahrirlash</a>
+      <button class="sm danger" hx-post="/faq/{{ i.id }}/delete" hx-confirm="O'chirasizmi?">O'chirish</button>
+    </div>
+  </div>
+  <div class="txt-pre small" style="margin-top:8px">{{ i.answer }}</div>
+  {% endif %}
+</div>
+{% else %}
+<div class="card muted">Bu bo'limda hozircha hech narsa yo'q.</div>
+{% endfor %}
+
+<div class="card form-card">
+  <h2>Qo'lda FAQ qo'shish</h2>
+  <form hx-post="/faq/save" hx-target="#stn" hx-swap="innerHTML">
+    <label>Savol</label><input name="question" required>
+    <label>Javob</label><textarea name="answer" rows="4" required></textarea>
+    <div class="muted small">Qalin yozuv uchun <code>**matn**</code>, qadamlar uchun "1.", "2." dan foydalaning.</div>
+    <label>Mavzu</label><select name="topic">{% for t in topics %}<option {{ 'selected' if t == 'Boshqa' }}>{{ t }}</option>{% endfor %}</select>
+    <div class="row" style="margin-top:12px"><button type="submit">Qo'shish</button><span id="stn"></span></div>
+  </form>
+</div>
+{% endblock %}

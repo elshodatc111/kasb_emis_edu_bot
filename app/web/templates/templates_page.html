@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Javob shablonlari{% endblock %}
+{% block content %}
+<h1>Javob shablonlari</h1>
+{% include "_notice.html" %}
+<p class="muted">Suhbat oynasida shablonni tanlasangiz, matn xabar maydoniga qo'yiladi (yuborishdan oldin tahrirlashingiz mumkin). Matnda <code>{ism}</code> yozsangiz, xodimning ismi qo'yiladi.</p>
+<div class="card form-card">
+  <h2>{{ "Shablonni tahrirlash" if form.id else "Yangi shablon" }}</h2>
+  <form hx-post="/templates/save" hx-target="#st" hx-swap="innerHTML">
+    <input type="hidden" name="tid" value="{{ form.id }}">
+    <label>Nomi</label><input name="title" value="{{ form.title }}" required>
+    <label>Matn</label><textarea name="text" rows="4" required>{{ form.text }}</textarea>
+    <div class="row" style="margin-top:12px"><button type="submit">Saqlash</button>
+      {% if form.id %}<a class="btn ghost" href="/templates">Bekor qilish</a>{% endif %}<span id="st"></span></div>
+  </form>
+</div>
+<div class="card table-wrap">
+<table>
+  {% for t in tpls %}
+  <tr><td><b>{{ t.title }}</b><div class="txt-pre small">{{ t.text }}</div></td>
+    <td class="acts"><a class="btn sm ghost" href="/templates?edit={{ t.id }}">Tahrirlash</a>
+      <button class="sm danger" hx-post="/templates/{{ t.id }}/delete" hx-confirm="O'chirasizmi?">O'chirish</button></td></tr>
+  {% else %}<tr><td class="muted">Shablon yo'q</td></tr>{% endfor %}
+</table>
+</div>
+{% endblock %}

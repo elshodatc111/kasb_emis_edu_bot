@@ -1,0 +1,12 @@
+# Serverga joylash uchun (keyinroq). HTTPS uchun oldiga Caddy/Nginx qo'ying va .env da COOKIE_SECURE=1, BASE_URL ni o'zgartiring.
+services:
+  texnikum:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      WEB_HOST: 0.0.0.0
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/srv/app/data

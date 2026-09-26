@@ -1,0 +1,20 @@
+<tr id="u-{{ u.id }}">
+  <td><b>{{ u.full_name }}</b><div class="muted small">{{ u.phone }}</div></td>
+  <td>{{ u.role }}<div class="muted small">{{ u.tech_name }}</div></td>
+  <td class="small">{% if u.tg_username %}@{{ u.tg_username }}<br>{% endif %}ID {{ u.tg_id }}</td>
+  <td><span class="pill {{ u.status }}">{{ u.status|status_uz }}</span></td>
+  <td class="small muted">{{ u.created_at|local }}</td>
+  <td class="acts">
+    <a class="sm ghost btn" href="/users/{{ u.id }}/edit">Tahrirlash</a>
+    {% if u.status in ('pending', 'rejected', 'blocked') %}
+      <button class="sm" hx-post="/users/{{ u.id }}/status" hx-vals='{"status":"approved"}' hx-target="#u-{{ u.id }}" hx-swap="outerHTML">Ruxsat berish</button>
+    {% endif %}
+    {% if u.status == 'pending' %}
+      <button class="sm ghost" hx-post="/users/{{ u.id }}/status" hx-vals='{"status":"rejected"}' hx-target="#u-{{ u.id }}" hx-swap="outerHTML">Rad etish</button>
+    {% endif %}
+    {% if u.status == 'approved' %}
+      <button class="sm danger" hx-post="/users/{{ u.id }}/status" hx-vals='{"status":"blocked"}' hx-confirm="Foydalanuvchini bloklaysizmi?" hx-target="#u-{{ u.id }}" hx-swap="outerHTML">Bloklash</button>
+      <a class="sm ghost btn" href="/chats/{{ u.id }}">Suhbat</a>
+    {% endif %}
+  </td>
+</tr>

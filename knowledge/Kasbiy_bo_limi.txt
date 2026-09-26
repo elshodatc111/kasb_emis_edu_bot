@@ -1,0 +1,875 @@
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ O‘zbekiston Respublikasi Oliy ta’lim, fan va innovatsiyalar vazirligi
+ Prof ta’lim axborot tizimi · prof-emis.edu.uz
+F OY DA L A N U VC H I Q O ‘ L L A N M A S I
+Kasbiy bo‘limi
+Qisqa muddatli (sertifikat) yo‘nalishi va kontingentni
+kuzatish, o‘quv resurslari.
+ Versiya 2.0.0 Sentabr, 2026 Rol: Kasbiy bo‘limi
+Ushbu qo‘llanma tizimdan foydalanish jarayonida yuzaga kelishi mumkin bo‘lgan savollarga
+amaliy yechim berish uchun mo‘ljallangan. Barcha rasmlar tizimning joriy versiyasidan olingan.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 1 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+Mundarija
+1. Tizimga kirish 4
+ 1.1 Kirish sahifasi 4
+ 1.2 Kirishda xatolik yuz bersa 5
+ 1.3 Bir nechta rol bilan ishlash 5
+ 1.4 Tizimdan chiqish 7
+2. Interfeys bilan tanishuv 8
+ 2.1 Ekran tuzilishi 8
+ 2.2 Sizning menyungiz 8
+ 2.3 Jadvallar bilan ishlash 9
+ 2.4 Amal tugmalari 10
+ 2.5 Ma’lumot kiritish oynalari 11
+ 2.6 Xabarnomalar 11
+ 2.7 Kunduzgi va tungi rejim 11
+ 2.8 Telefon va planshetdan foydalanish 11
+3. Statistika 12
+ 3.1 Sahifa haqida 12
+ 3.2 Umumiy kesim 13
+ 3.3 Kesimlar bo‘yicha ko‘rinishlar 15
+ 3.4 Raqamlar rolga qarab qanday farq qiladi 17
+4. Hujjatlar 19
+ 4.1 Hujjatlar sahifasi va uning varaqlari 19
+ 4.2 Imzo kutayotgan hujjatlar va ularni imzolash 20
+ 4.3 Tashqaridan yuklanadigan hujjatlar 21
+ 4.4 Buyruqlar — ro‘yxat va uni saralash 23
+ 4.5 Buyruq kartasi 24
+ 4.6 Buyruq PDF‘ini ko‘rib chiqish 25
+ 4.7 Kengash qarorlari — ro‘yxat 27
+ 4.8 Kengash qarori kartasi 28
+ 4.9 Tez-tez uchraydigan holatlar 28
+5. Qisqa muddatli (Sertifikat) 30
+ 5.1 Kvalifikatsiyalar 30
+ 5.2 Guruhlar 32
+ 5.3 O‘quvchilar 35
+ 5.4 Sertifikat yozuvini yaratish 37
+ 5.5 Tekshirish, qoralama va generatsiya 39
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 2 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+6. Kontingent 41
+ 6.1 Kontingent nima va u qayerda 41
+ 6.2 Hududiy boshqarma tomonidan tasdiqlash 42
+ 6.3 Tafsilotlarni ko‘rish va Excel 42
+7. O‘quv resurslari 44
+ 7.1 Menyudagi bandlar va ularning vazifasi 44
+8. Ko‘p uchraydigan savollar va yordam 46
+ 8.1 Kirish va ruxsatlar 46
+ 8.2 Ma’lumot kiritishdagi muammolar 46
+ 8.3 O‘quv jarayoni bo‘yicha 46
+ 8.4 Atamalar lug‘ati 47
+ 8.5 Yordam olish 47
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 3 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+§§s1§§
+ 1 Tizimga kirish
+ Prof ta’lim axborot tizimiga kirish ONE ID (yagona identifikatsiya tizimi) orqali amalga oshiriladi.
+ Alohida login va parol yaratilmaydi — sizning ONE ID hisobingiz va unga biriktirilgan rol yetarli.
+ §§s1-1§§
+1.1 Kirish sahifasi
+Brauzerda tizim manzilini oching. Ekranda kirish sahifasi paydo bo‘ladi: chap tomonda tizim nomi va
+qisqacha ma’lumot, o‘ng tomonda esa kirish oynasi joylashgan.
+ 1.1-rasm. Tizimga kirish sahifasi. Kirish tugmasi oynaning markazida joylashgan.
+ 1 Kirish oynasidagi ONE ID orqali kirish tugmasini bosing.
+ 2 Ochilgan ONE ID sahifasida o‘z hisobingiz (login va parol yoki mobil ilova) orqali tasdiqlang.
+ 3 Tasdiqlangandan so‘ng tizim sizni avtomatik ravishda Statistika sahifasiga qaytaradi — bu
+ tizimning bosh sahifasi.
+ ESLATMA Tizim ONE ID’dan qaytgan ma’lumot asosida sizning rolingizni o‘zi aniqlaydi. Shu sababli
+ kirishdan keyin ko‘rinadigan menyu bandlari boshqa xodimlarnikidan farq qilishi mumkin
+ — har bir rol faqat o‘ziga tegishli bo‘limlarni ko‘radi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 4 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ §§s1-2§§
+1.2 Kirishda xatolik yuz bersa
+ Xabar yoki holat Sababi Nima qilish kerak
+ Kechirasiz, admin sifatida kiritilmagansiz ONE ID hisobingiz tizimda Texnikum super admini yoki
+ xodim yoki admin sifatida kadrlar bo‘limiga murojaat
+ ro‘yxatga olinmagan qiling — ular sizni Xodimlar
+ bo‘limiga qo‘shishi kerak
+ Token topilmadi Kirish jarayoni to‘liq Sahifani yangilab, qaytadan
+ yakunlanmadi urinib ko‘ring
+ Kirgandan keyin menyuda hech qanday Sizga hali rol biriktirilmagan ( Kadrlar bo‘limidan rol
+ bo‘lim yo‘q Tayinlanmagan holati) biriktirishni so‘rang
+ Sahifa ochilmayapti yoki uzoq yuklanmoqda Internet aloqasi yoki server Sahifani yangilang; muammo
+ bilan bog‘liq vaqtinchalik takrorlansa Ishonch telefoni
+ uzilish 1006 ga murojaat qiling
+ §§s1-3§§
+1.3 Bir nechta rol bilan ishlash
+Bir xodimga bir nechta rol biriktirilgan bo‘lishi mumkin (masalan, ham O‘qituvchi , ham O‘quv bo‘limi ).
+Bunday holda kirgandan so‘ng rolni istalgan vaqtda almashtirish mumkin — buning uchun yuqori o‘ng
+burchakdagi ismingiz ustiga bosing.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 5 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 1.2-rasm. Profil menyusi. Rollar texnikumlar bo‘yicha guruhlangan; joriy rol ko‘k rangda ajratib ko‘rsatiladi.
+ 1 Yuqori o‘ng burchakdagi ism va rol yozuvi ustiga bosing.
+ 2 Ochilgan ro‘yxatdan kerakli rolni tanlang. Agar bir nechta texnikumda ishlasangiz, rollar texnikum
+ nomi ostida alohida guruhlangan bo‘ladi.
+ 3 Tizim tanlangan rol bilan qaytadan yuklanadi va menyu shu rolga mos ravishda o‘zgaradi.
+ MASLAHAT Rolni almashtirganda ochiq turgan sahifa yangi rolga ruxsat etilmagan bo‘lsa, tizim sizni
+ Statistika sahifasiga olib o‘tadi. Bu xatolik emas.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 6 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ §§s1-4§§
+1.4 Tizimdan chiqish
+Chiqish uchun profil menyusini oching va eng pastdagi Chiqish tugmasini bosing. Umumiy
+foydalanuvchi kompyuterida ishlaganingizdan so‘ng har doim tizimdan chiqing.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 7 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+§§s2§§
+ 2 Interfeys bilan tanishuv
+ Tizimning barcha sahifalari bir xil tuzilishga ega. Bir marta o‘rganib olsangiz, har qanday yangi
+ bo‘limda ham qiynalmaysiz.
+ §§s2-1§§
+2.1 Ekran tuzilishi
+ 2.1-rasm. Asosiy ekran: 1 — yon menyu, 2 — yuqori panel, 3 — ish maydoni (sahifa mazmuni).
+Yon menyu (chapda) Sizga ruxsat etilgan bo‘limlar ro‘yxati. Uchburchak belgisi bor bandlar ichida ost-
+ bandlar bor — ular bosilganda ochiladi.
+Yuqori panel Foydalanuvchi ID raqami, tizim versiyasi, texnikum nomi, ishonch telefoni,
+ kunduzgi/tungi rejim tugmasi va profil menyusi.
+Ish maydoni Tanlangan bo‘limning mazmuni: sarlavha, filtrlar, tugmalar va jadval.
+Menyuni yig‘ish uchun yuqori chapdagi belgini bosing — ish maydoni kengayadi. Bu ayniqsa ustunlari
+ko‘p jadvallarda qulay.
+ §§s2-2§§
+2.2 Sizning menyungiz
+Quyida Kasbiy bo‘limi roli uchun ko‘rinadigan menyu keltirilgan. Boshqa rol bilan kirsangiz bandlar
+ro‘yxati boshqacha bo‘ladi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 8 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 2.2-rasm. Kasbiy bo‘limi roli uchun yon menyu.
+ §§s2-3§§
+2.3 Jadvallar bilan ishlash
+Tizimdagi ro‘yxatlar bir xil ko‘rinishga ega. Har bir jadvalning birinchi ustuni — tartib raqami (№), oxirgi
+ustuni esa odatda Amallar bo‘lib, unda qatorga tegishli tugmalar joylashadi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 9 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 2.3-rasm. Jadval elementlari: 1 — qidiruv maydoni, 2 — filtrlar, 3 — qo‘shish tugmasi, 4 — jadval sarlavhasi, 5 —
+ qator amallari, 6 — sahifalash.
+ Qidiruv — maydonga matn kiritib, lupa tugmasini bosing yoki Enter tugmasini bosing. Qidiruv
+ maydonining ichidagi yozuv qanday ma’lumot bo‘yicha qidirish mumkinligini ko‘rsatadi (masalan,
+ PINFL, ID, F.I.O ).
+ Filtrlar — ro‘yxatni toraytiradi. Filtrni tozalash uchun uning o‘ng tomonidagi ✕ belgisini bosing.
+ Sahifalash — jadval ostida. Jami: N ta yozuvi topilgan yozuvlar sonini ko‘rsatadi. O‘ngdagi
+ ro‘yxatdan bir sahifada nechta qator ko‘rsatilishini tanlash mumkin (10, 15, 20, 50, 100 va h.k.).
+ Bo‘sh ro‘yxat — Ma’lumot topilmadi yozuvi chiqsa, bu xatolik emas: tanlangan filtrlarga mos yozuv
+ yo‘q. Filtrlarni tozalab ko‘ring.
+ MASLAHAT Filtr yoki qidiruvni o‘zgartirsangiz, tizim avtomatik ravishda birinchi sahifaga qaytadi.
+ Tanlangan filtrlar sahifa manzilida saqlanadi — sahifani yangilasangiz ham yo‘qolmaydi.
+ §§s2-4§§
+2.4 Amal tugmalari
+ Belgi Nomi Vazifasi
+ Ko‘k qalam Tahrirlash Yozuvni o‘zgartirish oynasini yoki sahifasini ochadi
+ Qizil savat O‘chirish Yozuvni o‘chiradi. Avval tasdiqlash so‘raladi
+ Ko‘k ko‘z Ko‘rish Yozuv tafsilotlarini ochadi (o‘zgartirish imkoniyatisiz)
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 10 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ Belgi Nomi Vazifasi
+ Uch nuqta Qo‘shimcha Qatorga tegishli qolgan amallar ro‘yxatini ochadi
+ Ko‘k odam O‘quvchilar Guruhga tegishli o‘quvchilar ro‘yxatiga o‘tadi
+ ESLATMA Agar sizda biror tugma ko‘rinmasa — demak, bu amal sizning rolingizga tegishli emas.
+ Masalan, ko‘pgina ma’lumotnomalarni O‘quv bo‘limi to‘ldiradi, Super admin esa faqat
+ ko‘radi. Bu xatolik emas, tizim qoidasi.
+ §§s2-5§§
+2.5 Ma’lumot kiritish oynalari
+Ko‘pchilik yozuvlar qalqib chiquvchi oyna (modal) orqali kiritiladi. Oyna pastida ikki tugma bo‘ladi:
+ Bekor qilish va Saqlash .
+ Yulduzcha (*) bilan belgilangan maydonlar majburiy — ular to‘ldirilmasa saqlash amalga oshmaydi va
+ maydon ostida qizil izoh chiqadi.
+ Sana maydonlari KK.OO.YYYY ko‘rinishida to‘ldiriladi yoki kalendardan tanlanadi.
+ Tanlov (dropdown) maydonlarida ro‘yxat uzun bo‘lsa, kerakli qiymat nomini yozib qidirish mumkin.
+ Ba’zi maydonlar bir-biriga bog‘liq: masalan, avval Viloyat tanlanmaguncha Tuman / shahar ro‘yxati
+ bo‘sh bo‘ladi.
+ §§s2-6§§
+2.6 Xabarnomalar
+Har bir amaldan so‘ng ekranning yuqori o‘ng burchagida qisqa xabar paydo bo‘ladi:
+ Muvaffaqiyatli amal bajarildi Xatolik amal bajarilmadi, sabab xabarda ko‘rsatiladi
+ MUHIM Agar Sizda bu amalni bajarish uchun ruxsat yo‘q degan xabar chiqsa — bu amal boshqa
+ rol zimmasida. Kim bajarishi kerakligini shu qo‘llanmaning tegishli bo‘limidan tekshiring.
+ §§s2-7§§
+2.7 Kunduzgi va tungi rejim
+Yuqori paneldagi quyosh/oy tugmasi ekran rangini almashtiradi. Tanlov brauzeringizda saqlanadi va
+keyingi kirishda ham saqlanib qoladi. Qo‘llanmadagi barcha rasmlar kunduzgi rejimda olingan.
+ §§s2-8§§
+2.8 Telefon va planshetdan foydalanish
+Tizim mobil qurilmalarga moslashtirilgan. Kichik ekranda yon menyu yashirin bo‘ladi — uni ochish uchun
+yuqori chapdagi menyu belgisini bosing. Jadvallardagi amal tugmalari esa “uch nuqta” tugmasi ostiga
+yig‘iladi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 11 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+§§s3§§
+ 3 Statistika
+ Tizimga kirganingizdan so‘ng birinchi bo‘lib ochiladigan sahifa — Statistika . Bu tizimning bosh
+ sahifasi: unda o‘quvchilar, texnikumlar va tizim foydalanuvchilari bo‘yicha umumlashtirilgan
+ raqamlar hamda diagrammalar jamlangan.
+ §§s3-1§§
+3.1 Sahifa haqida
+ Qayerda: Menyu → Statistika
+Faqat ko‘radi: Vazirlik Kasbiy boshqarma Super admin O‘quv bo‘limi Kasbiy bo‘limi
+ Buxgalter
+Statistika sahifasi faqat ko‘rish uchun. Unda hech narsa kiritilmaydi va tahrirlanmaydi — barcha
+raqamlar tizimning boshqa bo‘limlarida (guruhlar, o‘quvchilar, xodimlar, texnikum ma’lumotlari) kiritilgan
+yozuvlardan avtomatik hisoblanadi.
+ MA'LUMOT Bu sahifada filtr yo‘q — hudud, texnikum yoki o‘quv yilini tanlab bo‘lmaydi. Eksport
+ tugmasi ham yo‘q — ma’lumotni Excel yoki PDF ko‘rinishida yuklab olish imkoniyati
+ mavjud emas. Sahifa faqat umumiy manzarani ko‘rsatish uchun mo‘ljallangan.
+ 3.1-rasm. Statistika sahifasi: 1 — kesimlar qatori, 2 — tanlangan kesim mazmuni.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 12 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+Sahifaning eng tepasida kesimlar qatori joylashgan. Har bir kesim — alohida ko‘rinish. Kerakli yozuvni
+bosing, sahifaning pastki qismi shu kesim bo‘yicha qaytadan chiziladi. Sahifa ochilganda Umumiy
+kesimi tanlangan bo‘ladi.
+ Kesim Nimani ko‘rsatadi
+ Umumiy Tizim foydalanuvchilari, o‘quvchilar va texnikumlar bo‘yicha yig‘ma ko‘rsatkichlar
+ Muassasa turi O‘quvchilar akademik litsey, kasb-hunar maktabi, kollej va texnikum kesimida
+ Ta’lim shakli Kunduzgi, kechki, sirtqi va dual ta’lim bo‘yicha taqsimot
+ To‘lov shakli Davlat granti va to‘lov-shartnoma asosidagi o‘quvchilar
+ Fuqaroligi O‘quvchilarning fuqaroligi bo‘yicha taqsimot
+ Kurslar 1-kurs, 2-kurs va 3-kurs o‘quvchilari
+ Yosh 20 yoshdan kichik va 20 yoshdan oshgan o‘quvchilar
+ Yashash joyi O‘z uyida, ijarada, talabalar turar joyida va boshqa holatlar
+ Hududlar Barcha ko‘rsatkichlar viloyatlar kesimida
+ ESLATMA Tizim faqat siz ochgan kesim uchun ma’lumot so‘raydi. Shuning uchun yangi kesimga
+ o‘tganingizda diagrammalar bir necha soniya Ma’lumot yuklanmoqda... yozuvi bilan
+ turishi mumkin — bu normal holat, biroz kuting.
+ §§s3-2§§
+3.2 Umumiy kesim
+Bu kesimda uchta katta karta ketma-ket joylashgan. Har bir kartaning chap tomonida Jami raqami,
+o‘ng tomonida esa shu raqam tarkibini ochib beruvchi diagrammalar turadi. Ma’lumot yuklanayotganda
+kartaning o‘rnida aylanuvchi belgi ko‘rinadi.
+Tizim foydalanuvchilari soni
+Birinchi karta — Tizim foydalanuvchilari soni . Chapda tizimda ro‘yxatdan o‘tgan barcha
+foydalanuvchilarning Jami soni, o‘ngda esa halqa ko‘rinishidagi diagramma. Diagramma yonidagi
+ro‘yxatda har bir toifaning ulushi foizda va soni bilan beriladi. Diagramma bo‘lagi ustiga sichqonchani
+olib borsangiz, aniq son va foiz alohida yozuvda chiqadi.
+ 3.2-rasm. Tizim foydalanuvchilari kartasi: jami son va toifalar bo‘yicha halqa diagramma.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 13 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+O‘quvchilar
+Ikkinchi karta — O‘quvchilar . Unda quyidagilar bor:
+ Jami — hisobga olingan o‘quvchilarning umumiy soni.
+ O‘quvchilar soni o‘zgarish dinamikasi — yillar bo‘yicha chiziqli grafik; har bir nuqta ustida o‘sha yilning
+ soni yozib qo‘yilgan.
+ Diplom va sertifikat olganlar soni — Diplom olganlar va Sertifikat olganlar nisbati.
+ O‘quvchilar jinsi nisbati — Erkak va Ayol o‘quvchilar ulushi.
+ Uzoq va qisqa muddatli ta’lim shakllardagi o‘quvchilar soni — Uzoq muddatli (diplom) va
+ Qisqa muddatli (sertifikat) yo‘nalishlari nisbati.
+ 3.3-rasm. O‘quvchilar kartasi: jami son, yillar dinamikasi va uchta nisbat diagrammasi.
+Texnikumlar
+Uchinchi karta — Texnikumlar . Unda texnikumlarning Jami soni, yillar bo‘yicha
+ Texnikumlar soni o‘zgarish dinamikasi grafigi, Grant va shartnoma to‘lovdagi o‘quvchilar soni nisbati va
+ To‘lov shartnoma tushumi summasi ustunli diagrammasi joylashgan. Diagramma yonida uchta summa
+ko‘rsatiladi: To‘liq summa , To‘langan summa va To‘lanmagan summa .
+Kartaning pastki qismida to‘rtta kichik ko‘rsatkich bor: Guruhlar soni , Mutaxassisliklar soni , Fanlar soni
+va Xodimlar soni . Ularning yonida O‘qituvchilar soni alohida ajratib ko‘rsatiladi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 14 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 3.4-rasm. Texnikumlar kartasi: jami son, dinamika, tushum va qo‘shimcha ko‘rsatkichlar.
+ MUHIM Kartalardagi O‘tgan yilga nisbatan yozuvi bilan beriladigan o‘sish yoki kamayish
+ ko‘rsatkichlari, shuningdek Grant va shartnoma to‘lovdagi o‘quvchilar soni hamda
+ To‘lov shartnoma tushumi summasi diagrammalari hozircha namunaviy qiymatlar bilan
+ chiziladi — ular rasmiy hisobot uchun manba bo‘la olmaydi. Aniq raqam kerak bo‘lsa,
+ tegishli bo‘limlardan (tarifikatsiya, kontingent, diplom va sertifikat ro‘yxatlari) foydalaning.
+ §§s3-3§§
+3.3 Kesimlar bo‘yicha ko‘rinishlar
+ Umumiy dan boshqa sakkiz kesim bir xil tuzilishga ega — bittasini o‘rgansangiz, qolganlari ham
+tushunarli bo‘ladi. Har bir kesim ikki qismdan iborat.
+Yuqori qator — toifa kartalari Har bir toifa uchun alohida kartacha: toifa nomi, jami
+ o‘quvchilar soni va ikki rangli chiziq. Chiziq ostida Erkak va
+ Ayol o‘quvchilar soni hamda foizi yoziladi. Kartalar
+ o‘quvchilar soni bo‘yicha kamayish tartibida joylashadi.
+Pastki qism — kesishma diagrammalar Sarlavhasi O‘quvchilar soni ... kesimida ko‘rinishida bo‘lgan
+ ustunli diagrammalar. Ular tanlangan kesimni yosh, kurs,
+ to‘lov shakli, fuqarolik, yashash joyi kabi boshqa belgilar bilan
+ solishtiradi. Diagramma ostidagi rangli belgilar qaysi rang
+ nimani anglatishini ko‘rsatadi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 15 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 3.5-rasm. Muassasa turi kesimi: yuqorida toifa kartalari, pastda kesishma diagrammalar.
+ Hududlar kesimi eng batafsil ko‘rinish: unda avval barcha viloyatlar jins bo‘yicha, so‘ng har bir viloyat
+muassasa turi, kurslar, to‘lov shakli, yosh, yashash joyi, ta’lim shakli va fuqarolik bo‘yicha alohida
+diagrammalarda ko‘rsatiladi. Viloyatlar o‘quvchilar soni bo‘yicha kamayish tartibida joylashadi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 16 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 3.6-rasm. Hududlar kesimi: viloyatlar bo‘yicha o‘quvchilar soni.
+ MASLAHAT Diagramma ustuni ustiga sichqonchani olib borsangiz, o‘sha ustunning barcha
+ qiymatlari ro‘yxat ko‘rinishida chiqadi. Diagramma ostidagi rangli yozuvni bosib, ayrim
+ ko‘rsatkichlarni vaqtincha yashirish ham mumkin.
+ §§s3-4§§
+3.4 Raqamlar rolga qarab qanday farq qiladi
+Sahifada hudud yoki texnikum tanlash imkoniyati yo‘q, chunki tizim ma’lumot doirasini sizning rolingizga
+qarab o‘zi belgilaydi.
+ Kim ko‘rmoqda Qaysi ma’lumotni ko‘radi
+ Vazirlik Respublika bo‘yicha yig‘ma ko‘rsatkichlar — barcha
+ texnikumlar va barcha hududlar
+ Kasbiy boshqarma O‘z nazorati doirasidagi ko‘rsatkichlar
+ Super admin , O‘quv bo‘limi , O‘z texnikumiga tegishli ko‘rsatkichlar
+ Kasbiy bo‘limi , Buxgalter
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 17 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 3.7-rasm. Texnikum ko‘rinishi: raqamlar o‘z muassasangizga tegishli.
+ ESLATMA Shu sababli bir xil sahifani ikki xil rol bilan ochsangiz, raqamlar bir-biriga to‘g‘ri kelmasligi
+ mumkin. Bu xatolik emas: har bir rol o‘z doirasidagi ma’lumotni ko‘radi.
+Agar raqam siz kutgan qiymatdan farq qilsa, avval manba bo‘limlarni tekshiring: o‘quvchilar guruhlarga
+to‘g‘ri biriktirilganmi, xodimlar ro‘yxati yangilanganmi, texnikum ma’lumotlari to‘ldirilganmi. Statistika
+sahifasida raqamni qo‘lda tuzatib bo‘lmaydi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 18 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+§§s4§§
+ 4 Hujjatlar
+ Texnikumning rasmiy hujjatlari — buyruqlar, o‘quv kengashi qarorlari va tashqaridan
+ yuklanadigan hujjatlar (tushuntirish xati, protokol, ariza) — bitta joyda, Hujjatlar bo‘limida
+ yuritiladi. Buyruq va qaror qog‘ozda emas, tizimning o‘zida shakllantiriladi hamda elektron
+ raqamli imzo (ERI) bilan imzolanadi.
+ §§s4-1§§
+4.1 Hujjatlar sahifasi va uning varaqlari
+ Qayerda: Yon menyu → Hujjatlar
+Boshqaradi: O‘quv bo‘limi Faqat ko‘radi: Super admin O‘qituvchi Kadrlar bo‘limi
+ Kasbiy bo‘limi Buxgalter Texnikum
+Sahifa yuqorisida bir nechta varaq (tab) joylashgan. Har bir varaq — hujjatning alohida turi. Kerakli
+varaqni bosib, o‘sha turdagi hujjatlar ro‘yxatiga o‘tasiz.
+ 4.1-rasm. Hujjatlar sahifasi. 1 — varaqlar qatori, 2 — joriy varaqning ro‘yxati.
+ Buyruqlar — tizimda shablon asosida shakllantiriladigan buyruqlar. Sahifa ochilganda birinchi bo‘lib
+ shu varaq ko‘rinadi.
+ Kengash qarorlari — o‘quv kengashining qarorlari. Ba’zi buyruqlar aynan shu qarorsiz shakllanmaydi.
+ Tushuntirish xati , Protokol , Ariza va shu kabi varaqlar — tashqarida tayyorlangan va tizimga PDF
+ ko‘rinishida yuklanadigan hujjatlar. Bu varaqlar ro‘yxatini Vazirlik belgilaydi, shuning uchun ularning
+ soni va nomi vaqt o‘tishi bilan o‘zgarishi mumkin.
+ ESLATMA Varaqni almashtirsangiz, oldingi varaqda qo‘ygan filtringiz va sahifa raqamingiz
+ tozalanadi. Bu xatolik emas — har bir varaqning o‘z filtrlari bor.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 19 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ Amal Kim bajaradi
+ Buyruq va kengash qarorini yaratish, Faqat O‘quv bo‘limi
+ tahrirlash, kelishishga yuborish, bekor qilish
+ Hujjat yuklash (PDF), yuklangan hujjatni Faqat O‘quv bo‘limi
+ tahrirlash yoki o‘chirish
+ Ro‘yxatlarni va hujjat kartasini ko‘rish Barcha imzolovchi rollar: Super admin , O‘quv bo‘limi ,
+ Kadrlar bo‘limi , O‘qituvchi , Buxgalter , Kasbiy bo‘limi ,
+ Texnikum
+ Hujjatni ERI bilan imzolash Hujjatda imzolovchi sifatida ko‘rsatilgan har qanday xodim
+ Kimga tegishli ustunini ko‘rish O‘quv bo‘limi va Super admin
+ MUHIM Siz bu bo‘limda hujjatlarni ko‘rasiz va imzolaysiz, lekin yarata olmaysiz. Yangi buyruq
+ yoki qaror kerak bo‘lsa, o‘quv bo‘limiga murojaat qiling.
+ §§s4-2§§
+4.2 Imzo kutayotgan hujjatlar va ularni imzolash
+Agar biror hujjat aynan sizning imzoyingizni kutayotgan bo‘lsa, yon menyudagi Hujjatlar bandi yonida
+sariq rangli raqam paydo bo‘ladi. Bu raqam — imzoyingiz kutilayotgan hujjatlar soni.
+ 4.2-rasm. Yon menyu. Hujjatlar bandi yonidagi sariq raqam — imzoyingizni kutayotgan hujjatlar soni.
+Ro‘yxatlarda esa aynan shu hujjatlar qatorida ko‘k Imzolash tugmasi turadi. Boshqa qatorlarda bu
+tugma bo‘lmaydi — demak, u hujjat sizdan imzo kutmayapti.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 20 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 4.3-rasm. Buyruqlar ro‘yxati. 1 — imzo kutayotgan qatordagi Imzolash tugmasi, 2 — hujjat kartasini ochish
+ tugmasi.
+ 1 Ro‘yxatda o‘z hujjatingizni toping va Imzolash tugmasini bosing.
+ 2 Brauzerning yangi varag‘ida imzolash sahifasi ochiladi. Bu sahifa Prof ta’lim tizimidan tashqarida
+ ishlaydi.
+ 3 E-IMZO kalitingizni tanlang, parolni kiriting va imzoni tasdiqlang. Agar hujjat bilan qo‘shilmasangiz,
+ shu sahifadan uni rad etishingiz va sababini yozishingiz mumkin.
+ 4 Imzo qo‘yilgach, Prof ta’lim ochiq turgan varaqqa qayting va hujjat kartasidagi
+ Imzo holatini tekshirish tugmasini bosing — holat darhol yangilanadi.
+ MASLAHAT Imzolash sahifasi ochilmasa, brauzer qalqib chiquvchi oynani bloklagan bo‘lishi
+ mumkin. Bunday holda hujjat kartasidagi Imzolash sahifasini qayta ochish havolasidan
+ foydalaning.
+ ESLATMA Imzo holatini o‘zingiz tekshirmasangiz ham, tizim uni har 10 daqiqada o‘zi yangilab turadi.
+ Menyudagi sariq raqam esa boshqa varaqdan tizim oynasiga qaytganingizda o‘zi qayta
+ hisoblanadi.
+ MUHIM Imzolash faqat amaldagi E-IMZO kaliti bilan bajariladi. Kalit muddati tugagan yoki kalit
+ boshqa xodimniki bo‘lsa, imzo qabul qilinmaydi.
+ §§s4-3§§
+4.3 Tashqaridan yuklanadigan hujjatlar
+ Qayerda: Yon menyu → Hujjatlar → Tushuntirish xati / Protokol / Ariza
+Boshqaradi: O‘quv bo‘limi Faqat ko‘radi: Super admin O‘qituvchi Kadrlar bo‘limi
+ Kasbiy bo‘limi Buxgalter Texnikum
+Bu varaqlarda tizim hujjat yaratmaydi — tayyor hujjat skanerdan o‘tkazilib, PDF ko‘rinishida yuklanadi.
+Har bir yozuv aniq bir xodimga biriktiriladi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 21 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 4.4-rasm. Yuklanadigan hujjatlar varag‘i. 1 — O‘quv yili filtri, 2 — Status filtri, 3 — qidiruv, 4 — Yangilash .
+ O‘quv yili — hujjat qaysi o‘quv yiliga tegishli ekani bo‘yicha saralaydi.
+ Status — hujjatning imzolanish bosqichi bo‘yicha saralaydi.
+ ID, Nomi — hujjat raqami yoki nomi bo‘yicha qidiruv. Yozib bo‘lgach Enter tugmasini bosing.
+ Yangilash — ro‘yxatni serverdan qaytadan o‘qiydi. Imzo qo‘yilgandan keyin shu tugmani bosing.
+ Fayl ustunidagi Yuklab olish havolasi hujjat PDF‘ini ochadi.
+ MUHIM Siz bu varaqlarda faqat ko‘rish va (agar sizdan imzo kutilsa) imzolash imkoniga egasiz.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 22 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ §§s4-4§§
+4.4 Buyruqlar — ro‘yxat va uni saralash
+ Qayerda: Yon menyu → Hujjatlar → Buyruqlar
+Boshqaradi: O‘quv bo‘limi Faqat ko‘radi: Super admin O‘qituvchi Kadrlar bo‘limi
+ Kasbiy bo‘limi Buxgalter Texnikum
+Buyruqlar ro‘yxatida texnikumning barcha buyruqlari ko‘rinadi — eng yangisi yuqorida turadi.
+ Ustun Nimani ko‘rsatadi
+ Raqam Buyruq raqami. Uni tizim o‘zi beradi (masalan, B2026/460151) yoki siz kiritasiz
+ Buyruq turi Qaysi shablon asosida shakllantirilgan
+ Kengash qarori Buyruq asos qilib olgan qaror raqami. Talab qilinmasa "-"
+ O‘quvchilar Buyruqqa kiritilgan o‘quvchilar soni
+ Yaratilgan sana Buyruq tizimda yaratilgan kun
+ Tasdiqlangan sana Rahbar imzolagan kun. Tasdiqlanmaguncha "-"
+ Fayl Buyruq PDF‘i. Kelishishga yuborilgunga qadar "-"
+ Holat Buyruqning hozirgi bosqichi (pastda batafsil)
+Ro‘yxat tepasidagi ikki filtr yordam beradi: Buyruq turi — faqat bitta turdagi buyruqlarni ko‘rsatadi,
+ Holat — bosqich bo‘yicha saralaydi. Filtrni tozalash uchun uning o‘ngidagi ✕ belgisini bosing.
+ 4.5-rasm. Holat filtri ochilgan ko‘rinishi — buyruqning barcha mumkin bo‘lgan bosqichlari.
+ Qoralama buyruq yaratilgan, lekin hali hech kimga Kelishishga yuborilgan PDF shakllantirilgan va
+ yuborilmagan. Faqat shu bosqichda uni imzolovchilarga jo‘natilgan;
+ erkin tahrirlash mumkin imzolar to‘planmoqda
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 23 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ Kelishildi rahbardan boshqa barcha imzolovchilar Tasdiqlangan rahbar ham imzolagan — buyruq
+ imzolagan; endi rahbar imzosi kutilmoqda kuchga kirdi. Yakuniy holat
+ Rad etildi imzolovchilardan biri imzolashdan bosh Bekor qilingan buyruq o‘quv bo‘limi tomonidan
+ tortgan; sabab kartada ko‘rsatiladi bekor qilingan. Yakuniy holat —
+ ortga qaytmaydi
+ §§s4-5§§
+4.5 Buyruq kartasi
+ Qayerda: Yon menyu → Hujjatlar → Buyruqlar → qatordagi ko‘z tugmasi
+Boshqaradi: O‘quv bo‘limi Faqat ko‘radi: Super admin O‘qituvchi Kadrlar bo‘limi
+ Kasbiy bo‘limi Buxgalter Texnikum
+Karta — buyruq haqidagi to‘liq ma’lumot: raqami, turi, holati, sanalar, imzolovchilar va o‘quvchilar
+ro‘yxati. Tugmalar qatori buyruqning holatiga va sizning rolingizga qarab o‘zgaradi.
+ 4.6-rasm. Buyruq kartasi. Sizda faqat ko‘rish va imzo bilan bog‘liq tugmalar bo‘ladi.
+ Tugma Qachon ko‘rinadi Nima qiladi
+ Ko‘rib chiqish Har doim, barcha rollarda Buyruq PDF‘ini ekranda ochadi
+ Yuklab olish Buyruq Tasdiqlangan bo‘lganda Yakuniy, imzolangan PDF‘ni
+ kompyuterga saqlaydi
+ Imzo holatini tekshirish Kelishishga yuborilgan va Kelishildi Imzolar to‘planganini serverdan qayta
+ holatlarida so‘raydi
+ ESLATMA Buyruq Tasdiqlangan holatga o‘tgach uni tahrirlash ham, bekor qilish ham mumkin emas
+ — faqat ko‘rish va yuklab olish qoladi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 24 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+Imzolovchilar jadvali
+Karta pastidagi Imzolovchilar jadvali imzo yig‘ilishini kuzatib borish uchun xizmat qiladi.
+ 4.7-rasm. Kelishishga yuborilgan buyruq: imzolovchilar jadvalida har bir xodimning imzo holati ko‘rinadi.
+ Imzo ustunida yashil Imzolangan yoki sariq Kutilmoqda yozuvi turadi.
+ Rahbar sifatida belgilangan xodim ismi yonida binafsha Rahbar yozuvi bo‘ladi. U eng oxirida
+ imzolaydi.
+ Rad etish sababi ustuni imzolashdan bosh tortgan xodim yozgan izohni ko‘rsatadi.
+ Pastdagi O‘quvchilar jadvalida buyruqqa kiritilgan o‘quvchilar ro‘yxati bo‘ladi.
+ MA'LUMOT Buyruq ikki bosqichda imzolanadi: avval rahbardan boshqa barcha imzolovchilar
+ imzolaydi — holat Kelishildi ga o‘tadi va kartada Rahbar imzosi kutilmoqda deb
+ yoziladi; keyin rahbar imzolaydi — buyruq Tasdiqlangan bo‘ladi.
+ §§s4-6§§
+4.6 Buyruq PDF‘ini ko‘rib chiqish
+ Ko‘rib chiqish tugmasi buyruq matnini ekranda ochadi. PDF har safar joriy ma’lumotdan qaytadan
+quriladi, shuning uchun to‘plangan imzolar ham unda ko‘rinadi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 25 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 4.8-rasm. Buyruqni ko‘rib chiqish oynasi. Pastdagi Yuklab olish tugmasi faylni kompyuterga saqlaydi, Yopish
+ oynani yopadi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 26 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ §§s4-7§§
+4.7 Kengash qarorlari — ro‘yxat
+ Qayerda: Yon menyu → Hujjatlar → Kengash qarorlari
+Boshqaradi: O‘quv bo‘limi Faqat ko‘radi: Super admin O‘qituvchi Kadrlar bo‘limi
+ Kasbiy bo‘limi Buxgalter Texnikum
+O‘quv kengashi qarori — bir qator buyruqlar uchun asos bo‘ladigan hujjat. U buyruq bilan deyarli bir xil
+tartibda shakllantiriladi va imzolanadi; farqlari quyida keltirilgan.
+ 4.9-rasm. Kengash qarorlari ro‘yxati.
+ Ustun Nimani ko‘rsatadi
+ Raqam Qaror raqami (masalan, Q2026/460003)
+ Qaror turi Qaysi shablon asosida shakllantirilgan
+ O‘quvchilar Qarorga kiritilgan o‘quvchilar soni
+ A’zolar Qarorni imzolaydigan kengash a’zolari soni
+ Sana Qaror yaratilgan kun
+ Fayl Qaror PDF‘i
+ Holat Qarorning hozirgi bosqichi
+ Qoralama yaratilgan, hali yuborilmagan Kelishishga yuborilgan a’zolarga jo‘natilgan, imzolar
+ to‘planmoqda
+ Kuchga kirgan barcha a’zolar imzolagan. Aynan shu Rad etildi a’zolardan biri imzolashdan bosh tortgan
+ holatdagi qarorlargina buyruqqa
+ asos bo‘la oladi. Yakuniy holat
+ Bekor qilingan o‘quv bo‘limi bekor qilgan. Yakuniy
+ holat
+ MA'LUMOT Buyruqdan asosiy farqi: qarorda rahbar tushunchasi yo‘q — barcha a’zolar teng
+ imzolaydi. Barcha imzolar to‘plangach qaror darhol Kuchga kirgan holatiga o‘tadi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 27 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ §§s4-8§§
+4.8 Kengash qarori kartasi
+ Qayerda: Yon menyu → Hujjatlar → Kengash qarorlari → qatordagi ko‘z tugmasi
+Boshqaradi: O‘quv bo‘limi Faqat ko‘radi: Super admin O‘qituvchi Kadrlar bo‘limi
+ Kasbiy bo‘limi Buxgalter Texnikum
+ 4.10-rasm. Kengash qarori kartasi: ma’lumotlar, Kengash a’zolari va O‘quvchilar jadvallari.
+Karta buyruq kartasi bilan bir xil ishlaydi: Ko‘rib chiqish PDF‘ni ochadi, Imzo holatini tekshirish imzolarni
+yangilaydi, qaror Kuchga kirgan bo‘lgach Yuklab olish tugmasi paydo bo‘ladi.
+ Kengash a’zolari jadvalida har bir a’zoning Imzo holati ( Imzolangan yoki Kutilmoqda ) va Izoh
+ ustuni bo‘ladi. Rad etilganda sabab shu ustunda yoziladi.
+ §§s4-9§§
+4.9 Tez-tez uchraydigan holatlar
+Quyidagi jadvalda eng ko‘p beriladigan savollar va ularning yechimi keltirilgan. Ro‘yxat bo‘sh chiqsa esa
+avval filtrlarni tekshiring — Ma’lumot topilmadi yozuvi xatolik emas, tanlangan shartlarga mos hujjat
+yo‘qligini bildiradi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 28 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 4.11-rasm. Holat filtri qo‘yilgan, ammo unga mos buyruq yo‘q — jadvalda Ma’lumot topilmadi yozuvi chiqadi.
+ Holat Sababi va yechimi
+ Buyruq qo‘shish tugmasi ko‘rinmayapti Buyruq yaratish faqat O‘quv bo‘limi roliga tegishli. O‘quv
+ bo‘limiga murojaat qiling
+ Imzolash tugmasi hech qaysi qatorda yo‘q Hozircha sizdan imzo kutilmayapti. Menyudagi Hujjatlar
+ yonida raqam ham bo‘lmasa, imzolanadigan hujjat yo‘q
+ Imzoladim, lekin holat o‘zgarmadi Kartadagi Imzo holatini tekshirish yoki yuklanadigan
+ hujjatlar varag‘idagi Yangilash tugmasini bosing
+ Sizda bu amalni bajarish uchun ruxsat yo‘q Bu amal boshqa rol zimmasida. Yuqoridagi «kim nima qiladi»
+ xabari jadvalini ko‘ring
+ Fayl ustunida "-" turibdi Buyruq yoki qaror hali kelishishga yuborilmagan — PDF faqat
+ yuborilganda shakllanadi
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 29 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+§§s5§§
+ 5 Qisqa muddatli (Sertifikat)
+ Qisqa muddatli yo‘nalish — diplom beriladigan uzoq muddatli ta’limdan mustaqil tarmoq. Bu
+ yerda tinglovchi qisqa kurs (malaka) bo‘yicha o‘qiydi va yakunda diplom emas, sertifikat oladi.
+ Bo‘lim menyuda Qisqa muddatli (Sertifikat) nomi bilan turadi va ichida to‘rtta ish sahifasi hamda
+ raqamlar ma’lumotnomasi bor.
+Ish ketma-ketligi doimo bir xil:
+ 1 Kvalifikatsiyalar — texnikumingiz o‘qitadigan malakalarni ro‘yxatga olasiz.
+ 2 Guruhlar — malaka bo‘yicha guruh ochasiz.
+ 3 O‘quvchilar — fuqaroni JSHSHIR bo‘yicha topib, guruhga qo‘shasiz.
+ 4 Kurs tugagach Guruhlar dagi guruhni bitirtirasiz.
+ 5 Sertifikatlar — bitirgan har bir o‘quvchiga sertifikat yozasiz, tekshirasiz va generatsiya qilasiz.
+ MUHIM Ma’lumotni o‘zgartiradigan barcha amallarni faqat O‘quv bo‘limi bajaradi. Super admin
+ va Kasbiy bo‘limi bu sahifalarni ochadi, lekin ularda qo‘shish, tahrirlash va o‘chirish
+ tugmalari ko‘rinmaydi.
+ MA'LUMOT Bu bo‘limni siz faqat ko‘rish uchun ochasiz. Quyidagi qadamlarni o‘quv bo‘limi bajaradi
+ — matn sizga jarayonni tushunish uchun keltirilgan.
+ §§s5-1§§
+5.1 Kvalifikatsiyalar
+ Qayerda: Menyu → Qisqa muddatli (Sertifikat) → Kvalifikatsiyalar
+Boshqaradi: O‘quv bo‘limi Faqat ko‘radi: Super admin Kasbiy bo‘limi
+Malakalar (kvalifikatsiyalar) umumiy ma’lumotnomada — vazirlik ro‘yxatida — turadi. Bu sahifada siz shu
+ro‘yxatdan o‘z texnikumingiz o‘qitadiganlarini tanlab olasiz. Faqat shu yerga qo‘shilgan malakalar
+bo‘yicha guruh ochish mumkin.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 30 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+5.1-rasm. Kvalifikatsiyalar ro‘yxati: 1 — qo‘shish tugmasi, 2 — malaka nomi, 3 — Soatlar , 4 — Holati , 5 — qator
+ amallari.
+ Kvalifikatsiya Malakaning umumiy ma’lumotnomadagi nomi
+ Soatlar Malakaning o‘quv soati. Bu raqam keyinchalik sertifikat turini belgilaydi — 36 soat
+ bo‘lsa kurs moduli hisoblanadi
+ Holati Faol — malaka bo‘yicha yangi guruh ochish mumkin; Faol emas — endi yangi
+ guruhga tanlanmaydi
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 31 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 5.2-rasm. Yangi kvalifikatsiya qo‘shish oynasi. Malaka soati ro‘yxatdan tanlangach o‘zi keladi.
+ ESLATMA Bu sahifada qidiruv va filtr yo‘q — malakalar soni odatda kam bo‘ladi. Bir sahifada 10 ta
+ yozuv ko‘rsatiladi, qolganlari pastdagi sahifalash orqali ochiladi.
+ §§s5-2§§
+5.2 Guruhlar
+ Qayerda: Menyu → Qisqa muddatli (Sertifikat) → Guruhlar
+Boshqaradi: O‘quv bo‘limi Faqat ko‘radi: Super admin Kasbiy bo‘limi
+Guruh — bitta malaka bo‘yicha birga o‘qiydigan tinglovchilar to‘plami. Har bir guruh o‘z boshlanish va
+tugash sanasiga, o‘qish muddatiga hamda o‘quvchilar soni chegarasiga ega.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 32 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+5.3-rasm. Guruhlar ro‘yxati: 1 — qidiruv, 2 — Kvalifikatsiya filtri, 3 — Holat filtri, 4 — guruh qo‘shish, 5 — qator
+ amallari.
+ Nomi Guruh nomi — ro‘yxatda va sertifikat yozuvida shu nom ishlatiladi
+ Kvalifikatsiya Guruh qaysi malaka bo‘yicha o‘qiyotgani
+ Boshlanish va Tugash Kurs boshlangan va tugaydigan sanalar
+ O‘quvchilar Guruhga qo‘shilgan tinglovchilar soni
+ Holati Yaratilgan — guruh o‘qimoqda; Bitirgan — kurs yakunlangan
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 33 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 5.4-rasm. Yangi guruh qo‘shish oynasi. Yulduzcha bilan belgilangan maydonlar majburiy.
+Guruh qatoridagi amallar
+ Amal Kimda bor Nima qiladi
+ O‘quvchilar Barcha rollarda Shu guruhga tegishli o‘quvchilar ro‘yxatiga o‘tadi (ro‘yxat guruh bo‘yicha
+ filtrlangan holda ochiladi)
+ Tahrirlash O‘quv bo‘limi Guruh ma’lumotlarini o‘zgartirish oynasini ochadi
+ Bitirtirish O‘quv bo‘limi Faqat Yaratilgan holatidagi guruhda chiqadi — guruhni yakunlaydi
+ O‘chirish O‘quv bo‘limi Guruhni o‘chiradi
+Desktopda tez-tez kerak bo‘ladigan tugmalar qatorda ko‘rinib turadi, qolganlari esa “…” tugmasi ostiga
+yig‘iladi. Telefonda barcha amallar shu “…” tugmasi ichida bo‘ladi.
+ ESLATMA Guruh nomini qidiruv maydoniga yozib topish mumkin — matnni kiritib Enter ni bosing
+ yoki lupa belgisini bosing.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 34 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ §§s5-3§§
+5.3 O‘quvchilar
+ Qayerda: Menyu → Qisqa muddatli (Sertifikat) → O‘quvchilar
+Boshqaradi: O‘quv bo‘limi Faqat ko‘radi: Super admin Kasbiy bo‘limi
+Tinglovchi qo‘lda yozilmaydi: avval fuqaro davlat ma’lumotnomasidan topiladi, so‘ng guruhga biriktiriladi.
+Shu tufayli ism va JSHSHIR har doim rasmiy hujjatdagidek bo‘ladi.
+ 5.5-rasm. O‘quvchilar ro‘yxati: 1 — qidiruv, 2 — Guruh filtri, 3 — Holat filtri, 4 — o‘quvchi qo‘shish, 5 — qator
+ amallari.
+ O‘qimoqda tinglovchi kursda Chetlashgan kursdan chetlashtirilgan, qaytarish
+ mumkin
+ Bitirgan guruh bitirtirilgan — sertifikat yozish
+ mumkin
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 35 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+Yangi o‘quvchi qo‘shish
+ 5.6-rasm. Yangi o‘quvchi qo‘shish oynasining birinchi qadami — fuqaroni hujjat bo‘yicha qidirish.
+Chetlashtirish, qaytarish va o‘chirish
+Ism variantlari (RU/EN)
+Sertifikat blankasida ism kirill va lotin yozuvida ham chop etiladi. Shuning uchun har bir o‘quvchi uchun
+ism variantlarini oldindan kiritish kerak.
+ 5.7-rasm. Ism variantlarini kiritish oynasi. Ikkita bo‘lim bor: Ruscha va Inglizcha .
+ MUHIM Ism variantlarini sertifikat generatsiya qilinishidan oldin kiriting. Generatsiyadan keyin
+ o‘quvchining ismi qulflanadi va o‘zgartirib bo‘lmaydi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 36 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ §§s5-4§§
+5.4 Sertifikat yozuvini yaratish
+ Qayerda: Menyu → Qisqa muddatli (Sertifikat) → Sertifikatlar
+Boshqaradi: O‘quv bo‘limi Faqat ko‘radi: Super admin Kasbiy bo‘limi
+Sahifa ochilganda jadval bo‘lmaydi — avval guruhni tanlash kerak. Ekranda
+ Sertifikatlarni ko‘rish uchun guruhni tanlang yozuvi turadi.
+ 5.8-rasm. Sertifikatlar sahifasining boshlang‘ich ko‘rinishi. Yuqori o‘ngdagi Guruhni tanlang ro‘yxatidan guruh
+ tanlanadi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 37 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 5.9-rasm. Guruh tanlangandan keyingi ro‘yxat: Sertifikat raqami , Holati va qator amallari.
+Ikki xil sertifikat — ikki xil raqam
+ Guruh Sertifikat turi Raqam qayerdan olinadi
+ malakasi
+ 36 soat Qisqa muddatli kurs (36 soat) — Raqam maydonlari umuman ko‘rsatilmaydi: tizim
+ kurs moduli raqamni o‘zi beradi
+ Boshqa har Malaka sertifikati — davlat Sertifikat raqami va Ro‘yxatga olish raqami
+ qanday soat namunasi qo‘lda kiritiladi — texnikumga ajratilgan oraliqdan
+ ESLATMA Texnikumingizga ajratilgan raqamlar oralig‘ini Qisqa muddatli (Sertifikat) →
+ Sertifikat raqamlari sahifasidan ko‘rasiz. Oraliqdan tashqaridagi raqam tekshiruvdan
+ o‘tmaydi.
+ Yozilmagan sertifikat yozuvi hali yaratilmagan Yaratilgan yozuv bor, hali tahrirlash mumkin
+ Generatsiya qilingan fayl tayyorlangan, yozuv Imzolangan sertifikat imzolangan — yakuniy holat
+ qulflangan
+ MUHIM Guruh Bitirgan holatiga o‘tmaguncha uning o‘quvchilari bu ro‘yxatda ko‘rinmaydi.
+ Ro‘yxat bo‘sh bo‘lsa, avval Guruhlar sahifasidan guruhni bitirtiring.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 38 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ §§s5-5§§
+5.5 Tekshirish, qoralama va generatsiya
+ Qayerda: Sertifikatlar → guruh tanlangan holda, qator amallari
+Boshqaradi: O‘quv bo‘limi Faqat ko‘radi: Super admin Kasbiy bo‘limi
+Sertifikat fayli birdaniga chiqarilmaydi. Avval yozuv tekshiriladi, so‘ng qoralama ko‘riladi va faqat
+shundan keyin generatsiya qilinadi.
+ 5.10-rasm. Qator amallari. Ba’zi amallar “…” tugmasi ostida turadi — masalan, Ko‘rish (qoralama) .
+ Amal Qachon chiqadi Nima qiladi
+ Sertifikat yozish Sertifikat yozuvi yo‘q Sana va (kerak bo‘lsa) raqamlar kiritiladigan oynani ochadi
+ bo‘lsa
+ Tahrirlash Yozuv Yaratilgan Sana va raqamlarni o‘zgartirish imkonini beradi
+ holatida
+ Tekshirish Yozuv Yaratilgan Ma’lumot to‘liqligini nazorat qiladi; hammasi joyida bo‘lsa
+ holatida Tekshiruvdan muvaffaqiyatli o‘tdi deb yozadi
+ Ko‘rish (qoralama) Yozuv bor bo‘lsa Sertifikatning qoralamasini yangi oynada ochadi — bu fayl
+ saqlanmaydi
+ Generatsiya Yozuv Yaratilgan Yakuniy sertifikat faylini tayyorlaydi va yozuvni qulflaydi
+ holatida
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 39 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ Amal Qachon chiqadi Nima qiladi
+ Yuklab olish Yozuv generatsiya Tayyor faylni yangi oynada ochadi
+ qilingan yoki
+ imzolangan
+ ESLATMA Yuklab olish bosilganda Fayl hali tayyor emas deb yozsa, bu xatolik emas: fayl hali
+ tayyorlanmoqda. Bir-ikki daqiqadan so‘ng qayta urinib ko‘ring.
+Qoralama yangi oynada ochiladi. Oyna tepasida fayl nomi va ko‘k Yuklab olish havolasi turadi, pastda
+esa sertifikatning o‘zi ko‘rinadi.
+ MA'LUMOT Tayyor sertifikatda QR belgi bo‘ladi. Uni telefon kamerasi bilan o‘qish orqali istalgan
+ kishi hujjatning haqiqiyligini tekshira oladi — ochiladigan sahifada bitiruvchi, texnikum,
+ malaka, soat, sertifikat raqami va berilgan sana ko‘rsatiladi. Bu sahifani ko‘rish uchun
+ tizimga kirish shart emas.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 40 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+§§s6§§
+ 6 Kontingent
+ Kontingent — texnikumning o‘quvchilari, guruhlari va o‘quv rejalari bo‘yicha ma’lum bir kunga
+ olingan rasmiy kesim. U moliyaviy hisobot uchun shakllantiriladi, oy ko‘rsatilgan holda
+ tasdiqlashga yuboriladi va hududiy boshqarma tomonidan tasdiqlanadi.
+ §§s6-1§§
+6.1 Kontingent nima va u qayerda
+ Qayerda: Menyu → Tarifikatsiya hisoboti → Studentlar / Guruhlar / O'quv reja
+Boshqaradi: O‘quv bo‘limi Super admin Kasbiy boshqarma Faqat ko‘radi: Kasbiy bo‘limi
+ Buxgalter Vazirlik
+Kontingent — bu muzlatilgan kesim. Uni shakllantirgan paytdagi ma’lumotlar alohida saqlanib qoladi va
+keyin o‘quvchi qo‘shsangiz ham, guruh o‘zgartirsangiz ham o‘zgarmaydi. Shu sababli hisobot
+topshirilgandan keyin ham kesim qanday bo‘lgani har doim ko‘rinib turadi.
+ Studentlar — kesimga tushgan o‘quvchilar ro‘yxati (F.I.SH., jinsi, yo‘nalishi, guruhi, qabul turi).
+ Guruhlar — guruhlar kesimi: har bir guruhda nechta o‘quvchi bor, ulardan nechtasi erkak va nechtasi
+ ayol.
+ O'quv reja — guruhlarning o‘quv rejalari kesimi: semestr, jami soat va fanlar soni.
+Uchala sahifa bir xil ishlaydi — faqat kesimga tushadigan ma’lumot turi farq qiladi. Har biri uchun kesim
+alohida shakllantiriladi va alohida tasdiqlanadi.
+ 6.1-rasm. Studentlar sahifasi: 1 — Holat filtri, 2 — Shakllantirish tugmasi, 3 — Holati ustuni, 4 — qator
+ amallari.
+ Ustun Nima ko‘rsatadi
+ Texnikum Kesim qaysi texnikumga tegishli
+ Shakllantirilgan sana Kesim qaysi kunda olingani
+ Tasdiqlashga yuborilgan oy Kesim qaysi oy uchun yuborilgani. Hali yuborilmagan bo‘lsa — chiziqcha
+ Holati Kesim qaysi bosqichda ekani
+ Amallar Qatorga tegishli tugmalar
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 41 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+Holatlar
+ Yaratilgan kesim shakllantirilgan, lekin hali Texnikum admini tasdiqlagan texnikum kesimni oy
+ yuborilmagan ko‘rsatib yuborgan,
+ boshqarma javobi
+ kutilmoqda
+ Hudud admini tasdiqlagan boshqarma tasdiqlagan Hudud admini rad etgan boshqarma rad etgan;
+ — hisobot yopildi sababni ko‘rish uchun holat
+ yozuvi ustiga sichqonchani
+ olib boring
+Siz bu bo‘limni faqat ko‘rasiz: ro‘yxatni ochish, tafsilotlarni ko‘rish va Excel faylini yuklab olish mumkin.
+Kesimni shakllantirish texnikum, tasdiqlash esa hududiy boshqarma zimmasida.
+ §§s6-2§§
+6.2 Hududiy boshqarma tomonidan tasdiqlash
+Boshqaradi: Kasbiy boshqarma Faqat ko‘radi: O‘quv bo‘limi Super admin Kasbiy bo‘limi
+ Buxgalter Vazirlik
+Texnikum yuborgan kesim hududiy boshqarmaga tushadi. Boshqarma uni ko‘rib chiqib, tasdiqlaydi yoki
+sabab ko‘rsatib rad etadi.
+ 6.2-rasm. Hududiy boshqarma ko‘radigan ro‘yxat. Tasdiqlash va Rad etish tugmalari faqat
+ Texnikum admini tasdiqlagan holatidagi qatorlarda chiqadi.
+Kesim rad etilsa, holat Hudud admini rad etgan ga o‘zgaradi. Rad etish sababini ko‘rish uchun
+sichqonchani holat yozuvi ustiga olib boring — sabab qalqib chiqadi. Sabab tafsilot oynasida ham
+ko‘rinadi.
+ ESLATMA Tasdiqlash va rad etish faqat Texnikum admini tasdiqlagan holatidan bajariladi. Shu
+ sababli hali yuborilmagan yoki allaqachon tasdiqlangan qatorlarda bu tugmalar
+ ko‘rinmaydi.
+ §§s6-3§§
+6.3 Tafsilotlarni ko‘rish va Excel
+Boshqaradi: O‘quv bo‘limi Super admin Kasbiy boshqarma Faqat ko‘radi: Kasbiy bo‘limi
+ Buxgalter Vazirlik
+Har bir qatordagi ko‘k Ko'rish tugmasi kesim tafsilotlarini ochadi. Yuqorida texnikum nomi, STIR raqami,
+holati, shakllantirilgan sana va yuborilgan oy ko‘rinadi; pastda esa kesimga tushgan ma’lumotlar jadvali.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 42 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ 6.3-rasm. Kontingent tafsiloti oynasi.
+ Sahifa Tafsilotlar jadvalida nima bor
+ Studentlar F.I.SH. , JSHSHIR , Jinsi , Tug'ilgan sana , Yo'nalish , Mutaxassislik , Guruh ,
+ Qabul turi
+ Guruhlar Yo'nalish , Mutaxassislik , Guruh , Jami , Erkak , Ayol , Ta'lim tili , O'quv yili
+ O'quv reja Guruh , Semestr , Jami , O'quv reja , Jami soat , Fanlar soni . Har bir qatorni ochib,
+ unga kirgan fanlar ro‘yxatini ko‘rish mumkin
+Excel faylini ikki joydan olish mumkin: qator amallari orasidagi Excel yuklab olish tugmasi (uch nuqta
+ostida) yoki tafsilot oynasidagi Yuklab olish tugmasi. Fayl yangi oynada ochiladi.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 43 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+§§s7§§
+ 7 O‘quv resurslari
+ Menyudagi O‘quv resurslari bandi ostida o‘qituvchining o‘quv materiallari bilan bog‘liq sahifalari
+ jamlangan. Bu sahifalarda ma’lumotni o‘qituvchi kiritadi, siz esa uni kuzatib borasiz.
+ §§s7-1§§
+7.1 Menyudagi bandlar va ularning vazifasi
+ Qayerda: Menyu → O‘quv resurslari
+Faqat ko‘radi: Super admin O‘quv bo‘limi Kasbiy bo‘limi Buxgalter Kasbiy boshqarma
+ Vazirlik
+ 7.1-rasm. Kasbiy bo‘limi roli uchun O‘quv resurslari menyusi.
+Band ostida uchtagacha sahifa bo‘lishi mumkin. Sizga qaysilari ko‘rinishi rolingizga bog‘liq:
+ Sahifa Nima uchun kerak Sizga
+ ko‘rinadimi
+ Fanlarim O‘qituvchining etalon fan shablonlari: mavzular ro‘yxati va Ha — faqat
+ ularga biriktirilgan fayllar ko‘rish
+ Taqvim-mavzu rejalarim Mavzularning dars kunlari bo‘yicha taqsimoti va reja Ha — faqat
+ to‘ldirilganligi ko‘rish
+ Resurslar bazasi Texnikumning o‘quv fayllari ombori: taqdimot, metodik Ha
+ ko‘rsatma, jadval va boshqalar
+ ESLATMA Menyuda faqat sizga ruxsat etilgan bandlar chiqadi. Jadvalda “Yo‘q” deb belgilangan
+ sahifa sizga ko‘rinmasa — bu xatolik emas, tizim qoidasi.
+ Fanlarim — etalon fan shablonlari
+O‘qituvchi bir marta fan shablonini tuzadi: mavzular ketma-ketligini yozadi va har bir mavzuga fayllar
+biriktiradi. Shablon yilga ham, guruhga ham bog‘lanmaydi — u istalgan guruhga ulanaveradi. Siz
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 44 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+kartochkalar ro‘yxatini ochib, har bir fanda nechta mavzu borligini, unga qaysi guruhlar ulanganini va
+mavzularga fayl biriktirilgan-biriktirilmaganini ko‘rasiz.
+Yaratish, tahrirlash, nusxa olish, arxivlash va guruhga ulash tugmalari sizda ko‘rinmaydi — bu amallarni
+o‘qituvchining o‘zi bajaradi.
+ Taqvim-mavzu rejalarim — mavzularning dars kunlari bo‘yicha taqsimoti
+Ro‘yxatda har bir [guruh + fan] birikmasi alohida qator bo‘lib turadi. Eng foydali ustun — To‘ldirilganlik :
+u rejaning necha foizi to‘ldirilganini rangli chiziq bilan ko‘rsatadi. Yashil — reja to‘liq, qizil — yarmidan
+kami to‘ldirilgan. Nazorat qilishda shu ustunga qarash kifoya.
+Qatordagi Ko‘rish tugmasi rejani o‘qish rejimida ochadi: qaysi kunga qaysi mavzu yozilgani, dars turi va
+mavzuga biriktirilgan fayllar ko‘rinadi. Bu — o‘quvchi ko‘radigan ko‘rinishning aynan o‘zi. Rejani
+o‘zgartirish tugmalari sizda yo‘q.
+ Resurslar bazasi — fayllar ombori
+Barcha o‘quv fayllari shu yerda saqlanadi. Har bir fayl kartochkasida uning egalik darajasi ko‘rsatiladi:
+ Shaxsiy (faqat egasi ko‘radi), Texnikum (butun texnikumga ochiq) va Global (vazirlik tarqatgan
+material). Fayllarni turi, sanasi va nomi bo‘yicha filtrlash mumkin.
+Siz ombordagi fayllarni faqat ko‘rasiz va ochasiz — yuklash, tahrirlash va o‘chirish sizning rolingizga
+tegishli emas.
+ MA'LUMOT Bu sahifalar bilan kundalik ishni o‘qituvchi olib boradi: shablon tuzish, mavzularni dars
+ kunlariga joylashtirish va fayl biriktirish tartibi o‘qituvchi qo‘llanmasida bosqichma-
+ bosqich yozilgan. Sizga esa natijani kuzatish yetarli.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 45 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+§§s8§§
+ 8 Ko‘p uchraydigan savollar va yordam
+ Bu bo‘limda foydalanuvchilar eng ko‘p duch keladigan holatlar va ularning yechimi to‘plangan.
+ Muammoga duch kelsangiz, avval shu ro‘yxatni ko‘rib chiqing.
+ §§s8-1§§
+8.1 Kirish va ruxsatlar
+ Holat Sabab va yechim
+ Menyuda kerakli bo‘lim ko‘rinmayapti Bo‘lim sizning rolingizga tegishli emas. Rolingizni yuqori o‘ng
+ burchakdagi profil menyusidan tekshiring; bir nechta rolingiz
+ bo‘lsa, kerakli rolga o‘ting.
+ Sahifa ochilganda Sahifa topilmadi Havola sizning rolingizga yopiq. Menyudan foydalaning yoki
+ chiqmoqda mos rolga o‘ting.
+ Sizda bu amalni bajarish uchun ruxsat yo‘q Amal boshqa rol zimmasida. Qo‘llanmaning tegishli bo‘limida
+ kim bajarishi ko‘rsatilgan.
+ Tugma ko‘rinadi, lekin bosilmaydi (kulrang) Amal uchun shart bajarilmagan: masalan, yozuv holati mos
+ emas yoki majburiy maydon to‘ldirilmagan. Tugma ustiga
+ sichqonchani olib borsangiz, ko‘pincha sabab yozilgan izoh
+ chiqadi.
+ Rolni almashtirgach eski ma’lumot Sahifani yangilang (F5). Rol almashganda tizim odatda o‘zi
+ ko‘rinmoqda yangilanadi.
+ §§s8-2§§
+8.2 Ma’lumot kiritishdagi muammolar
+ Holat Sabab va yechim
+ Saqlash tugmasi bosilmoqda, Formada to‘ldirilmagan majburiy maydon bor. Oynani yuqoriga surib, qizil
+ lekin oyna yopilmayapti izohli maydonni toping.
+ Tanlov ro‘yxati bo‘sh Bog‘liq maydon hali tanlanmagan (masalan, viloyat tanlanmasa tuman
+ ro‘yxati bo‘sh bo‘ladi) yoki tegishli ma’lumotnoma hali to‘ldirilmagan.
+ PINFL bo‘yicha fuqaro topilmadi PINFL va pasport seriyasi/raqamini qaytadan tekshiring. Ma’lumot davlat
+ bazasidan olinadi — u yerda bo‘lmasa tizim ham topa olmaydi.
+ Fayl yuklanmayapti Fayl hajmi 5 MB dan oshmasligi va formati ko‘rsatilgan turga (odatda PDF)
+ mos bo‘lishi kerak.
+ Yozuvni o‘chirib bo‘lmayapti Unga bog‘langan ma’lumot mavjud (masalan, xonaga dars biriktirilgan).
+ Avval bog‘liq yozuvlarni o‘chiring yoki yozuvni nofaol holatga o‘tkazing.
+ §§s8-3§§
+8.3 O‘quv jarayoni bo‘yicha
+ Savol Javob
+ Guruh yaratmoqchiman, lekin Faqat tasdiqlangan o‘quv reja asosida guruh ochiladi. Rejani avval
+ o‘quv reja ro‘yxatda yo‘q tasdiqlashga yuboring.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 46 / 47
+Prof ta’lim · Foydalanuvchi qo‘llanmasi Kasbiy bo‘limi
+ Savol Javob
+ Dars jadvaliga fan qo‘shilmayapti Fan tanlash uchun semestr tasdiqlangan bo‘lishi kerak. Tasdiqlanmagan
+ semestr fanlari ro‘yxatda chiqmaydi.
+ O‘qituvchini darsga biriktirib Xodim nofaol, ishdan bo‘shagan yoki o‘sha kuni mehnatga layoqatsiz
+ bo‘lmayapti bo‘lishi mumkin.
+ Jurnalda baho maydonlari yopiq Darsga mavzu biriktirilmagan, davomat kiritilmagan yoki o‘qituvchi
+ mehnatga layoqatsizlik davrida.
+ Talaba semestrga ko‘tarilmadi Sababsiz darsga kelmagan soatlari me’yordan oshgan yoki fanlardan qarzi
+ bor. Ko‘tarish oynasida har bir talaba uchun sabab ko‘rsatiladi.
+ Diplom generatsiya qilinmayapti Avval Tekshirish amali o‘tishi kerak: diplom ma’lumotlari, oldingi ta’lim
+ (inglizcha nomi bilan) va baholar to‘liq bo‘lsin.
+ §§s8-4§§
+8.4 Atamalar lug‘ati
+Juftlik (para) Dars vaqti oralig‘i. Bir juftlik — ikki akademik soat.
+O‘quv reja (kurrikulum) Mutaxassislik bo‘yicha nima o‘qitilishini belgilaydigan hujjat: semestrlar, fanlar,
+ soatlar.
+Semestr fani O‘quv rejadagi muayyan semestrga biriktirilgan fan.
+Etalon kurs Yil va guruhga bog‘liq bo‘lmagan fan shabloni: mavzular va resurslar to‘plami.
+Taqvim-mavzu reja Mavzularning aniq dars kunlariga taqsimlangan ko‘rinishi.
+R-semestr Semestr yakunidagi umumiy natija.
+Kredit-modul Baholash tizimi: yakuniy baho 0–5 oralig‘ida kasr son bilan qo‘yiladi.
+GPA O‘rtacha o‘zlashtirish ko‘rsatkichi (kredit tizimida).
+DAK Davlat attestatsiya komissiyasi — bitiruv imtihonlari.
+Tarifikatsiya O‘qituvchi o‘tgan darslarning akademik soatga aylantirilgan oylik hisobi.
+Kontingent Texnikum holatining muzlatilgan nusxasi — Moliya vazirligiga uzatiladi.
+Verifikatsiya O‘quvchi yoki hujjatning Vazirlik tomonidan tasdiqlanishi.
+ERI Elektron raqamli imzo — hujjatlarni imzolash vositasi.
+ §§s8-5§§
+8.5 Yordam olish
+ Ishonch telefoni: 1006 — har qanday sahifaning yuqori panelida ko‘rsatilgan.
+ Texnik qo‘llab-quvvatlash: yon menyu pastidagi Telegram guruh havolasi va +998 71 203 13 24
+ raqami.
+ Murojaat qilishdan oldin: sahifa manzilini, ekrandagi xato matnini va yuqori paneldagi Id raqamingizni
+ yozib oling — bu muammoni tezroq hal qilishga yordam beradi.
+ MA'LUMOT Tizim doimiy takomillashtirib boriladi. Yangi imkoniyatlar qo‘shilgach, ushbu qo‘llanma
+ ham yangilanadi — sahifadagi versiya raqamiga e’tibor bering.
+prof-emis.edu.uz · Ishonch telefoni: 1006 Sahifa 47 / 47

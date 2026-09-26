@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+{% set s = r.stats %}
+<p><a href="/reports">&larr; Hisobotlar</a></p>
+<h1>{{ kind_uz[r.kind] }} hisobot</h1>
+<p class="muted">{{ s.label }}</p>
+<div class="cards">
+  <div class="stat"><span>Savollar</span><b>{{ s.questions }}</b>
+    {% if s.prev_questions is defined %}<small>oldingi davrda: {{ s.prev_questions }}</small>{% endif %}</div>
+  <div class="stat"><span>Javob berildi</span><b>{{ s.answered }}</b></div>
+  <div class="stat {{ 'warn' if s.unanswered }}"><span>Javobsiz</span><b>{{ s.unanswered }}</b></div>
+  <div class="stat"><span>Faol foydalanuvchilar</span><b>{{ s.active_users }}</b></div>
+  <div class="stat"><span>Rasmlar</span><b>{{ s.photos }}</b></div>
+  <div class="stat"><span>Admin xabarlari</span><b>{{ s.admin_messages }}</b></div>
+  <div class="stat"><span>Yangi so'rovlar</span><b>{{ s.new_requests }}</b></div>
+</div>
+<div class="grid2">
+  <section class="card">
+    <h2>Mavzular bo'yicha</h2>
+    {% set mx = (s.by_topic|map(attribute='n')|max) if s.by_topic else 1 %}
+    {% for t in s.by_topic %}
+      <div class="bar"><span class="lbl">{{ t.topic }}</span>
+        <span class="track"><i style="width: {{ (t.n / mx * 100)|round }}%"></i></span>
+        <span class="val">{{ t.n }}{% if t.unanswered %} <em class="warn-text">({{ t.unanswered }} javobsiz)</em>{% endif %}</span></div>
+    {% else %}<p class="muted">Ma'lumot yo'q</p>{% endfor %}
+  </section>
+  <section class="card">
+    <h2>Rollar bo'yicha</h2>
+    <table>{% for x in s.by_role %}<tr><td>{{ x.role }}</td><td class="num">{{ x.n }}</td></tr>{% else %}<tr><td class="muted">Ma'lumot yo'q</td></tr>{% endfor %}</table>
+    <h2>Texnikumlar bo'yicha</h2>
+    <table>{% for x in s.by_tech %}<tr><td>{{ x.tech }}</td><td class="num">{{ x.n }}</td></tr>{% else %}<tr><td class="muted">Ma'lumot yo'q</td></tr>{% endfor %}</table>
+  </section>
+</div>
+<section class="card">
+  <h2>Soat bo'yicha (Toshkent vaqti)</h2>
+  {% set hm = {} %}{% for x in s.by_hour %}{% set _ = hm.update({x.h: x.n}) %}{% endfor %}
+  {% set hmx = (hm.values()|max) if hm else 1 %}
+  <div class="hours">{% for h in range(24) %}{% set n = hm.get(h, 0) %}<div title="{{ h }}:00 - {{ n }} ta savol"><i style="height: {{ (n / hmx * 100)|round }}%"></i><span>{{ h }}</span></div>{% endfor %}</div>
+</section>
+<section class="card md">
+  {{ r.content_md|md|safe }}
+</section>
+<p class="muted small">AI sarfi: kirish {{ s.tokens_in }} / chiqish {{ s.tokens_out }} token.</p>
+{% endblock %}

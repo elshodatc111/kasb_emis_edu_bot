@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Hisobotlar</h1>
+<div class="card">
+  <h2>Hozir yaratish</h2>
+  <p class="muted">Avtomatik hisobotlar: kunlik, haftalik va oylik. Istalgan vaqtda qo'lda ham yaratishingiz mumkin (10-30 soniya davom etadi).</p>
+  <div class="row">
+    {% for k, v in kind_uz.items() %}
+    <button class="ghost" hx-post="/reports/generate" hx-vals='{"kind":"{{ k }}"}' hx-disabled-elt="this" hx-indicator="#spin">{{ v }} hisobot</button>
+    {% endfor %}
+    <span id="spin" class="htmx-indicator muted">Yaratilmoqda...</span>
+  </div>
+</div>
+<div class="card table-wrap">
+<table>
+  <thead><tr><th>Tur</th><th>Davr (Toshkent vaqti)</th><th>Yaratilgan</th></tr></thead>
+  {% for r in reports %}
+  <tr><td><a href="/reports/{{ r.id }}">{{ kind_uz[r.kind] }}</a></td>
+      <td>{{ r.period_start|local('%d.%m.%Y %H:%M') }} - {{ r.period_end|local('%d.%m.%Y %H:%M') }}</td>
+      <td class="muted">{{ r.created_at|local }}</td></tr>
+  {% else %}<tr><td colspan="3" class="muted">Hisobotlar yo'q</td></tr>{% endfor %}
+</table>
+</div>
+{% endblock %}

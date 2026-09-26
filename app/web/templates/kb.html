@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Bilimlar bazasi{% endblock %}
+{% block content %}
+<h1>Bilimlar bazasi</h1>
+{% include "_notice.html" %}
+<p class="muted">Bu yerdagi savol-javoblarni bot qo'llanmadan ustun qo'yib ishlatadi. Bot javob bera olmagan savolga siz javob yozgach, "Bilimlar bazasiga qo'shish" tugmasi orqali shu yerga qo'shing, bot keyingi safar o'zi javob beradi.</p>
+<div class="card form-card">
+  <h2>{{ "Yozuvni tahrirlash" if form.id else "Yangi savol-javob" }}</h2>
+  <form hx-post="/kb/save" hx-target="#st" hx-swap="innerHTML">
+    <input type="hidden" name="kb_id" value="{{ form.id }}">
+    <input type="hidden" name="source_msg_id" value="{{ form.source_msg_id or 0 }}">
+    <label>Savol (xodim qanday so'raydi)</label>
+    <textarea name="question" rows="2" required>{{ form.question }}</textarea>
+    <label>To'g'ri javob</label>
+    <textarea name="answer" rows="6" required>{{ form.answer }}</textarea>
+    <label>Mavzu</label>
+    <select name="topic">{% for t in topics %}<option {{ 'selected' if t == (form.topic or 'Boshqa') }}>{{ t }}</option>{% endfor %}</select>
+    {% if not form.id %}
+    <label class="check"><input type="checkbox" name="also_faq" value="1"> "Ko'p so'raladigan savollar" ro'yxatiga ham qo'shish</label>
+    {% endif %}
+    <div class="muted small">PINFL va pasport raqamlari saqlashdan oldin avtomatik yashiriladi.</div>
+    <div class="row" style="margin-top:12px"><button type="submit">Saqlash</button>
+      {% if form.id or form.question %}<a class="btn ghost" href="/kb">Bekor qilish</a>{% endif %}<span id="st"></span></div>
+  </form>
+</div>
+
+<div class="card">
+  <div class="row" style="justify-content:space-between">
+    <div><b>OpenAI bilan sinxronlash:</b>
+      {% if sync.error %}<span class="err">xato: {{ sync.error }}</span>
+      {% elif sync.at %}<span class="muted">oxirgi: {{ sync.at|local }}</span>
+      {% else %}<span class="muted">hali sinxronlanmagan (avtomatik, har 5 daqiqada)</span>{% endif %}</div>
+    <button class="sm ghost" hx-post="/kb/sync" hx-disabled-elt="this">Hozir sinxronlash</button>
+  </div>
+</div>
+
+<form class="filters" method="get" action="/kb"><input name="q" value="{{ q }}" placeholder="Qidirish..."><button type="submit">Qidirish</button></form>
+<div class="card table-wrap">
+<table>
+  <thead><tr><th>Savol va javob</th><th>Mavzu</th><th>Holat</th><th></th></tr></thead>
+  {% for e in entries %}
+  <tr>
+    <td><b>{{ e.question }}</b><div class="txt-pre small">{{ e.answer }}</div>
+      <div class="muted small">{{ e.created_by or '' }} · {{ e.created_at|local }}</div></td>
+    <td class="small">{{ e.topic }}</td>
+    <td>{% if e.active %}<span class="pill approved">faol</span>{% else %}<span class="pill blocked">o'chirilgan</span>{% endif %}</td>
+    <td class="acts">
+      <a class="btn sm ghost" href="/kb?edit={{ e.id }}">Tahrirlash</a>
+      <button class="sm ghost" hx-post="/kb/{{ e.id }}/toggle">{{ "O'chirib qo'yish" if e.active else "Yoqish" }}</button>
+      <button class="sm danger" hx-post="/kb/{{ e.id }}/delete" hx-confirm="Yozuvni butunlay o'chirasizmi?">O'chirish</button>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="4" class="muted">Hali yozuv yo'q</td></tr>{% endfor %}
+</table>
+</div>
+{% endblock %}

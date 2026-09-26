@@ -1,0 +1,12 @@
+<div id="conv-list" hx-get="/chats/list?filter={{ filter }}&q={{ q|urlencode }}&active={{ active or 0 }}" hx-trigger="list-refresh from:body, every 30s" hx-swap="outerHTML">
+  {% for c in convs %}
+  <a class="conv {{ 'on' if active == c.id }}" href="/chats/{{ c.id }}?filter={{ filter }}&q={{ q|urlencode }}">
+    <div class="top"><b>{{ c.full_name }}</b>
+      {% if c.unread %}<span class="badge">{{ c.unread }}</span>{% endif %}
+      {% if c.needs_attention %}<span class="dot" title="Diqqat talab"></span>{% endif %}</div>
+    <div class="sub">{{ c.role }} · {{ c.tech_name }}</div>
+    <div class="prev">{% if c.last_kind == 'photo' %}[rasm]{% elif c.last_kind == 'video' %}[video]{% else %}{{ (c.last_text or '')[:70] }}{% endif %}</div>
+    <div class="time">{{ c.last_message_at|local }}</div>
+  </a>
+  {% else %}<p class="muted pad">Suhbatlar yo'q</p>{% endfor %}
+</div>

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a href="/videos">&larr; Video rejalar</a></p>
+<h1>{{ p.title }}</h1>
+<p class="muted">Mavzu: {{ p.topic }} · Asosiy rol: {{ p.role }} · Asos bo'lgan savollar: {{ p.question_count }} ·
+  <a href="/videos/{{ p.id }}/download">Markdown fayl sifatida yuklab olish</a></p>
+<section class="card md">{{ p.content_md|md|safe }}</section>
+{% endblock %}

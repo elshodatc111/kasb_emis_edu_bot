@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Suhbatlar{% endblock %}
+{% block active_chat %}{{ active or '' }}{% endblock %}
+{% block content %}
+<div class="chats">
+  <div class="conv-col">
+    <form class="filters" method="get" action="/chats">
+      <select name="filter" onchange="this.form.submit()">
+        <option value="all" {{ 'selected' if filter == 'all' }}>Hammasi</option>
+        <option value="attention" {{ 'selected' if filter == 'attention' }}>Diqqat talab</option>
+        <option value="unread" {{ 'selected' if filter == 'unread' }}>O'qilmagan</option>
+      </select>
+      <input name="q" value="{{ q }}" placeholder="Qidirish...">
+    </form>
+    {% include "_conv_list.html" %}
+  </div>
+  <div class="chat-col" id="chat-pane">
+    {% if user %}
+      {% include "_chat_head.html" %}
+      <div id="msgs" class="msgs" hx-get="/chats/{{ user.id }}/messages" hx-trigger="refresh-msgs from:body, every 20s"
+           hx-vals='js:{after: window.lastMsgId()}' hx-swap="beforeend" hx-sync="this:replace">
+        {% include "_messages.html" %}
+      </div>
+      <div class="composer">
+        <form id="send-form" hx-post="/chats/{{ user.id }}/send" hx-encoding="multipart/form-data" hx-target="#send-status"
+              hx-swap="innerHTML" hx-on::after-request="if (event.detail.successful && !document.getElementById('send-status').textContent.trim()) this.reset()">
+          {% if tpls %}<select id="tpl" class="tpl" data-name="{{ (user.full_name.split()[1] if user.full_name.split()|length > 1 else user.full_name) }}" onchange="applyTemplate(this)">
+            <option value="">Shablon tanlang...</option>
+            {% for t in tpls %}<option value="{{ t.text }}">{{ t.title }}</option>{% endfor %}
+          </select>{% endif %}
+          <textarea id="msg-text" name="text" rows="3" placeholder="Xabar yozing..."></textarea>
+          <div class="row"><input type="file" name="file" accept="image/*,video/*"><span id="send-status"></span></div>
+          <div class="muted small">Rasm: 10 MB gacha, video: 50 MB gacha. Fayllar serverga yozilmaydi, to'g'ridan-to'g'ri Telegramga uzatiladi.</div>
+        </form>
+        <div class="btns">
+          <button type="button" class="ghost" hx-post="/chats/{{ user.id }}/suggest" hx-target="#msg-text" hx-swap="outerHTML" hx-disabled-elt="this">AI taklif</button>
+          <button type="submit" form="send-form">Yuborish</button>
+        </div>
+      </div>
+    {% else %}
+      <div class="empty">Suhbatni tanlang</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
