@@ -3,17 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>{% block title %}Texnikum yordamchi{% endblock %}</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%232563eb'/%3E%3Ccircle cx='25' cy='7' r='5' fill='%23dc2626'/%3E%3Cpath d='M9 17l5 5 9-10' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>
+(function () { try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {} })();
+</script>
 <link rel="stylesheet" href="/static/style.css">
 <script src="/static/htmx.min.js"></script>
 </head>
 <body hx-headers='{"X-CSRF-Token": "{{ csrf }}"}' data-active-chat="{% block active_chat %}{% endblock %}">
 {% if admin_id %}
 <div class="shell">
+  <div class="topbar">
+    <div class="brand"><span class="brand-mark">{{ icon('shield', 20) }}</span><b>Texnikum yordamchi</b></div>
+    <button type="button" class="ghost icon-btn" data-nav-toggle aria-label="Menyu">{{ icon('menu', 20) }}</button>
+  </div>
   <aside class="side">
-    <div class="brand">Texnikum yordamchi</div>
+    <div class="brand">
+      <span class="brand-mark">{{ icon('shield', 22) }}</span>
+      <div><b>Texnikum yordamchi</b><small>Prof ta'lim · Admin panel</small></div>
+    </div>
     {% include "_nav.html" %}
-    <div class="side-foot">Admin ID: {{ admin_id }}<br><a href="/logout">Chiqish</a></div>
+    <div class="side-foot">
+      {% include "_theme.html" %}
+      <div class="me">
+        <span class="avatar">{{ icon('user', 18) }}</span>
+        <div><b>{{ admin_name or 'Administrator' }}</b>ID {{ admin_id }}</div>
+        <a class="out" href="/logout" title="Chiqish" aria-label="Chiqish">{{ icon('log-out', 18) }}</a>
+      </div>
+    </div>
   </aside>
   <main class="main">{% block content %}{% endblock %}</main>
 </div>

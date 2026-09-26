@@ -63,6 +63,6 @@ async def analyze(notify: bool = True) -> dict:
         existing_rows.append({"id": fid, "question": q})
         created += 1
     if created and notify:
-        await services.notify_admins(f"FAQ uchun {created} ta yangi variant tayyor. Ko'rib chiqing: {c.settings.base_url}/faq")
+        await services.notify_admins(f"✨ FAQ uchun {created} ta yangi variant tayyor. Ko'rib chiqing: {c.settings.base_url}/faq")
     await services.push({"type": "faq"})
     return {"created": created, "updated": updated, "reason": "ok"}

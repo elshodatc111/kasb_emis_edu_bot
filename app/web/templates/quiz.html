@@ -1,34 +1,34 @@
 {% extends "base.html" %}
 {% block title %}Kunlik test{% endblock %}
 {% block content %}
-<h1>Kunlik test (viktorina)</h1>
+<div class="page-head"><div><h1>Kunlik test (viktorina)</h1>
+  <p>Har kuni {{ '%02d:%02d' % s.quiz_start }}–{{ '%02d:%02d' % s.quiz_end }} oralig'ida har bir tasdiqlangan xodimga roli bo'yicha {{ s.quiz_size }} ta takrorlanmaydigan savol yuboriladi.</p></div></div>
 {% include "_notice.html" %}
-<p class="muted">Har kuni {{ '%02d:%02d' % s.quiz_start }}–{{ '%02d:%02d' % s.quiz_end }} oralig'ida har bir tasdiqlangan xodimga roli bo'yicha {{ s.quiz_size }} ta takrorlanmaydigan savol yuboriladi.</p>
-<div class="row" style="margin-bottom:12px">
+<div class="row" style="margin-bottom:16px">
   {% for d, label in [(1,'Bugun'),(7,'7 kun'),(30,'30 kun'),(90,'90 kun')] %}
   <a class="btn {{ '' if days == d else 'ghost' }} sm" href="/quiz?days={{ d }}">{{ label }}</a>{% endfor %}
   <span style="flex:1"></span>
-  <button class="ghost sm" hx-post="/quiz/prepare" hx-disabled-elt="this" hx-indicator="#spin">Savollar zaxirasini tayyorlash</button>
-  <button class="sm" hx-post="/quiz/send-now" hx-confirm="Testni hozir hamma tasdiqlangan xodimga yuborasizmi?" hx-disabled-elt="this" hx-indicator="#spin">Testni hozir yuborish</button>
+  <button class="ghost sm" hx-post="/quiz/prepare" hx-disabled-elt="this" hx-indicator="#spin">{{ icon('sparkles', 15) }} Savollar zaxirasini tayyorlash</button>
+  <button class="sm" hx-post="/quiz/send-now" hx-confirm="Testni hozir hamma tasdiqlangan xodimga yuborasizmi?" hx-disabled-elt="this" hx-indicator="#spin">{{ icon('send', 15) }} Testni hozir yuborish</button>
   <span id="spin" class="htmx-indicator muted">Bajarilmoqda...</span>
 </div>
 <div class="cards">
-  <div class="stat"><span>Yuborilgan testlar</span><b>{{ o.sessions }}</b></div>
-  <div class="stat"><span>Yakunlaganlar</span><b>{{ o.done }}</b></div>
-  <div class="stat"><span>Javoblar</span><b>{{ o.answers }}</b></div>
-  <div class="stat"><span>To'g'ri javoblar</span><b>{{ (o.correct * 100 // o.answers) if o.answers else 0 }}%</b><small>{{ o.correct }} / {{ o.answers }}</small></div>
+  <div class="stat"><span>Yuborilgan testlar</span><b>{{ o.sessions }}</b><i class="ic">{{ icon('send', 20) }}</i></div>
+  <div class="stat ok"><span>Yakunlaganlar</span><b>{{ o.done }}</b><i class="ic">{{ icon('check-circle', 20) }}</i></div>
+  <div class="stat"><span>Javoblar</span><b>{{ o.answers }}</b><i class="ic">{{ icon('quiz', 20) }}</i></div>
+  <div class="stat"><span>To'g'ri javoblar</span><b>{{ (o.correct * 100 // o.answers) if o.answers else 0 }}%</b><small>{{ o.correct }} / {{ o.answers }}</small><i class="ic">{{ icon('target', 20) }}</i></div>
 </div>
 
 <div class="grid2">
   <section class="card">
-    <h2>Rollar bo'yicha natija</h2>
+    <h2>{{ icon('users', 18) }} Rollar bo'yicha natija</h2>
     {% for r in o.by_role %}
     {% set pct = (r.correct * 100 // r.answers) if r.answers else 0 %}
     <div class="bar"><span>{{ r.role }}</span><div class="track"><i style="width:{{ pct }}%"></i></div><span class="val">{{ pct }}% ({{ r.answers }})</span></div>
     {% else %}<p class="muted">Ma'lumot yo'q</p>{% endfor %}
   </section>
   <section class="card">
-    <h2>Mavzular bo'yicha (eng qiyini birinchi)</h2>
+    <h2>{{ icon('target', 18) }} Mavzular bo'yicha (eng qiyini birinchi)</h2>
     {% for t in o.by_topic %}
     {% set pct = (t.correct * 100 // t.answers) if t.answers else 0 %}
     <div class="bar"><span>{{ t.topic }}</span><div class="track"><i style="width:{{ pct }}%"></i></div><span class="val">{{ pct }}% ({{ t.answers }})</span></div>
@@ -37,7 +37,7 @@
 </div>
 
 <section class="card table-wrap">
-  <h2>Xodimlar</h2>
+  <h2 style="padding:20px 20px 0">{{ icon('users', 18) }} Xodimlar</h2>
   <table>
     <thead><tr><th>F.I.SH.</th><th>Rol</th><th>Testlar</th><th>Yakunlagan</th><th>To'g'ri</th></tr></thead>
     {% for u in o.by_user %}
@@ -50,13 +50,13 @@
 
 <div class="grid2">
   <section class="card">
-    <h2>Eng ko'p xato qilingan savollar</h2>
+    <h2>{{ icon('alert', 18) }} Eng ko'p xato qilingan savollar</h2>
     {% for h in o.hardest %}
     <p class="small"><b>{{ h.question }}</b><br><span class="muted">{{ h.role }} · to'g'ri: {{ h.correct }} / {{ h.answers }}</span></p>
     {% else %}<p class="muted">Yetarli ma'lumot yo'q</p>{% endfor %}
   </section>
   <section class="card">
-    <h2>Savollar zaxirasi</h2>
+    <h2>{{ icon('database', 18) }} Savollar zaxirasi</h2>
     {% for p in o.pool %}<p class="small">{{ p.role }}: <b>{{ p.n }}</b> ta savol</p>{% else %}<p class="muted">Savollar hali tayyorlanmagan (birinchi testda avtomatik tuziladi).</p>{% endfor %}
   </section>
 </div>

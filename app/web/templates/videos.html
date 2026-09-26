@@ -1,14 +1,15 @@
 {% extends "base.html" %}
+{% block title %}Video rejalar{% endblock %}
 {% block content %}
-<h1>Video rolik rejalari</h1>
-{% if notice %}<div class="alert">{{ notice }}</div>{% endif %}
+<div class="page-head"><div><h1>Video rolik rejalari</h1></div></div>
+{% include "_notice.html" %}
 <div class="card">
-  <p class="muted">Xodimlarning takrorlanayotgan savollari asosida qaysi video rolikni tayyorlash kerakligi va rolik uchun to'liq material
+  <p class="muted" style="margin-top:0">Xodimlarning takrorlanayotgan savollari asosida qaysi video rolikni tayyorlash kerakligi va rolik uchun to'liq material
     (ssenariy, qadamlar, skrinshotlar ro'yxati, ovozli matn) avtomatik yaratiladi. Har yakshanba haftalik reja o'zi tayyorlanadi.</p>
   <div class="row">
-    <button class="ghost" hx-post="/videos/generate" hx-vals='{"kind":"daily"}' hx-disabled-elt="this" hx-indicator="#spin">Bugungi savollar asosida</button>
-    <button class="ghost" hx-post="/videos/generate" hx-vals='{"kind":"weekly"}' hx-disabled-elt="this" hx-indicator="#spin">Oxirgi 7 kun asosida</button>
-    <button class="ghost" hx-post="/videos/generate" hx-vals='{"kind":"monthly"}' hx-disabled-elt="this" hx-indicator="#spin">Joriy oy asosida</button>
+    <button class="ghost" hx-post="/videos/generate" hx-vals='{"kind":"daily"}' hx-disabled-elt="this" hx-indicator="#spin">{{ icon('sparkles', 16) }} Bugungi savollar asosida</button>
+    <button class="ghost" hx-post="/videos/generate" hx-vals='{"kind":"weekly"}' hx-disabled-elt="this" hx-indicator="#spin">{{ icon('sparkles', 16) }} Oxirgi 7 kun asosida</button>
+    <button class="ghost" hx-post="/videos/generate" hx-vals='{"kind":"monthly"}' hx-disabled-elt="this" hx-indicator="#spin">{{ icon('sparkles', 16) }} Joriy oy asosida</button>
     <span id="spin" class="htmx-indicator muted">Yaratilmoqda (1-2 daqiqa)...</span>
   </div>
 </div>
@@ -16,7 +17,7 @@
 <table>
   <thead><tr><th>Sarlavha</th><th>Mavzu</th><th>Asosiy rol</th><th>Savollar</th><th>Yaratilgan</th></tr></thead>
   {% for p in plans %}
-  <tr><td><a href="/videos/{{ p.id }}">{{ p.title }}</a></td><td>{{ p.topic }}</td><td>{{ p.role }}</td><td class="num">{{ p.question_count }}</td>
+  <tr><td><a href="/videos/{{ p.id }}"><b>{{ p.title }}</b></a></td><td>{{ p.topic }}</td><td>{{ p.role }}</td><td class="num">{{ p.question_count }}</td>
       <td class="muted">{{ p.created_at|local }}</td></tr>
   {% else %}<tr><td colspan="5" class="muted">Hali reja yo'q</td></tr>{% endfor %}
 </table>

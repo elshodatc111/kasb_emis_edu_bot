@@ -1,6 +1,29 @@
 (function () {
   "use strict";
 
+  // ---- kun / tun rejimi ----
+  function currentMode() {
+    try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") return t; } catch (e) {}
+    return "auto";
+  }
+  function applyMode(mode) {
+    var root = document.documentElement;
+    if (mode === "light" || mode === "dark") root.setAttribute("data-theme", mode); else root.removeAttribute("data-theme");
+    try { if (mode === "auto") localStorage.removeItem("theme"); else localStorage.setItem("theme", mode); } catch (e) {}
+    markMode();
+  }
+  function markMode() {
+    var m = currentMode();
+    document.querySelectorAll("[data-theme-set]").forEach(function (b) { b.classList.toggle("on", b.dataset.themeSet === m); });
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-theme-set]");
+    if (b) { applyMode(b.dataset.themeSet); return; }
+    if (e.target.closest("[data-nav-toggle]")) { document.body.classList.toggle("nav-open"); return; }
+    if (document.body.classList.contains("nav-open") && !e.target.closest(".side")) document.body.classList.remove("nav-open");
+  });
+  markMode();
+
   // Oxirgi ko'rsatilgan xabar ID si (faqat yangi xabarlarni olish uchun)
   window.lastMsgId = function () {
     var els = document.querySelectorAll("#msgs .msg");

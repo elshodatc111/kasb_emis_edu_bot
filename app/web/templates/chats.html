@@ -10,7 +10,7 @@
         <option value="attention" {{ 'selected' if filter == 'attention' }}>Diqqat talab</option>
         <option value="unread" {{ 'selected' if filter == 'unread' }}>O'qilmagan</option>
       </select>
-      <input name="q" value="{{ q }}" placeholder="Qidirish...">
+      <div class="search">{{ icon('search', 16) }}<input name="q" value="{{ q }}" placeholder="Qidirish..."></div>
     </form>
     {% include "_conv_list.html" %}
   </div>
@@ -30,15 +30,15 @@
           </select>{% endif %}
           <textarea id="msg-text" name="text" rows="3" placeholder="Xabar yozing..."></textarea>
           <div class="row"><input type="file" name="file" accept="image/*,video/*"><span id="send-status"></span></div>
-          <div class="muted small">Rasm: 10 MB gacha, video: 50 MB gacha. Fayllar serverga yozilmaydi, to'g'ridan-to'g'ri Telegramga uzatiladi.</div>
+          <div class="muted small" style="margin-top:6px">{{ icon('paperclip', 13) }} Rasm: 10 MB gacha, video: 50 MB gacha. Fayllar serverga yozilmaydi, to'g'ridan-to'g'ri Telegramga uzatiladi.</div>
         </form>
         <div class="btns">
-          <button type="button" class="ghost" hx-post="/chats/{{ user.id }}/suggest" hx-target="#msg-text" hx-swap="outerHTML" hx-disabled-elt="this">AI taklif</button>
-          <button type="submit" form="send-form">Yuborish</button>
+          <button type="button" class="ghost" hx-post="/chats/{{ user.id }}/suggest" hx-target="#msg-text" hx-swap="outerHTML" hx-disabled-elt="this">{{ icon('sparkles', 16) }} AI taklif</button>
+          <button type="submit" form="send-form">{{ icon('send', 16) }} Yuborish</button>
         </div>
       </div>
     {% else %}
-      <div class="empty">Suhbatni tanlang</div>
+      <div class="empty">{{ icon('message', 56) }}<b>Suhbatni tanlang</b><span class="small">Chapdagi ro'yxatdan xodimni tanlang</span></div>
     {% endif %}
   </div>
 </div>

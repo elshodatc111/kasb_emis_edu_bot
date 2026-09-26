@@ -11,7 +11,7 @@
     <video controls preload="metadata" src="/media/{{ m.id }}"></video>
   {% endif %}
   {% if m.text %}<div class="txt">{{ m.text }}</div>{% endif %}
-  {% if m.sender == 'admin' and m.kind == 'text' and m.text %}<div class="note"><a href="/kb?msg={{ m.id }}">Bilimlar bazasiga qo'shish</a></div>{% endif %}
+  {% if m.sender == 'admin' and m.kind == 'text' and m.text %}<div class="note"><a href="/kb?msg={{ m.id }}">{{ icon('book-open', 13) }} Bilimlar bazasiga qo'shish</a></div>{% endif %}
   {% if m.sender == 'user' and m.kind == 'text' and m.found is not none and m.text|has_sensitive %}
     <div class="note">Shaxsiy ma'lumot (PINFL/pasport) OpenAI ga yashirilgan holda yuborildi.</div>
   {% endif %}

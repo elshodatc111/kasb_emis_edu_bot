@@ -15,7 +15,7 @@ from .format import admin_html
 
 log = logging.getLogger(__name__)
 
-MAIN_MENU_HINT = "Savolingizni yozing. Rasm yuborsangiz, u faqat adminga ko'rinadi (bot rasmni ko'rmaydi)."
+MAIN_MENU_HINT = "✍️ Savolingizni yozing. Rasm yuborsangiz, u faqat adminga ko'rinadi (bot rasmni ko'rmaydi)."
 
 
 async def push(event: dict) -> None:
@@ -62,12 +62,12 @@ async def decide_user(user_id: int, status: str) -> dict | None:
             if status == "approved":
                 await c.bot.send_message(
                     user["tg_id"],
-                    "Sizga botdan foydalanish uchun ruxsat berildi.\n\n" + MAIN_MENU_HINT,
+                    "✅ Sizga botdan foydalanish uchun ruxsat berildi.\n\n" + MAIN_MENU_HINT,
                     reply_markup=main_menu(),
                 )
             elif status == "rejected":
                 await c.bot.send_message(
-                    user["tg_id"], "So'rovingiz rad etildi. Savollar bo'lsa, admin bilan bog'laning. "
+                    user["tg_id"], "❌ So'rovingiz rad etildi. Savollar bo'lsa, admin bilan bog'laning. "
                                    "Qayta so'rov yuborish uchun /start bosing.")
         except TelegramAPIError as exc:
             log.warning("Foydalanuvchiga (%s) xabar yuborib bo'lmadi: %s", user["tg_id"], exc)
@@ -136,8 +136,8 @@ def availability_note(now: datetime | None = None) -> str:
     s = get_ctx().settings
     rng = f"{_hm(s.work_start)}–{_hm(s.work_end)}"
     if in_work_hours(now):
-        return f"Admin ish vaqtida (ish kunlari {rng}) tez orada javob beradi."
-    return (f"Hozir ish vaqtidan tashqari (ish kunlari {rng}), shuning uchun admin darhol javob bera olmasligi mumkin. "
+        return f"🕘 Admin ish vaqtida (ish kunlari {rng}) tez orada javob beradi."
+    return (f"🌙 Hozir ish vaqtidan tashqari (ish kunlari {rng}), shuning uchun admin darhol javob bera olmasligi mumkin. "
             "Savolingiz qabul qilindi, admin ish vaqti boshlanganda javob beradi. Sabringiz uchun rahmat.")
 
 
@@ -168,6 +168,6 @@ async def remind_admins(now: datetime | None = None) -> int:
     if not count:
         return 0
     more = f"\n... va yana {count - len(lines)} ta" if count > len(lines) else ""
-    await notify_admins(f"Javob kutayotgan suhbatlar: {count} ta\n\n" + "\n".join(lines) + more +
-                        f"\n\nPanel: {c.settings.base_url}/chats?filter=attention")
+    await notify_admins(f"⏰ Javob kutayotgan suhbatlar: {count} ta\n\n" + "\n".join(lines) + more +
+                        f"\n\n🔗 Panel: {c.settings.base_url}/chats?filter=attention")
     return count

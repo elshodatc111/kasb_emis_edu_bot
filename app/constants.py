@@ -53,3 +53,14 @@ ROLE_GUIDES = {
     "Rahbariyat (Super admin)": "Super admin qo'llanmasi (rollar, sozlamalar, texnikum ma'lumotlari, umumiy boshqaruv)",
     "Boshqa": "barcha qo'llanmalardan platformadan foydalanishning umumiy asoslari (tizimga kirish, rollar, asosiy bo'limlar)",
 }
+
+# Telegram tugmalarida ko'rsatiladigan rol belgilari (bazaga faqat rol nomi yoziladi)
+ROLE_ICONS = {
+    "O'qituvchi": "👩‍🏫",
+    "O'quv bo'limi": "🎓",
+    "Kadrlar bo'limi": "👥",
+    "Buxgalter": "💰",
+    "Kasbiy bo'lim": "🛠",
+    "Rahbariyat (Super admin)": "🏛",
+    "Boshqa": "👤",
+}

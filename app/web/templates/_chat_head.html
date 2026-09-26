@@ -1,19 +1,23 @@
 <div id="chat-head" class="chat-head" hx-target="#chat-head" hx-swap="outerHTML">
-  <div>
-    <b>{{ user.full_name }}</b>
-    <span class="pill {{ user.status }}">{{ user.status|status_uz }}</span>
-    <span class="pill {{ 'admin' if user.mode == 'admin' else 'bot' }}">{{ "Admin suhbatda" if user.mode == 'admin' else "Bot javob beradi" }}</span>
-    <div class="muted small">{{ user.role }} · {{ user.tech_name }} · {{ user.phone }}
-      {% if user.tg_username %}· @{{ user.tg_username }}{% endif %}</div>
+  <div class="who-cell">
+    <span class="avatar lg {{ 'red' if user.needs_attention }}">{{ user.full_name|initials }}</span>
+    <div>
+      <b>{{ user.full_name }}</b>
+      <span class="pill {{ user.status }}">{{ user.status|status_uz }}</span>
+      <span class="pill {{ 'admin' if user.mode == 'admin' else 'bot' }}">{{ "Admin suhbatda" if user.mode == 'admin' else "Bot javob beradi" }}</span>
+      <div class="muted small">{{ user.role }} · {{ user.tech_name }} · {{ user.phone }}
+        {% if user.tg_username %}· @{{ user.tg_username }}{% endif %}</div>
+    </div>
   </div>
   <div class="acts">
     {% if user.mode == 'admin' %}
-      <button class="sm" hx-post="/chats/{{ user.id }}/mode" hx-vals='{"mode":"bot"}'>Botga qaytarish</button>
+      <button class="sm" hx-post="/chats/{{ user.id }}/mode" hx-vals='{"mode":"bot"}'>{{ icon('sparkles', 15) }} Botga qaytarish</button>
     {% else %}
-      <button class="sm ghost" hx-post="/chats/{{ user.id }}/mode" hx-vals='{"mode":"admin"}'>Suhbatni o'zimga olish</button>
+      <button class="sm ghost" hx-post="/chats/{{ user.id }}/mode" hx-vals='{"mode":"admin"}'>{{ icon('headset', 15) }} Suhbatni o'zimga olish</button>
     {% endif %}
     {% if user.needs_attention %}
-      <button class="sm ghost" hx-post="/chats/{{ user.id }}/attention">Ko'rib chiqildi</button>
+      <button class="sm ghost" hx-post="/chats/{{ user.id }}/attention">{{ icon('check', 15) }} Ko'rib chiqildi</button>
     {% endif %}
+    <a class="btn sm ghost" href="/users/{{ user.id }}/edit">{{ icon('edit', 15) }}</a>
   </div>
 </div>

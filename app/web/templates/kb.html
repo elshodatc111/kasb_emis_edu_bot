@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Bilimlar bazasi{% endblock %}
 {% block content %}
-<h1>Bilimlar bazasi</h1>
+<div class="page-head"><div><h1>Bilimlar bazasi</h1>
+  <p>Bu yerdagi savol-javoblarni bot qo'llanmadan ustun qo'yib ishlatadi. Bot javob bera olmagan savolga suhbatda javob yozing, so'ng "Bilimlar bazasiga qo'shish" havolasini bosing, bot keyingi safar o'zi javob beradi.</p></div></div>
 {% include "_notice.html" %}
-<p class="muted">Bu yerdagi savol-javoblarni bot qo'llanmadan ustun qo'yib ishlatadi. Bot javob bera olmagan savolga siz javob yozgach, "Bilimlar bazasiga qo'shish" tugmasi orqali shu yerga qo'shing, bot keyingi safar o'zi javob beradi.</p>
 <div class="card form-card">
-  <h2>{{ "Yozuvni tahrirlash" if form.id else "Yangi savol-javob" }}</h2>
+  <h2>{{ icon('edit' if form.id else 'plus', 18) }} {{ "Yozuvni tahrirlash" if form.id else "Yangi savol-javob" }}</h2>
   <form hx-post="/kb/save" hx-target="#st" hx-swap="innerHTML">
     <input type="hidden" name="kb_id" value="{{ form.id }}">
     <input type="hidden" name="source_msg_id" value="{{ form.source_msg_id or 0 }}">
@@ -18,23 +18,23 @@
     {% if not form.id %}
     <label class="check"><input type="checkbox" name="also_faq" value="1"> "Ko'p so'raladigan savollar" ro'yxatiga ham qo'shish</label>
     {% endif %}
-    <div class="muted small">PINFL va pasport raqamlari saqlashdan oldin avtomatik yashiriladi.</div>
-    <div class="row" style="margin-top:12px"><button type="submit">Saqlash</button>
+    <div class="muted small" style="margin-top:10px">PINFL va pasport raqamlari saqlashdan oldin avtomatik yashiriladi.</div>
+    <div class="row" style="margin-top:16px"><button type="submit">{{ icon('save', 17) }} Saqlash</button>
       {% if form.id or form.question %}<a class="btn ghost" href="/kb">Bekor qilish</a>{% endif %}<span id="st"></span></div>
   </form>
 </div>
 
 <div class="card">
   <div class="row" style="justify-content:space-between">
-    <div><b>OpenAI bilan sinxronlash:</b>
+    <div class="row" style="gap:8px">{{ icon('database', 18) }}<b>OpenAI bilan sinxronlash:</b>
       {% if sync.error %}<span class="err">xato: {{ sync.error }}</span>
       {% elif sync.at %}<span class="muted">oxirgi: {{ sync.at|local }}</span>
       {% else %}<span class="muted">hali sinxronlanmagan (avtomatik, har 5 daqiqada)</span>{% endif %}</div>
-    <button class="sm ghost" hx-post="/kb/sync" hx-disabled-elt="this">Hozir sinxronlash</button>
+    <button class="sm ghost" hx-post="/kb/sync" hx-disabled-elt="this">{{ icon('refresh', 15) }} Hozir sinxronlash</button>
   </div>
 </div>
 
-<form class="filters" method="get" action="/kb"><input name="q" value="{{ q }}" placeholder="Qidirish..."><button type="submit">Qidirish</button></form>
+<form class="filters" method="get" action="/kb"><div class="search">{{ icon('search', 16) }}<input name="q" value="{{ q }}" placeholder="Qidirish..."></div><button type="submit">Qidirish</button></form>
 <div class="card table-wrap">
 <table>
   <thead><tr><th>Savol va javob</th><th>Mavzu</th><th>Holat</th><th></th></tr></thead>
@@ -45,9 +45,9 @@
     <td class="small">{{ e.topic }}</td>
     <td>{% if e.active %}<span class="pill approved">faol</span>{% else %}<span class="pill blocked">o'chirilgan</span>{% endif %}</td>
     <td class="acts">
-      <a class="btn sm ghost" href="/kb?edit={{ e.id }}">Tahrirlash</a>
-      <button class="sm ghost" hx-post="/kb/{{ e.id }}/toggle">{{ "O'chirib qo'yish" if e.active else "Yoqish" }}</button>
-      <button class="sm danger" hx-post="/kb/{{ e.id }}/delete" hx-confirm="Yozuvni butunlay o'chirasizmi?">O'chirish</button>
+      <a class="btn sm ghost" href="/kb?edit={{ e.id }}">{{ icon('edit', 15) }} Tahrirlash</a>
+      <button class="sm ghost" hx-post="/kb/{{ e.id }}/toggle">{{ icon('eye-off' if e.active else 'eye', 15) }} {{ "O'chirib qo'yish" if e.active else "Yoqish" }}</button>
+      <button class="sm danger" hx-post="/kb/{{ e.id }}/delete" hx-confirm="Yozuvni butunlay o'chirasizmi?">{{ icon('trash', 15) }}</button>
     </td>
   </tr>
   {% else %}<tr><td colspan="4" class="muted">Hali yozuv yo'q</td></tr>{% endfor %}

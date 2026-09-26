@@ -29,6 +29,7 @@ from ..constants import ROLE_STATUS_UZ, ROLES, TOPICS
 from ..context import get_ctx
 from ..db import FMT, parse_ts, utcnow
 from ..privacy import mask_sensitive
+from .icons import icon, initials
 
 log = logging.getLogger(__name__)
 BASE = Path(__file__).parent
@@ -63,6 +64,8 @@ def _has_sensitive(value: str | None) -> bool:
 templates.env.filters["local"] = _local
 templates.env.filters["md"] = _md
 templates.env.filters["has_sensitive"] = _has_sensitive
+templates.env.globals["icon"] = icon
+templates.env.filters["initials"] = initials
 templates.env.filters["status_uz"] = lambda s: ROLE_STATUS_UZ.get(s, s)
 
 
@@ -115,7 +118,9 @@ async def render(request: Request, name: str, status_code: int = 200, **context)
     counts = {}
     if request.session.get("admin_id"):
         counts = await c.db.dashboard_counts(_today_start())
-    context.update(csrf=request.session["csrf"], admin_id=request.session.get("admin_id"), counts=counts,
+    aid = request.session.get("admin_id")
+    context.update(csrf=request.session["csrf"], admin_id=aid, counts=counts,
+                   admin_name=c.settings.admin_name(aid) if aid else "",
                    base_url=c.settings.base_url)
     return templates.TemplateResponse(request, name, context, status_code=status_code)
 

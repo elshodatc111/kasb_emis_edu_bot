@@ -1,25 +1,42 @@
 {% extends "base.html" %}
 {% block title %}Kirish{% endblock %}
 {% block public %}
-<div class="card login">
-  <h1>Texnikum yordamchi</h1>
-  <p class="muted">Admin paneliga kirish</p>
-  {% if error %}<div class="alert err">{{ error }}</div>{% endif %}
-  {% if step == 1 %}
-  <form method="post" action="/login/request">
-    <label>Telegram ID</label>
-    <input name="tg_id" value="{{ tg_id }}" inputmode="numeric" autocomplete="off" autofocus required placeholder="masalan, 123456789">
-    <button type="submit">Kod yuborish</button>
-    <p class="muted small">Kod botdan Telegramga keladi. Botga avval /start yuborgan bo'lishingiz kerak.</p>
-  </form>
-  {% else %}
-  <form method="post" action="/login/verify">
-    <input type="hidden" name="tg_id" value="{{ tg_id }}">
-    <label>Telegramga kelgan 6 xonali kod</label>
-    <input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" autofocus required placeholder="123456">
-    <button type="submit">Kirish</button>
-    <p class="muted small"><a href="/login">Boshqa ID bilan urinish</a></p>
-  </form>
-  {% endif %}
+<div class="auth">
+  <section class="auth-hero">
+    <div>
+      <span class="brand-mark">{{ icon('shield', 26) }}</span>
+      <h2>Texnikum xodimlari uchun aqlli yordamchi</h2>
+      <p>Prof ta'lim platformasi bo'yicha savollarga tezkor javoblar, o'qitish va nazorat bitta joyda.</p>
+    </div>
+    <ul class="auth-list">
+      <li>{{ icon('message', 20) }} Xodimlar suhbatlari jonli ko'rinadi</li>
+      <li>{{ icon('quiz', 20) }} Kunlik testlar va o'qitish natijalari</li>
+      <li>{{ icon('chart', 20) }} Kunlik, haftalik va oylik hisobotlar</li>
+    </ul>
+  </section>
+  <section class="auth-form">
+    <div class="theme-corner">{% include "_theme.html" %}</div>
+    <div class="card login">
+      <h1>Xush kelibsiz</h1>
+      <p class="muted">Admin paneliga kirish</p>
+      {% if error %}<div class="alert err">{{ icon('alert') }}<span>{{ error }}</span></div>{% endif %}
+      {% if step == 1 %}
+      <form method="post" action="/login/request">
+        <label>Telegram ID</label>
+        <input name="tg_id" value="{{ tg_id }}" inputmode="numeric" autocomplete="off" autofocus required placeholder="masalan, 123456789">
+        <button type="submit">{{ icon('send', 18) }} Kod yuborish</button>
+        <p class="muted small">Kod botdan Telegramga keladi. Botga avval /start yuborgan bo'lishingiz kerak.</p>
+      </form>
+      {% else %}
+      <form method="post" action="/login/verify">
+        <input type="hidden" name="tg_id" value="{{ tg_id }}">
+        <label>Telegramga kelgan 6 xonali kod</label>
+        <input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" autofocus required placeholder="123456">
+        <button type="submit">{{ icon('check', 18) }} Kirish</button>
+        <p class="muted small"><a href="/login">Boshqa ID bilan urinish</a></p>
+      </form>
+      {% endif %}
+    </div>
+  </section>
 </div>
 {% endblock %}

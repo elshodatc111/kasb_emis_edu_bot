@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Foydalanuvchini tahrirlash{% endblock %}
 {% block content %}
-<h1>Foydalanuvchini tahrirlash</h1>
+<a class="back" href="/users">{{ icon('arrow-left', 16) }} Foydalanuvchilar</a>
+<div class="page-head"><div><h1>Foydalanuvchini tahrirlash</h1></div></div>
 <div class="card form-card">
+  <div class="who-cell" style="margin-bottom:6px"><span class="avatar lg">{{ u.full_name|initials }}</span>
+    <div><b>{{ u.full_name }}</b><div class="muted small">{% if u.tg_username %}@{{ u.tg_username }} · {% endif %}Telegram ID {{ u.tg_id }}</div></div></div>
   <form hx-post="/users/{{ u.id }}/edit" hx-target="#st" hx-swap="innerHTML">
     <label>F.I.SH.</label>
     <input name="full_name" value="{{ u.full_name }}" required>
@@ -20,8 +23,8 @@
       {% for k, v in {'pending':'Kutilmoqda','approved':'Ruxsat berilgan','rejected':'Rad etilgan','blocked':'Bloklangan'}.items() %}
       <option value="{{ k }}" {{ 'selected' if k == u.status }}>{{ v }}</option>{% endfor %}
     </select>
-    <div class="muted small" style="margin-top:8px">Telegram: {% if u.tg_username %}@{{ u.tg_username }} · {% endif %}ID {{ u.tg_id }} (o'zgartirib bo'lmaydi). Holat o'zgarsa, foydalanuvchiga Telegram orqali xabar boradi.</div>
-    <div class="row" style="margin-top:14px"><button type="submit">Saqlash</button><a class="btn ghost" href="/users">Bekor qilish</a><span id="st"></span></div>
+    <div class="muted small" style="margin-top:10px">Holat o'zgarsa, foydalanuvchiga Telegram orqali xabar boradi.</div>
+    <div class="row" style="margin-top:18px"><button type="submit">{{ icon('save', 17) }} Saqlash</button><a class="btn ghost" href="/users">Bekor qilish</a><span id="st"></span></div>
   </form>
 </div>
 {% endblock %}

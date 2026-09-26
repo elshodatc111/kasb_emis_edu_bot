@@ -1,8 +1,8 @@
 {% extends "base.html" %}
+{% block title %}Video reja{% endblock %}
 {% block content %}
-<p><a href="/videos">&larr; Video rejalar</a></p>
-<h1>{{ p.title }}</h1>
-<p class="muted">Mavzu: {{ p.topic }} · Asosiy rol: {{ p.role }} · Asos bo'lgan savollar: {{ p.question_count }} ·
-  <a href="/videos/{{ p.id }}/download">Markdown fayl sifatida yuklab olish</a></p>
+<a class="back" href="/videos">{{ icon('arrow-left', 16) }} Video rejalar</a>
+<div class="page-head"><div><h1>{{ p.title }}</h1><p>Mavzu: {{ p.topic }} · Asosiy rol: {{ p.role }} · Asos bo'lgan savollar: {{ p.question_count }} ·
+  <a href="/videos/{{ p.id }}/download">{{ icon('download', 14) }} Markdown fayl sifatida yuklab olish</a></p></div></div>
 <section class="card md">{{ p.content_md|md|safe }}</section>
 {% endblock %}

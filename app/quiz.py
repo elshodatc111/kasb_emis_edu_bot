@@ -50,7 +50,7 @@ def result_text(q: dict, chosen: int) -> str:
 
 def keyboard(session_id: int, q: dict) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[[
-        InlineKeyboardButton(text=LETTERS[i], callback_data=f"qz:{session_id}:{q['id']}:{i}") for i in range(3)]])
+        InlineKeyboardButton(text=f"🔹 {LETTERS[i]}", callback_data=f"qz:{session_id}:{q['id']}:{i}") for i in range(3)]])
 
 
 def summary_text(score: int, total: int) -> str:

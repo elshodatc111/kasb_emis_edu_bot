@@ -20,7 +20,7 @@ from ..context import get_ctx
 from ..db import parse_ts, utcnow
 from ..privacy import mask_sensitive
 from ..format import bot_html, bot_plain, system_html
-from .keyboards import (BTN_ADMIN, BTN_BOT, BTN_FAQ, BTN_HELP, BTN_QUIZ, BTN_VIDEO, approval_keyboard, main_menu, phone_keyboard,
+from .keyboards import (LBL_ADMIN, LBL_BOT, LBL_FAQ, LBL_HELP, LBL_QUIZ, LBL_VIDEO, approval_keyboard, is_button, main_menu, phone_keyboard,
                         roles_keyboard)
 
 log = logging.getLogger(__name__)
@@ -29,15 +29,15 @@ router = Router(name="main")
 _rate: dict[int, deque] = defaultdict(deque)
 
 HELP_TEXT = (
-    "Men Prof ta'lim tizimi bo'yicha savollaringizga qo'llanmalar asosida javob beraman.\n\n"
-    "- Savolingizni matn ko'rinishida yozing.\n"
-    "- Rasm (skrinshot) yuborishingiz mumkin, lekin bot rasmni ko'rmaydi va tahlil qilmaydi, u faqat adminga ko'rinadi. "
+    "🎓 Men Prof ta'lim tizimi bo'yicha savollaringizga qo'llanmalar asosida javob beraman.\n\n"
+    "✍️ Savolingizni matn ko'rinishida yozing.\n"
+    "🖼 Rasm (skrinshot) yuborishingiz mumkin, lekin bot rasmni ko'rmaydi va tahlil qilmaydi, u faqat adminga ko'rinadi. "
     "Iltimos, rasmda shaxsiy ma'lumotlarni (PINFL, pasport) yopib yuboring.\n"
-    "- Audio, video va fayllar qabul qilinmaydi.\n"
-    "- Boshqa lavozimdagi hamkasblaringiz uchun ham savol berishingiz mumkin.\n"
-    "- \"Ko'p so'raladigan savollar\" va \"Video darslar\" tugmalari tayyor javoblar va o'quv videolarini ko'rsatadi.\n"
-    "- \"Kunlik test\" orqali har kuni 5 ta savolga javob berib bilimingizni sinang.\n"
-    "- Admin bilan gaplashish uchun \"Adminga murojaat\" tugmasini bosing."
+    "🚫 Audio, video va fayllar qabul qilinmaydi.\n"
+    "👥 Boshqa lavozimdagi hamkasblaringiz uchun ham savol berishingiz mumkin.\n"
+    "❓ \"Ko'p so'raladigan savollar\" va 🎬 \"Video darslar\" tayyor javoblar va o'quv videolarini ko'rsatadi.\n"
+    "🧩 \"Kunlik test\" orqali har kuni 5 ta savolga javob berib bilimingizni sinang.\n"
+    "🙋 Admin bilan gaplashish uchun \"Adminga murojaat\" tugmasini bosing."
 )
 
 
@@ -85,28 +85,28 @@ async def cmd_start(message: Message, state: FSMContext):
         full = " ".join(x for x in (tg.first_name, tg.last_name) if x) or "Administrator"
         await c.db.create_user(tg.id, tg.username, full, None, None, "Administrator", status="approved")
         await message.answer(
-            "Assalomu alaykum, admin. Siz avtomatik ruxsat oldingiz.\n\nVeb-panel: "
+            "👋 Assalomu alaykum, admin. Siz avtomatik ruxsat oldingiz.\n\nVeb-panel: "
             f"{c.settings.base_url}\nKirish uchun Telegram ID ingizni ({tg.id}) kiriting, kod shu yerga keladi.\n\n"
             + services.MAIN_MENU_HINT, reply_markup=main_menu())
         return
     if user is None or user["status"] == "rejected":
         await state.set_state(Reg.name)
         await message.answer(
-            "Assalomu alaykum! Bu Prof ta'lim tizimi bo'yicha yordamchi bot.\n"
+            "👋 Assalomu alaykum! Bu Prof ta'lim tizimi bo'yicha yordamchi bot.\n"
             "Foydalanish uchun admin ruxsati kerak. Avval qisqa ma'lumot to'ldiring.\n\n"
-            "Ism va familiyangizni (otasining ismi bilan) yozing:")
+            "👤 Ism va familiyangizni (otasining ismi bilan) yozing:")
         return
     if user["status"] == "approved":
-        await message.answer("Assalomu alaykum! " + services.MAIN_MENU_HINT,
+        await message.answer("👋 Assalomu alaykum! " + services.MAIN_MENU_HINT,
                              reply_markup=main_menu(await services.effective_mode(user) == "admin"))
     elif user["status"] == "pending":
-        await message.answer("So'rovingiz ko'rib chiqilmoqda. Ruxsat berilganda sizga xabar keladi.")
+        await message.answer("⏳ So'rovingiz ko'rib chiqilmoqda. Ruxsat berilganda sizga xabar keladi.")
 
 
 @router.message(Command("cancel"))
 async def cmd_cancel(message: Message, state: FSMContext):
     await state.clear()
-    await message.answer("Bekor qilindi. Qayta boshlash uchun /start bosing.")
+    await message.answer("❎ Bekor qilindi. Qayta boshlash uchun /start bosing.")
 
 
 @router.message(Reg.name, F.text)
@@ -117,7 +117,7 @@ async def reg_name(message: Message, state: FSMContext):
         return
     await state.update_data(full_name=name)
     await state.set_state(Reg.phone)
-    await message.answer("Telefon raqamingizni yuboring (pastdagi tugma orqali yoki +998901234567 ko'rinishida yozing):",
+    await message.answer("📱 Telefon raqamingizni yuboring (pastdagi tugma orqali yoki +998901234567 ko'rinishida yozing):",
                          reply_markup=phone_keyboard())
 
 
@@ -136,7 +136,7 @@ async def reg_phone(message: Message, state: FSMContext):
     await state.set_state(Reg.tech)
     from aiogram.types import ReplyKeyboardRemove
 
-    await message.answer("Qaysi texnikumda ishlaysiz? Texnikum nomini yozing:", reply_markup=ReplyKeyboardRemove())
+    await message.answer("🏫 Qaysi texnikumda ishlaysiz? Texnikum nomini yozing:", reply_markup=ReplyKeyboardRemove())
 
 
 @router.message(Reg.tech, F.text)
@@ -147,7 +147,7 @@ async def reg_tech(message: Message, state: FSMContext):
         return
     await state.update_data(tech_name=tech)
     await state.set_state(Reg.role)
-    await message.answer("Lavozimingiz / platformadagi rolingizni tanlang:", reply_markup=roles_keyboard())
+    await message.answer("💼 Lavozimingiz / platformadagi rolingizni tanlang:", reply_markup=roles_keyboard())
 
 
 @router.callback_query(Reg.role, F.data.startswith("role:"))
@@ -166,15 +166,15 @@ async def reg_role(cb: CallbackQuery, state: FSMContext):
     else:
         uid = user["id"]
         await c.db.update_registration(uid, tg.username, data["full_name"], data["phone"], data["tech_name"], ROLES[idx])
-    await cb.message.edit_text(f"Rol: {ROLES[idx]}")
-    await cb.message.answer("So'rovingiz adminga yuborildi. Ruxsat berilgach sizga xabar keladi. Iltimos, kuting.")
+    await cb.message.edit_text(f"💼 Rol: {ROLES[idx]}")
+    await cb.message.answer("✅ So'rovingiz adminga yuborildi. Ruxsat berilgach sizga xabar keladi. Iltimos, kuting.")
     await cb.answer()
     new = await c.db.get_user(uid)
     await services.push({"type": "user", "user_id": uid})
     await services.notify_admins(
-        "Yangi foydalanish so'rovi\n\n"
-        f"F.I.SH.: {new['full_name']}\nTelefon: {new['phone']}\nTexnikum: {new['tech_name']}\nRol: {new['role']}\n"
-        f"Telegram: {'@' + new['tg_username'] if new['tg_username'] else '-'} (ID {new['tg_id']})",
+        "🆕 Yangi foydalanish so'rovi\n\n"
+        f"👤 F.I.SH.: {new['full_name']}\n📱 Telefon: {new['phone']}\n🏫 Texnikum: {new['tech_name']}\n💼 Rol: {new['role']}\n"
+        f"✈️ Telegram: {'@' + new['tg_username'] if new['tg_username'] else '-'} (ID {new['tg_id']})",
         reply_markup=approval_keyboard(uid))
 
 
@@ -189,7 +189,7 @@ async def cb_decide(cb: CallbackQuery):
     if not user:
         await cb.answer("Foydalanuvchi topilmadi", show_alert=True)
         return
-    label = "Ruxsat berildi" if status == "approved" else "Rad etildi"
+    label = "✅ Ruxsat berildi" if status == "approved" else "❌ Rad etildi"
     try:
         await cb.message.edit_text(f"{cb.message.text}\n\n{label}")
     except Exception:  # noqa: BLE001
@@ -207,14 +207,14 @@ async def _approved_user(message: Message) -> dict | None:
     if user["status"] == "approved":
         return user
     if user["status"] == "pending":
-        await message.answer("So'rovingiz hali ko'rib chiqilmoqda. Ruxsat berilganda sizga xabar keladi.")
+        await message.answer("⏳ So'rovingiz hali ko'rib chiqilmoqda. Ruxsat berilganda sizga xabar keladi.")
     elif user["status"] == "rejected":
-        await message.answer("So'rovingiz rad etilgan. Qayta so'rov yuborish uchun /start bosing.")
+        await message.answer("❌ So'rovingiz rad etilgan. Qayta so'rov yuborish uchun /start bosing.")
     return None  # bloklangan foydalanuvchiga javob berilmaydi
 
 
 @router.message(Command("help"))
-@router.message(F.text == BTN_HELP)
+@router.message(is_button(LBL_HELP))
 async def cmd_help(message: Message):
     if await _approved_user(message):
         await message.answer(HELP_TEXT)
@@ -227,7 +227,7 @@ async def cmd_panel(message: Message):
 
 
 @router.message(Command("admin"))
-@router.message(F.text == BTN_ADMIN)
+@router.message(is_button(LBL_ADMIN))
 async def cmd_admin(message: Message):
     c = get_ctx()
     user = await _approved_user(message)
@@ -241,11 +241,11 @@ async def cmd_admin(message: Message):
         "Adminga xabar yuborildi. Savolingizni yozib qoldiring.\n"
         f"{services.availability_note()}\n\n"
         "Botga qaytish uchun \"Botga qaytish\" tugmasini bosing.", reply_markup=main_menu(admin_mode=True))
-    await services.notify_admins(f"Adminga murojaat: {_who(user)}\nPanel: {_panel_link(user['id'])}")
+    await services.notify_admins(f"🙋 Adminga murojaat: {_who(user)}\n🔗 Panel: {_panel_link(user['id'])}")
 
 
 @router.message(Command("bot"))
-@router.message(F.text == BTN_BOT)
+@router.message(is_button(LBL_BOT))
 async def cmd_bot(message: Message):
     c = get_ctx()
     user = await _approved_user(message)
@@ -253,7 +253,7 @@ async def cmd_bot(message: Message):
         return
     await c.db.set_mode(user["id"], "bot")
     await services.push({"type": "user", "user_id": user["id"]})
-    await message.answer("Bot rejimiga qaytdingiz. Savolingizni yozing.", reply_markup=main_menu())
+    await message.answer("🤖 Bot rejimiga qaytdingiz. Savolingizni yozing.", reply_markup=main_menu())
 
 
 # ------------------------------------------------------------------ FAQ
@@ -261,11 +261,11 @@ def _faq_topics_kb(topics: list[dict]) -> InlineKeyboardMarkup:
     rows = []
     for t in topics:
         name = t["topic"] if t["topic"] in TOPICS else "Boshqa"
-        rows.append([InlineKeyboardButton(text=f"{name} ({t['n']})", callback_data=f"faqt:{TOPICS.index(name)}")])
+        rows.append([InlineKeyboardButton(text=f"📂 {name} ({t['n']})", callback_data=f"faqt:{TOPICS.index(name)}")])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
-@router.message(F.text == BTN_FAQ)
+@router.message(is_button(LBL_FAQ))
 async def cmd_faq(message: Message):
     c = get_ctx()
     if not await _approved_user(message):
@@ -274,14 +274,14 @@ async def cmd_faq(message: Message):
     if not topics:
         await message.answer("Hozircha tayyor ro'yxat yo'q. Savolingizni yozing, javob beraman.")
         return
-    await message.answer("Ko'p so'raladigan savollar. Mavzuni tanlang:", reply_markup=_faq_topics_kb(topics))
+    await message.answer("❓ Ko'p so'raladigan savollar. Mavzuni tanlang:", reply_markup=_faq_topics_kb(topics))
 
 
 @router.callback_query(F.data == "faqb")
 async def cb_faq_back(cb: CallbackQuery):
     topics = await get_ctx().db.faq_topics()
     try:
-        await cb.message.edit_text("Ko'p so'raladigan savollar. Mavzuni tanlang:", reply_markup=_faq_topics_kb(topics))
+        await cb.message.edit_text("❓ Ko'p so'raladigan savollar. Mavzuni tanlang:", reply_markup=_faq_topics_kb(topics))
     except Exception:  # noqa: BLE001
         pass
     await cb.answer()
@@ -299,10 +299,10 @@ async def cb_faq_topic(cb: CallbackQuery):
         await cb.answer()
         return
     items = await c.db.faq_by_topic(TOPICS[idx])
-    rows = [[InlineKeyboardButton(text=i["question"][:60], callback_data=f"faqq:{i['id']}")] for i in items[:20]]
-    rows.append([InlineKeyboardButton(text="« Mavzular", callback_data="faqb")])
+    rows = [[InlineKeyboardButton(text=f"❓ {i['question'][:58]}", callback_data=f"faqq:{i['id']}")] for i in items[:20]]
+    rows.append([InlineKeyboardButton(text="⬅️ Mavzular", callback_data="faqb")])
     try:
-        await cb.message.edit_text(f"{TOPICS[idx]}. Savolni tanlang:", reply_markup=InlineKeyboardMarkup(inline_keyboard=rows))
+        await cb.message.edit_text(f"📂 {TOPICS[idx]}. Savolni tanlang:", reply_markup=InlineKeyboardMarkup(inline_keyboard=rows))
     except Exception:  # noqa: BLE001
         pass
     await cb.answer()
@@ -330,13 +330,13 @@ def _video_card(v: dict) -> str:
 
     desc = f"\n{_h.escape(v['description'], quote=False)}" if v.get("description") else ""
     return (f"🎬 <b>{_h.escape(v['title'], quote=False)}</b>{desc}\n\n"
-            f'<a href="{_h.escape(v["url"], quote=True)}">Videoni ko\'rish</a>')
+            f'▶️ <a href="{_h.escape(v["url"], quote=True)}">Videoni ko\'rish</a>')
 
 
 def _video_list_kb(videos: list[dict], back: bool = False) -> InlineKeyboardMarkup:
-    rows = [[InlineKeyboardButton(text=v["title"][:60], callback_data=f"vid:{v['id']}")] for v in videos[:25]]
+    rows = [[InlineKeyboardButton(text=f"▶️ {v['title'][:58]}", callback_data=f"vid:{v['id']}")] for v in videos[:25]]
     if back:
-        rows.append([InlineKeyboardButton(text="« Mavzular", callback_data="vidb")])
+        rows.append([InlineKeyboardButton(text="⬅️ Mavzular", callback_data="vidb")])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
@@ -346,28 +346,28 @@ def _video_topics_kb(videos: list[dict]) -> InlineKeyboardMarkup:
         name = v["topic"] if v.get("topic") in TOPICS else "Boshqa"
         counts[name] = counts.get(name, 0) + 1
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text=f"{n} ({k})", callback_data=f"vidt:{TOPICS.index(n)}")] for n, k in counts.items()])
+        [InlineKeyboardButton(text=f"📁 {n} ({k})", callback_data=f"vidt:{TOPICS.index(n)}")] for n, k in counts.items()])
 
 
-@router.message(F.text == BTN_VIDEO)
+@router.message(is_button(LBL_VIDEO))
 async def cmd_videos(message: Message):
     c = get_ctx()
     if not await _approved_user(message):
         return
     videos = await c.db.list_lib_videos(active_only=True)
     if not videos:
-        await message.answer("Hozircha video darslar qo'shilmagan.")
+        await message.answer("🎬 Hozircha video darslar qo'shilmagan.")
     elif len(videos) <= 12:
-        await message.answer("Video darslar:", reply_markup=_video_list_kb(videos))
+        await message.answer("🎬 Video darslar:", reply_markup=_video_list_kb(videos))
     else:
-        await message.answer("Video darslar. Mavzuni tanlang:", reply_markup=_video_topics_kb(videos))
+        await message.answer("🎬 Video darslar. Mavzuni tanlang:", reply_markup=_video_topics_kb(videos))
 
 
 @router.callback_query(F.data == "vidb")
 async def cb_video_back(cb: CallbackQuery):
     videos = await get_ctx().db.list_lib_videos(active_only=True)
     try:
-        await cb.message.edit_text("Video darslar. Mavzuni tanlang:", reply_markup=_video_topics_kb(videos))
+        await cb.message.edit_text("🎬 Video darslar. Mavzuni tanlang:", reply_markup=_video_topics_kb(videos))
     except Exception:  # noqa: BLE001
         pass
     await cb.answer()
@@ -388,7 +388,7 @@ async def cb_video_topic(cb: CallbackQuery):
     items = [v for v in await c.db.list_lib_videos(active_only=True)
              if (v["topic"] if v.get("topic") in TOPICS else "Boshqa") == name]
     try:
-        await cb.message.edit_text(f"{name}. Videoni tanlang:", reply_markup=_video_list_kb(items, back=True))
+        await cb.message.edit_text(f"📁 {name}. Videoni tanlang:", reply_markup=_video_list_kb(items, back=True))
     except Exception:  # noqa: BLE001
         pass
     await cb.answer()
@@ -412,7 +412,7 @@ async def cb_video_item(cb: CallbackQuery):
 
 # ------------------------------------------------------------------ kunlik test
 @router.message(Command("test"))
-@router.message(F.text == BTN_QUIZ)
+@router.message(is_button(LBL_QUIZ))
 async def cmd_quiz(message: Message):
     user = await _approved_user(message)
     if not user:
@@ -463,7 +463,7 @@ async def on_photo(message: Message):
     if last and (utcnow() - last).total_seconds() < 60:
         return
     await c.db.touch_photo_notified(user["id"])
-    await services.notify_admins(f"Rasm keldi: {_who(user)}\nPanel: {_panel_link(user['id'])}")
+    await services.notify_admins(f"🖼 Rasm keldi: {_who(user)}\n🔗 Panel: {_panel_link(user['id'])}")
 
 
 # ------------------------------------------------------------------ matn (asosiy)
@@ -530,7 +530,7 @@ async def _escalate(user: dict, message: Message, user_msg_id: int, question_tex
     await message.answer(system_html(user_reply), parse_mode="HTML")
     await services.push({"type": "message", "user_id": user["id"]})
     await services.notify_admins(
-        f"Javobsiz savol: {_who(user)}\n\n\"{question_text[:600]}\"\n\nPanel: {_panel_link(user['id'])}")
+        f"❓ Javobsiz savol: {_who(user)}\n\n\"{question_text[:600]}\"\n\nPanel: {_panel_link(user['id'])}")
 
 
 # ------------------------------------------------------------------ boshqa turdagi kontent
@@ -543,4 +543,4 @@ async def on_other(message: Message):
     kind = message.content_type.value if hasattr(message.content_type, "value") else str(message.content_type)
     await c.db.add_message(user["id"], "user", "other", text=f"[{kind}] qabul qilinmadi")
     await services.push({"type": "message", "user_id": user["id"]})
-    await message.answer("Faqat matn va rasm qabul qilinadi. Audio, video va fayllarni yubora olmaysiz.")
+    await message.answer("🚫 Faqat matn va rasm qabul qilinadi. Audio, video va fayllarni yubora olmaysiz.")

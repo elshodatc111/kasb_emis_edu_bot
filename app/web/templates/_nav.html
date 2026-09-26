@@ -1,18 +1,18 @@
 <nav id="nav" hx-get="/counts?page={{ page or '' }}" hx-trigger="counts-refresh from:body, every 30s" hx-swap="outerHTML">
-  <a href="/" class="{{ 'on' if page == 'dashboard' }}">Bosh sahifa</a>
-  <a href="/users?status=pending" class="{{ 'on' if page == 'requests' }}">So'rovlar
+  <a href="/" class="{{ 'on' if page == 'dashboard' }}">{{ icon('home') }}<span class="grow">Bosh sahifa</span></a>
+  <a href="/users?status=pending" class="{{ 'on' if page == 'requests' }}">{{ icon('user-plus') }}<span class="grow">So'rovlar</span>
     {% if counts and counts.pending %}<b class="badge">{{ counts.pending }}</b>{% endif %}</a>
-  <a href="/users" class="{{ 'on' if page == 'users' }}">Foydalanuvchilar</a>
-  <a href="/chats" class="{{ 'on' if page == 'chats' }}">Suhbatlar
+  <a href="/users" class="{{ 'on' if page == 'users' }}">{{ icon('users') }}<span class="grow">Foydalanuvchilar</span></a>
+  <a href="/chats" class="{{ 'on' if page == 'chats' }}">{{ icon('message') }}<span class="grow">Suhbatlar</span>
     {% if counts and counts.attention %}<b class="badge warn">{{ counts.attention }}</b>{% elif counts and counts.unread %}<b class="badge">{{ counts.unread }}</b>{% endif %}</a>
   <div class="nav-sep">Bilim va o'qitish</div>
-  <a href="/kb" class="{{ 'on' if page == 'kb' }}">Bilimlar bazasi</a>
-  <a href="/faq" class="{{ 'on' if page == 'faq' }}">Ko'p so'raladigan savollar
+  <a href="/kb" class="{{ 'on' if page == 'kb' }}">{{ icon('book-open') }}<span class="grow">Bilimlar bazasi</span></a>
+  <a href="/faq" class="{{ 'on' if page == 'faq' }}">{{ icon('help') }}<span class="grow">Ko'p so'raladigan savollar</span>
     {% if counts and counts.faq_pending %}<b class="badge warn">{{ counts.faq_pending }}</b>{% endif %}</a>
-  <a href="/library" class="{{ 'on' if page == 'library' }}">Video kutubxona</a>
-  <a href="/quiz" class="{{ 'on' if page == 'quiz' }}">Kunlik test</a>
-  <a href="/templates" class="{{ 'on' if page == 'templates' }}">Javob shablonlari</a>
+  <a href="/library" class="{{ 'on' if page == 'library' }}">{{ icon('play') }}<span class="grow">Video kutubxona</span></a>
+  <a href="/quiz" class="{{ 'on' if page == 'quiz' }}">{{ icon('quiz') }}<span class="grow">Kunlik test</span></a>
+  <a href="/templates" class="{{ 'on' if page == 'templates' }}">{{ icon('zap') }}<span class="grow">Javob shablonlari</span></a>
   <div class="nav-sep">Tahlil</div>
-  <a href="/reports" class="{{ 'on' if page == 'reports' }}">Hisobotlar</a>
-  <a href="/videos" class="{{ 'on' if page == 'videos' }}">Video rejalar</a>
+  <a href="/reports" class="{{ 'on' if page == 'reports' }}">{{ icon('chart') }}<span class="grow">Hisobotlar</span></a>
+  <a href="/videos" class="{{ 'on' if page == 'videos' }}">{{ icon('film') }}<span class="grow">Video rejalar</span></a>
 </nav>
