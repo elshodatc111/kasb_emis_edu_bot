@@ -58,6 +58,59 @@
   });
   window.addEventListener("load", scrollDown);
 
+  // ---- bildirishnoma: ovoz, brauzer bildirishnomasi, sarlavhadagi son ----
+  var baseTitle = document.title.replace(/^\(\d+\)\s*/, "");
+  function attentionCount() {
+    var n = document.getElementById("nav");
+    return n ? parseInt(n.dataset.attention || "0", 10) || 0 : 0;
+  }
+  function updateTitle() {
+    var n = attentionCount();
+    document.title = (n > 0 ? "(" + n + ") " : "") + baseTitle;
+  }
+  document.body.addEventListener("htmx:afterSettle", updateTitle);
+  window.addEventListener("load", updateTitle);
+  var notifOn = false;
+  try { notifOn = localStorage.getItem("notif") === "1"; } catch (e) {}
+  var btn = document.getElementById("notif-btn");
+  function paintBtn() {
+    if (!btn) return;
+    btn.classList.toggle("on", notifOn);
+    btn.querySelector("span").textContent = "Bildirishnoma: " + (notifOn ? "yoqiq" : "o'chiq");
+  }
+  var audio = null;
+  function beep() {
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === "suspended") audio.resume();
+      var o = audio.createOscillator(), g = audio.createGain();
+      o.type = "sine"; o.frequency.value = 880; g.gain.value = 0.08;
+      o.connect(g); g.connect(audio.destination);
+      o.start(); o.frequency.setValueAtTime(660, audio.currentTime + 0.12); o.stop(audio.currentTime + 0.28);
+    } catch (e) {}
+  }
+  function notify(ev) {
+    if (!notifOn) return;
+    beep();
+    try {
+      if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+        new Notification("Yangi savol: " + (ev.name || "xodim"), { body: ev.preview || "" });
+      }
+    } catch (e) {}
+  }
+  if (btn) {
+    paintBtn();
+    btn.addEventListener("click", function () {
+      notifOn = !notifOn;
+      try { localStorage.setItem("notif", notifOn ? "1" : "0"); } catch (e) {}
+      if (notifOn) {
+        beep();
+        if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
+      }
+      paintBtn();
+    });
+  }
+
   // Jonli hodisalar (yangi xabar, yangi so'rov va h.k.)
   var retry = 1000;
   function connect() {
@@ -69,6 +122,8 @@
       try { ev = JSON.parse(e.data); } catch (_) { return; }
       htmx.trigger(document.body, "list-refresh");
       htmx.trigger(document.body, "counts-refresh");
+      if (ev.type === "attention") notify(ev);
+      if (ev.type === "reset") location.reload();
       var active = document.body.dataset.activeChat;
       if (active && ev.user_id && String(ev.user_id) === active) {
         htmx.trigger(document.body, "refresh-msgs");

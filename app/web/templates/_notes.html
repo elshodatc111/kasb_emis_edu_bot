@@ -1,0 +1,11 @@
+<div id="notes-{{ uid }}" class="notes">
+  <form hx-post="/users/{{ uid }}/notes" hx-target="#notes-{{ uid }}" hx-swap="outerHTML" hx-on::after-request="this.reset()">
+    <textarea name="text" rows="2" maxlength="1000" placeholder="Ichki izoh (xodimga va AIga ko'rinmaydi)..." required></textarea>
+    <div class="row" style="margin-top:8px"><button class="sm" type="submit">{{ icon('plus', 15) }} Izoh qo'shish</button></div>
+  </form>
+  {% for n in notes %}
+  <div class="note-item"><div class="txt-pre">{{ n.text }}</div>
+    <div class="muted small">{{ n.author }} · {{ n.created_at|local }}
+      <a href="#" class="danger-link" hx-post="/users/{{ uid }}/notes/{{ n.id }}/delete" hx-target="#notes-{{ uid }}" hx-swap="outerHTML" hx-confirm="Izohni o'chirasizmi?">o'chirish</a></div></div>
+  {% endfor %}
+</div>

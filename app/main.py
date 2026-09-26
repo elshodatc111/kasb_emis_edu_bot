@@ -61,6 +61,11 @@ async def amain() -> None:
     dp = build_dispatcher()
     app = create_app()
     scheduler = build_scheduler(settings)
+    from . import ops, services
+
+    ops.scheduler = scheduler
+    ops.install_error_log()
+    await services.load_worktime()
 
     try:
         me = await bot.get_me()

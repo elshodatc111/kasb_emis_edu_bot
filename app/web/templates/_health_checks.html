@@ -1,0 +1,8 @@
+<div class="checks">
+{% for c in checks %}
+  <div class="check-row {{ 'ok' if c.ok else 'bad' }}">
+    <span class="ic">{{ icon('check-circle' if c.ok else 'alert', 20) }}</span>
+    <div><b>{{ c.name }}</b><div class="small muted">{{ c.detail }}</div></div>
+  </div>
+{% endfor %}
+</div>

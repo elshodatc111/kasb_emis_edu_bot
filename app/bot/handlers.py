@@ -13,7 +13,7 @@ from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMar
 from aiogram.utils.chat_action import ChatActionSender
 
 from .. import kb as kb_mod
-from .. import announce, quiz, services
+from .. import announce, quiz, services, spam
 from ..agent import AgentError
 from ..constants import ROLES, TOPICS
 from ..context import get_ctx
@@ -482,11 +482,12 @@ async def on_photo(message: Message):
                            tg_message_id=message.message_id)
     await c.db.set_attention(user["id"], True)
     await services.push({"type": "message", "user_id": user["id"]})
+    await services.push({"type": "attention", "user_id": user["id"], "name": user.get("full_name"), "preview": "🖼 rasm"})
     last = parse_ts(user.get("photo_notified_at"))
     if last and (utcnow() - last).total_seconds() < 60:
         return
     await c.db.touch_photo_notified(user["id"])
-    await services.notify_admins(f"🖼 Rasm keldi: {_who(user)}\n🔗 Panel: {_panel_link(user['id'])}")
+    await services.notify_for_user(user, f"🖼 Rasm keldi: {_who(user)}\n🔗 Panel: {_panel_link(user['id'])}")
 
 
 # ------------------------------------------------------------------ matn (asosiy)
@@ -499,6 +500,14 @@ async def on_text(message: Message):
     text = message.text.strip()
     if not text:
         return
+    mode = await services.effective_mode(user)
+    left = spam.muted_left(user["id"])
+    if mode == "bot" and left:
+        if not spam.told_mute(user["id"]):
+            await message.answer(system_html(f"Siz bir xil savolni ko'p marta yubordingiz. Iltimos, {left // 60 + 1} daqiqadan "
+                                             "keyin qayta urinib ko'ring yoki \"Adminga murojaat\" tugmasini bosing."),
+                                 parse_mode="HTML")
+        return
     history = [
         {"sender": h["sender"], "text": mask_sensitive(h["text"])[0]}
         for h in await c.db.ai_history(user["id"], c.settings.history_turns)
@@ -506,12 +515,27 @@ async def on_text(message: Message):
     msg_id = await c.db.add_message(user["id"], "user", "text", text=text, tg_message_id=message.message_id)
     await services.push({"type": "message", "user_id": user["id"]})
 
-    if await services.effective_mode(user) == "admin":
+    if mode == "admin":
         await c.db.set_attention(user["id"], True)
+        await services.push({"type": "attention", "user_id": user["id"], "name": user.get("full_name"),
+                             "preview": text[:80]})
         return
     if not _rate_ok(user["id"]):
         await message.answer(system_html("Juda ko'p savol yuborildi. Iltimos, 1 daqiqadan keyin qayta urinib ko'ring."),
                              parse_mode="HTML")
+        return
+
+    verdict = spam.check(user["id"], text)
+    if verdict.kind == "mute":
+        await c.db.add_spam(user["id"], "muted", text)
+        await message.answer(system_html("Siz bir xil savolni ko'p marta yubordingiz, shuning uchun 15 daqiqaga to'xtatildingiz. "
+                                         "Shoshilinch bo'lsa, \"Adminga murojaat\" tugmasini bosing."), parse_mode="HTML")
+        spam.told_mute(user["id"])
+        return
+    if verdict.kind == "repeat":
+        await c.db.add_spam(user["id"], "repeat", text)
+        await message.answer("🔁 <i>Bu savolga yaqinda javob berilgan edi:</i>\n\n" + verdict.reply, parse_mode="HTML",
+                             disable_web_page_preview=True)
         return
 
     masked, _n = mask_sensitive(text)
@@ -525,12 +549,14 @@ async def on_text(message: Message):
         await c.db.update_message_analysis(msg_id, None, False)
         await _escalate(user, message, msg_id, text,
                         "Hozir javob bera olmayapman. Savolingiz adminga yuborildi.")
+        _remember_escalated(user, text)
         return
 
     await c.db.update_message_analysis(msg_id, result.topic, result.found)
     if not result.found:
         await _escalate(user, message, msg_id, masked,
                         "Bu savol bo'yicha qo'llanmada aniq javob topa olmadim. Savolingiz adminga yuborildi.")
+        _remember_escalated(user, text)
         return
 
     video = next(((v["title"], v["url"]) for v in lib if v["id"] == result.video_id), None)
@@ -540,9 +566,15 @@ async def on_text(message: Message):
         user["id"], "bot", "text", text=bot_plain(result.title, result.answer[:3500], result.section, video),
         topic=result.topic, found=True, sources=result.sources,
         tokens_in=result.tokens_in, tokens_out=result.tokens_out)
-    await message.answer(bot_html(result.title, result.answer[:3500], result.section, video), parse_mode="HTML",
-                         disable_web_page_preview=True)
+    reply_html = bot_html(result.title, result.answer[:3500], result.section, video)
+    await message.answer(reply_html, parse_mode="HTML", disable_web_page_preview=True)
+    spam.remember(user["id"], text, reply_html)
     await services.push({"type": "message", "user_id": user["id"]})
+
+
+def _remember_escalated(user: dict, text: str) -> None:
+    spam.remember(user["id"], text, system_html("Savolingiz allaqachon adminga yuborilgan. Javobni kutib turing.\n"
+                                                  + services.availability_note()))
 
 
 async def _escalate(user: dict, message: Message, user_msg_id: int, question_text: str, user_reply: str):
@@ -552,8 +584,10 @@ async def _escalate(user: dict, message: Message, user_msg_id: int, question_tex
     await c.db.add_message(user["id"], "bot", "text", text=user_reply, found=False)
     await message.answer(system_html(user_reply), parse_mode="HTML")
     await services.push({"type": "message", "user_id": user["id"]})
-    await services.notify_admins(
-        f"❓ Javobsiz savol: {_who(user)}\n\n\"{question_text[:600]}\"\n\nPanel: {_panel_link(user['id'])}")
+    await services.push({"type": "attention", "user_id": user["id"], "name": user.get("full_name"),
+                         "preview": question_text[:80]})
+    await services.notify_for_user(
+        user, f"❓ Javobsiz savol: {_who(user)}\n\n\"{question_text[:600]}\"\n\nPanel: {_panel_link(user['id'])}")
 
 
 # ------------------------------------------------------------------ boshqa turdagi kontent

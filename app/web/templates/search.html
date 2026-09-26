@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Qidiruv{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Yozishmalardan qidirish</h1>
+  <p>Barcha xodimlar bilan bo'lgan suhbatlardan so'z yoki ibora bo'yicha qidiring (masalan: "diplom", "jurnal").</p></div></div>
+<form class="filters" method="get" action="/search">
+  <div class="search">{{ icon('search', 16) }}<input name="q" value="{{ q }}" placeholder="Kamida 2 ta belgi..." autofocus></div>
+  <select name="sender">
+    {% for k, v in {'': 'Hamma yozganlar', 'user': 'Faqat xodimlar', 'bot': 'Faqat bot javoblari', 'admin': 'Faqat adminlar'}.items() %}
+    <option value="{{ k }}" {{ 'selected' if sender == k }}>{{ v }}</option>{% endfor %}
+  </select>
+  <button type="submit">{{ icon('search', 16) }} Qidirish</button>
+</form>
+{% if q and q|length < 2 %}<p class="muted">Kamida 2 ta belgi kiriting.</p>
+{% elif q %}<p class="muted small" style="margin:12px 0">{{ results|length }} ta natija{% if results|length >= 100 %} (birinchi 100 tasi){% endif %}</p>{% endif %}
+<div class="card table-wrap">
+<table>
+  {% for r in results %}
+  <tr>
+    <td style="width:34%"><div class="who-cell"><span class="avatar">{{ r.full_name|initials }}</span>
+      <div><a href="/chats/{{ r.user_id }}"><b>{{ r.full_name }}</b></a><div class="muted small">{{ r.role }} · {{ r.tech_name }}</div></div></div></td>
+    <td><span class="tag {{ 'ok' if r.sender == 'admin' }}">{{ {'user': 'Xodim', 'bot': 'Bot', 'admin': 'Admin: ' ~ (r.author or '')}[r.sender] }}</span>
+      <span class="muted small"> {{ r.created_at|local }}</span>
+      <div style="margin-top:4px">{{ r.text|snippet(q) }}</div></td>
+    <td class="acts" style="justify-content:flex-end"><a class="btn sm ghost" href="/chats/{{ r.user_id }}">Ochish</a></td>
+  </tr>
+  {% else %}<tr><td class="muted">{{ "Hech narsa topilmadi." if q else "Qidirish uchun so'z kiriting." }}</td></tr>{% endfor %}
+</table>
+</div>
+{% endblock %}

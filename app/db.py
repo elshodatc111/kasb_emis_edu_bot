@@ -8,6 +8,7 @@ from typing import Any
 import aiosqlite
 
 from .db_features import FEATURE_SCHEMA, FeaturesMixin
+from .db_ops import OPS_SCHEMA, OpsMixin
 
 FMT = "%Y-%m-%d %H:%M:%S"
 
@@ -90,7 +91,7 @@ CREATE TABLE IF NOT EXISTS video_plans (
 """
 
 
-class Database(FeaturesMixin):
+class Database(FeaturesMixin, OpsMixin):
     def __init__(self, path: Path | str):
         self.path = str(path)
         self.conn: aiosqlite.Connection | None = None
@@ -105,11 +106,17 @@ class Database(FeaturesMixin):
             await self.conn.execute("PRAGMA journal_mode=WAL")
         await self.conn.executescript(SCHEMA)
         await self.conn.executescript(FEATURE_SCHEMA)
+        await self.conn.executescript(OPS_SCHEMA)
+        ucols = [r[1] for r in await (await self.conn.execute("PRAGMA table_info(users)")).fetchall()]
+        if "assigned_to" not in ucols:
+            await self.conn.execute("ALTER TABLE users ADD COLUMN assigned_to INTEGER")
+            await self.conn.execute("ALTER TABLE users ADD COLUMN assigned_at TEXT")
         cols = [r[1] for r in await (await self.conn.execute("PRAGMA table_info(messages)")).fetchall()]
         if "author" not in cols:  # eski bazani yangilash
             await self.conn.execute("ALTER TABLE messages ADD COLUMN author TEXT")
         await self.conn.commit()
         await self.seed_defaults()
+        await self.seed_holidays()
 
     async def close(self) -> None:
         if self.conn:
@@ -235,7 +242,8 @@ class Database(FeaturesMixin):
         )
         return list(reversed(rows))
 
-    async def conversations(self, filter_: str = "all", q: str | None = None, limit: int = 200) -> list[dict]:
+    async def conversations(self, filter_: str = "all", q: str | None = None, limit: int = 200,
+                            admin_id: int | None = None) -> list[dict]:
         sql = (
             "SELECT u.*, (SELECT text FROM messages m WHERE m.user_id=u.id ORDER BY m.id DESC LIMIT 1) AS last_text,"
             " (SELECT kind FROM messages m WHERE m.user_id=u.id ORDER BY m.id DESC LIMIT 1) AS last_kind,"
@@ -247,6 +255,11 @@ class Database(FeaturesMixin):
             sql += " AND u.needs_attention=1"
         elif filter_ == "unread":
             sql += " AND u.unread>0"
+        elif filter_ == "mine":
+            sql += " AND u.assigned_to=?"
+            params.append(admin_id or 0)
+        elif filter_ == "unassigned":
+            sql += " AND u.assigned_to IS NULL"
         if q:
             like = f"%{q.strip()}%"
             sql += " AND (u.full_name LIKE ? OR u.tech_name LIKE ? OR u.phone LIKE ?)"
@@ -263,6 +276,7 @@ class Database(FeaturesMixin):
             "attention": one(await self._one("SELECT COUNT(*) c FROM users WHERE needs_attention=1")),
             "unread": one(await self._one("SELECT COUNT(*) c FROM users WHERE unread>0")),
             "faq_pending": one(await self._one("SELECT COUNT(*) c FROM faq_items WHERE status='pending'")),
+            "errors_today": one(await self._one("SELECT COUNT(*) c FROM error_log WHERE created_at>=?", (since,))),
             "questions_today": one(await self._one(
                 "SELECT COUNT(*) c FROM messages WHERE sender='user' AND kind='text' AND created_at>=?", (since,))),
             "unanswered_today": one(await self._one(

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Faol bo'lmaganlar{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Faol bo'lmagan xodimlar</h1>
+  <p>Tanlangan muddat ichida botga yozmagan va kunlik testda qatnashmagan tasdiqlangan xodimlar. Ularga bir bosishda eslatma yuborishingiz mumkin.</p></div></div>
+<div class="row" style="margin-bottom:16px">
+  {% for d in [7, 14, 30, 60, 90] %}<a class="btn {{ '' if days == d else 'ghost' }} sm" href="/inactive?days={{ d }}">{{ d }} kun</a>{% endfor %}
+</div>
+<form hx-post="/inactive/remind" hx-target="#st" hx-swap="innerHTML" hx-confirm="Belgilangan xodimlarga eslatma yuborilsinmi?">
+<div class="card table-wrap">
+  <table>
+    <thead><tr><th style="width:44px"><input type="checkbox" onclick="document.querySelectorAll('.inact').forEach(function(c){c.checked=this.checked}.bind(this))" aria-label="Hammasini belgilash"></th><th>Xodim</th><th>Rol</th><th>Oxirgi faollik</th></tr></thead>
+    {% for u in users %}
+    <tr><td><input class="inact" type="checkbox" name="users" value="{{ u.id }}"></td>
+      <td><a href="/chats/{{ u.id }}"><b>{{ u.full_name }}</b></a><div class="muted small">{{ u.tech_name }}</div></td>
+      <td>{{ u.role }}</td>
+      <td>{% if u.last_active %}{{ u.last_active|local }}{% else %}<span class="tag warn">hech qachon yozmagan</span>{% endif %}</td></tr>
+    {% else %}<tr><td colspan="4" class="muted">{{ days }} kun ichida faol bo'lmagan xodim yo'q. Ajoyib!</td></tr>{% endfor %}
+  </table>
+</div>
+{% if users %}
+<div class="card form-card" style="margin-top:18px">
+  <h2>{{ icon('send', 18) }} Eslatma matni</h2>
+  <textarea name="text" rows="4">{{ default_text }}</textarea>
+  <div class="row" style="margin-top:14px"><button type="submit">{{ icon('send', 17) }} Belgilanganlarga yuborish</button><span id="st"></span></div>
+  <div class="muted small" style="margin-top:8px">Eslatma "E'lonlar" orqali yuboriladi, natijasini o'sha bo'limda ko'rasiz.</div>
+</div>
+{% endif %}
+</form>
+{% endblock %}

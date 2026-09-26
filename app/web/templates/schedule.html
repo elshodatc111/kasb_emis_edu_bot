@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Ish vaqti va bayramlar{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Ish vaqti va bayramlar</h1>
+  <p>Xodim savolini bot topa olmasa, "admin qachon javob beradi" xabari shu sozlamaga qarab yumshoq shaklda chiqadi.</p></div></div>
+{% include "_notice.html" %}
+<div class="alert"><span>{{ icon('clock') }}</span><span>Hozir:
+  {% if today_holiday %}<b>bayram kuni ({{ today_holiday }})</b>{% elif not today_work %}<b>dam olish kuni</b>{% elif in_hours %}<b>ish vaqti</b>{% else %}<b>ish vaqtidan tashqari</b>{% endif %}</span></div>
+<div class="grid2">
+<section class="card">
+  <h2>{{ icon('clock', 18) }} Ish vaqti</h2>
+  <form hx-post="/schedule/save" hx-target="#st" hx-swap="innerHTML">
+    <div class="grid2" style="margin:0">
+      <div><label>Boshlanishi</label><input type="time" name="start" value="{{ '%02d:%02d' % s.work_start }}" required></div>
+      <div><label>Tugashi</label><input type="time" name="end" value="{{ '%02d:%02d' % s.work_end }}" required></div>
+    </div>
+    <label>Ish kunlari</label>
+    <div class="seg">
+      {% for n, d in [(1,'Dushanba'),(2,'Seshanba'),(3,'Chorshanba'),(4,'Payshanba'),(5,'Juma'),(6,'Shanba'),(7,'Yakshanba')] %}
+      <label style="padding:8px 12px"><input type="checkbox" name="days" value="{{ n }}" {{ 'checked' if n in s.work_days }}> {{ d }}</label>{% endfor %}
+    </div>
+    <div class="row" style="margin-top:16px"><button type="submit">{{ icon('save', 17) }} Saqlash</button><span id="st"></span></div>
+  </form>
+</section>
+<section class="card">
+  <h2>{{ icon('calendar', 18) }} Yangi bayram / dam olish kuni</h2>
+  <form hx-post="/schedule/holidays" hx-target="#hst" hx-swap="innerHTML">
+    <label>Sana</label><input type="date" name="day" required>
+    <label>Nomi</label><input name="name" placeholder="Masalan: Ramazon hayiti" required>
+    <label class="check"><input type="checkbox" name="recurring"> Har yili takrorlansin (doimiy sana, masalan 1-sentabr)</label>
+    <div class="row" style="margin-top:14px"><button type="submit">{{ icon('plus', 17) }} Qo'shish</button><span id="hst"></span></div>
+    <div class="muted small" style="margin-top:8px">Diniy bayramlar (hayit) sanasi har yili o'zgaradi, ularni yil sayin bir martalik qilib kiriting.</div>
+  </form>
+</section>
+</div>
+<div class="card table-wrap">
+  <table>
+    <thead><tr><th>Sana</th><th>Nomi</th><th>Turi</th><th></th></tr></thead>
+    {% for h in holidays %}
+    <tr><td>{% if h.recurring %}{{ h.day[3:] }}.{{ h.day[:2] }}{% else %}{{ h.day[8:] }}.{{ h.day[5:7] }}.{{ h.day[:4] }}{% endif %}</td><td><b>{{ h.name }}</b></td>
+      <td>{% if h.recurring %}<span class="tag">har yili</span>{% else %}<span class="tag ok">bir martalik</span>{% endif %}</td>
+      <td class="acts" style="justify-content:flex-end"><button class="sm danger" hx-post="/schedule/holidays/{{ h.id }}/delete" hx-confirm="O'chirasizmi?">{{ icon('trash', 15) }}</button></td></tr>
+    {% else %}<tr><td colspan="4" class="muted">Bayramlar yo'q</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

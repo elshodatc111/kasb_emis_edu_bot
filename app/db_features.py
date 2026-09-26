@@ -279,7 +279,7 @@ class FeaturesMixin:
     # ---------- javob kutayotgan suhbatlar ----------
     async def waiting_chats(self) -> list[dict]:
         return await self._all(
-            "SELECT u.id, u.full_name, u.role, u.tech_name, u.last_message_at,"
+            "SELECT u.id, u.full_name, u.role, u.tech_name, u.last_message_at, u.assigned_to,"
             " (SELECT text FROM messages m WHERE m.user_id=u.id AND m.sender='user' ORDER BY m.id DESC LIMIT 1) AS last_text,"
             " (SELECT kind FROM messages m WHERE m.user_id=u.id AND m.sender='user' ORDER BY m.id DESC LIMIT 1) AS last_kind"
             " FROM users u WHERE u.needs_attention=1 ORDER BY u.last_message_at")

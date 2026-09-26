@@ -211,3 +211,23 @@ async def send_all_now() -> int:
         except Exception:  # noqa: BLE001
             log.exception("Viktorina yuborishda xato (user %s)", u.get("id"))
     return sent
+
+
+def ranking(by_user: list[dict]) -> list[dict]:
+    """Reyting: ko'p to'g'ri javob, keyin foiz bo'yicha. Javob bermaganlar kirmaydi."""
+    rows = []
+    for u in by_user:
+        if u.get("answers"):
+            rows.append({**u, "pct": u["correct"] * 100 // u["answers"]})
+    rows.sort(key=lambda r: (-r["correct"], -r["pct"], r["answers"]))
+    for i, r in enumerate(rows, 1):
+        r["rank"] = i
+    return rows
+
+
+def reset_state() -> None:
+    """Reset'dan keyin xotiradagi vaqtinchalik holatni tozalaydi."""
+    for name in ("_failed",):
+        obj = globals().get(name)
+        if hasattr(obj, "clear"):
+            obj.clear()

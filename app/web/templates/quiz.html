@@ -36,6 +36,16 @@
   </section>
 </div>
 
+<section class="card">
+  <div class="row" style="justify-content:space-between"><h2 style="margin:0">{{ icon('trophy', 18) }} Reyting (eng yaxshi 10 xodim)</h2>
+    {% if ranking %}<button class="sm ghost" hx-post="/quiz/announce-ranking" hx-vals='{"days": {{ days }}}' hx-confirm="Top-5 bilan e'lon qoralamasi yaratilsinmi? Yuborishdan oldin ko'rib chiqasiz.">{{ icon('megaphone', 15) }} Reytingni e'lon qilish</button>{% endif %}</div>
+  {% for r in ranking %}
+  <div class="rank-row"><span class="rank-no">{{ ['🥇','🥈','🥉'][r.rank - 1] if r.rank <= 3 else r.rank }}</span>
+    <div style="flex:1"><a href="/chats/{{ r.id }}"><b>{{ r.full_name }}</b></a><div class="muted small">{{ r.role }} · {{ r.tech_name }}</div></div>
+    <div class="num"><b>{{ r.correct }}</b> / {{ r.answers }} <span class="tag ok">{{ r.pct }}%</span></div></div>
+  {% else %}<p class="muted">Hali javob berilmagan</p>{% endfor %}
+</section>
+
 <section class="card table-wrap">
   <h2 style="padding:20px 20px 0">{{ icon('users', 18) }} Xodimlar</h2>
   <table>

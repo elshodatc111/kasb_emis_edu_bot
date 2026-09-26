@@ -1,10 +1,12 @@
-<nav id="nav" hx-get="/counts?page={{ page or '' }}" hx-trigger="counts-refresh from:body, every 30s" hx-swap="outerHTML">
+<nav id="nav" data-attention="{{ counts.attention if counts else 0 }}" hx-get="/counts?page={{ page or '' }}" hx-trigger="counts-refresh from:body, every 30s" hx-swap="outerHTML">
   <a href="/" class="{{ 'on' if page == 'dashboard' }}">{{ icon('home') }}<span class="grow">Bosh sahifa</span></a>
   <a href="/users?status=pending" class="{{ 'on' if page == 'requests' }}">{{ icon('user-plus') }}<span class="grow">So'rovlar</span>
     {% if counts and counts.pending %}<b class="badge">{{ counts.pending }}</b>{% endif %}</a>
   <a href="/users" class="{{ 'on' if page == 'users' }}">{{ icon('users') }}<span class="grow">Foydalanuvchilar</span></a>
+  <a href="/inactive" class="{{ 'on' if page == 'inactive' }}">{{ icon('user-x') }}<span class="grow">Faol bo'lmaganlar</span></a>
   <a href="/chats" class="{{ 'on' if page == 'chats' }}">{{ icon('message') }}<span class="grow">Suhbatlar</span>
     {% if counts and counts.attention %}<b class="badge warn">{{ counts.attention }}</b>{% elif counts and counts.unread %}<b class="badge">{{ counts.unread }}</b>{% endif %}</a>
+  <a href="/search" class="{{ 'on' if page == 'search' }}">{{ icon('search') }}<span class="grow">Qidiruv</span></a>
   <a href="/announcements" class="{{ 'on' if page == 'announce' }}">{{ icon('megaphone') }}<span class="grow">E'lonlar</span></a>
   <div class="nav-sep">Bilim va o'qitish</div>
   <a href="/kb" class="{{ 'on' if page == 'kb' }}">{{ icon('book-open') }}<span class="grow">Bilimlar bazasi</span></a>
@@ -16,4 +18,9 @@
   <div class="nav-sep">Tahlil</div>
   <a href="/reports" class="{{ 'on' if page == 'reports' }}">{{ icon('chart') }}<span class="grow">Hisobotlar</span></a>
   <a href="/videos" class="{{ 'on' if page == 'videos' }}">{{ icon('film') }}<span class="grow">Video rejalar</span></a>
+  <a href="/usage" class="{{ 'on' if page == 'usage' }}">{{ icon('wallet') }}<span class="grow">AI xarajatlari</span></a>
+  <div class="nav-sep">Tizim</div>
+  <a href="/schedule" class="{{ 'on' if page == 'schedule' }}">{{ icon('calendar') }}<span class="grow">Ish vaqti va bayramlar</span></a>
+  <a href="/system" class="{{ 'on' if page == 'system' }}">{{ icon('activity') }}<span class="grow">Tizim holati</span>
+    {% if counts and counts.errors_today %}<b class="badge warn">{{ counts.errors_today }}</b>{% endif %}</a>
 </nav>

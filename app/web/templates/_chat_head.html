@@ -5,6 +5,7 @@
       <b>{{ user.full_name }}</b>
       <span class="pill {{ user.status }}">{{ user.status|status_uz }}</span>
       <span class="pill {{ 'admin' if user.mode == 'admin' else 'bot' }}">{{ "Admin suhbatda" if user.mode == 'admin' else "Bot javob beradi" }}</span>
+      {% if user.assigned_to %}<span class="tag mine">{{ icon('pin', 12) }} {{ user.assigned_to|admin_nm }}{{ ' (siz)' if user.assigned_to == admin_id }}</span>{% endif %}
       <div class="muted small">{{ user.role }} · {{ user.tech_name }} · {{ user.phone }}
         {% if user.tg_username %}· @{{ user.tg_username }}{% endif %}</div>
     </div>
@@ -14,6 +15,11 @@
       <button class="sm" hx-post="/chats/{{ user.id }}/mode" hx-vals='{"mode":"bot"}'>{{ icon('sparkles', 15) }} Botga qaytarish</button>
     {% else %}
       <button class="sm ghost" hx-post="/chats/{{ user.id }}/mode" hx-vals='{"mode":"admin"}'>{{ icon('headset', 15) }} Suhbatni o'zimga olish</button>
+    {% endif %}
+    {% if user.assigned_to == admin_id %}
+      <button class="sm ghost" hx-post="/chats/{{ user.id }}/assign" hx-vals='{"action":"release"}'>{{ icon('x', 15) }} Bo'shatish</button>
+    {% else %}
+      <button class="sm ghost" hx-post="/chats/{{ user.id }}/assign" hx-vals='{"action":"me"}'{% if user.assigned_to %} hx-confirm="Bu suhbat {{ user.assigned_to|admin_nm }} ga biriktirilgan. O'zingizga olasizmi?"{% endif %}>{{ icon('pin', 15) }} Menda</button>
     {% endif %}
     {% if user.needs_attention %}
       <button class="sm ghost" hx-post="/chats/{{ user.id }}/attention">{{ icon('check', 15) }} Ko'rib chiqildi</button>

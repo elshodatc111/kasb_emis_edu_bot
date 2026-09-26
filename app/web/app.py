@@ -13,6 +13,7 @@ from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
 import markdown as md_lib
+from markupsafe import Markup
 from aiogram.exceptions import TelegramAPIError
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse, Response
@@ -21,6 +22,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from .. import announce as announce_mod
+from .. import ops, spam
 from .. import faq as faq_mod
 from .. import kb as kb_mod
 from .. import quiz as quiz_mod
@@ -71,6 +73,25 @@ def _aud_label(aud: dict) -> str:
     return "Barcha tasdiqlangan xodimlar"
 
 
+def _snippet(text: str | None, q: str) -> Markup:
+    """Topilgan so'z atrofidagi qism, so'z belgilangan holda."""
+    text = " ".join((text or "").split())
+    i = text.lower().find(q.lower()) if q else -1
+    if i > 90:
+        text = "…" + text[i - 70:]
+    text = text[:260]
+    esc = html.escape(text, quote=False)
+    if q:
+        esc = re.sub(re.escape(html.escape(q, quote=False)), lambda m: f"<mark>{m.group(0)}</mark>", esc, flags=re.I)
+    return Markup(esc)
+
+
+def _admin_nm(admin_id) -> str:
+    return get_ctx().settings.admin_name(admin_id) if admin_id else ""
+
+
+templates.env.filters["snippet"] = _snippet
+templates.env.filters["admin_nm"] = _admin_nm
 templates.env.filters["aud_label"] = _aud_label
 templates.env.filters["local"] = _local
 templates.env.filters["md"] = _md
@@ -250,29 +271,30 @@ def create_app() -> FastAPI:
 
     # ---------------- suhbatlar ----------------
     @app.get("/chats", response_class=HTMLResponse)
-    async def chats_page(request: Request, filter: str = "all", q: str = "", _: int = Depends(admin_required)):
-        convs = await get_ctx().db.conversations(filter, q or None)
+    async def chats_page(request: Request, filter: str = "all", q: str = "", admin_id: int = Depends(admin_required)):
+        convs = await get_ctx().db.conversations(filter, q or None, admin_id=admin_id)
         return await render(request, "chats.html", convs=convs, filter=filter, q=q, active=None, user=None,
                             messages=[], page="chats")
 
     @app.get("/chats/list", response_class=HTMLResponse)
     async def chats_list(request: Request, filter: str = "all", q: str = "", active: int = 0,
-                         _: int = Depends(admin_required)):
-        convs = await get_ctx().db.conversations(filter, q or None)
+                         admin_id: int = Depends(admin_required)):
+        convs = await get_ctx().db.conversations(filter, q or None, admin_id=admin_id)
         return await render(request, "_conv_list.html", convs=convs, filter=filter, q=q, active=active)
 
     @app.get("/chats/{user_id}", response_class=HTMLResponse)
     async def chat_page(request: Request, user_id: int, filter: str = "all", q: str = "",
-                        _: int = Depends(admin_required)):
+                        admin_id: int = Depends(admin_required)):
         ctx = get_ctx()
         user = await ctx.db.get_user(user_id)
         if not user:
             raise HTTPException(404, "Foydalanuvchi topilmadi")
         await ctx.db.mark_read(user_id)
-        convs = await ctx.db.conversations(filter, q or None)
+        convs = await ctx.db.conversations(filter, q or None, admin_id=admin_id)
         messages = await ctx.db.list_messages(user_id)
         return await render(request, "chats.html", convs=convs, filter=filter, q=q, active=user_id, user=user,
-                            messages=messages, tpls=await ctx.db.list_templates(), page="chats")
+                            messages=messages, tpls=await ctx.db.list_templates(), page="chats",
+                            notes=await ctx.db.list_notes(user_id))
 
     @app.get("/chats/{user_id}/messages", response_class=HTMLResponse)
     async def chat_messages(request: Request, user_id: int, after: int = 0, _: int = Depends(admin_required)):
@@ -425,7 +447,8 @@ def create_app() -> FastAPI:
         roles = list(ROLES) + (["Administrator"] if user.get("role") == "Administrator" else [])
         if user.get("role") and user["role"] not in roles:
             roles.append(user["role"])
-        return await render(request, "user_edit.html", u=user, roles=roles, page="users")
+        return await render(request, "user_edit.html", u=user, roles=roles, page="users",
+                            notes=await get_ctx().db.list_notes(user_id))
 
     @app.post("/users/{user_id}/edit", response_class=HTMLResponse)
     async def user_edit_save(user_id: int, full_name: str = Form(""), phone: str = Form(""), tech_name: str = Form(""),
@@ -651,6 +674,7 @@ def create_app() -> FastAPI:
         since = (datetime.now(tz) - timedelta(days=days - 1)).strftime("%Y-%m-%d")
         ov = await ctx.db.quiz_overview(since)
         return await render(request, "quiz.html", o=ov, days=days, s=ctx.settings, page="quiz",
+                            ranking=quiz_mod.ranking(ov["by_user"])[:10],
                             notice=request.query_params.get("notice"))
 
     @app.post("/quiz/send-now", response_class=HTMLResponse)
@@ -785,6 +809,218 @@ def create_app() -> FastAPI:
             return _hx(f"/announcements/{ann_id}?notice=" + quote("Yuborilayotgan e'lonni o'chirib bo'lmaydi."))
         await get_ctx().db.delete_announcement(ann_id)
         return _hx("/announcements?notice=" + quote("O'chirildi."))
+
+    # ---------------- qidiruv (barcha yozishmalar bo'yicha) ----------------
+    @app.get("/search", response_class=HTMLResponse)
+    async def search_page(request: Request, q: str = "", sender: str = "", _: int = Depends(admin_required)):
+        q = q.strip()
+        results = await get_ctx().db.search_messages(q, sender) if len(q) >= 2 else []
+        return await render(request, "search.html", q=q, sender=sender, results=results, page="search")
+
+    # ---------------- ichki izohlar (xodimga ko'rinmaydi) ----------------
+    async def _notes_view(request: Request, user_id: int) -> HTMLResponse:
+        return await render(request, "_notes.html", notes=await get_ctx().db.list_notes(user_id), uid=user_id)
+
+    @app.post("/users/{user_id}/notes", response_class=HTMLResponse)
+    async def note_add(request: Request, user_id: int, text: str = Form(""), admin_id: int = Depends(csrf_required)):
+        ctx = get_ctx()
+        if not await ctx.db.get_user(user_id):
+            raise HTTPException(404, "Foydalanuvchi topilmadi")
+        text = text.strip()
+        if text:
+            await ctx.db.add_note(user_id, ctx.settings.admin_name(admin_id), text[:1000])
+        return await _notes_view(request, user_id)
+
+    @app.post("/users/{user_id}/notes/{note_id}/delete", response_class=HTMLResponse)
+    async def note_delete(request: Request, user_id: int, note_id: int, _: int = Depends(csrf_required)):
+        ctx = get_ctx()
+        notes = await ctx.db.list_notes(user_id)
+        if any(n["id"] == note_id for n in notes):
+            await ctx.db.delete_note(note_id)
+        return await _notes_view(request, user_id)
+
+    # ---------------- suhbatni adminga biriktirish ----------------
+    @app.post("/chats/{user_id}/assign", response_class=HTMLResponse)
+    async def chat_assign(request: Request, user_id: int, action: str = Form("me"), admin_id: int = Depends(csrf_required)):
+        ctx = get_ctx()
+        if not await ctx.db.get_user(user_id):
+            raise HTTPException(404, "Foydalanuvchi topilmadi")
+        await ctx.db.assign_chat(user_id, admin_id if action == "me" else None)
+        resp = await render(request, "_chat_head.html", user=await ctx.db.get_user(user_id))
+        resp.headers["HX-Trigger"] = "list-refresh"
+        return resp
+
+    # ---------------- faol bo'lmagan xodimlar ----------------
+    DEFAULT_REMIND = ("Assalomu alaykum! Yaqinda botdan foydalanmaganingizni ko'rdik. Prof ta'lim tizimi bo'yicha savolingiz "
+                      "bo'lsa, botga yozing va har kungi testda qatnashib bilimingizni sinang.")
+
+    @app.get("/inactive", response_class=HTMLResponse)
+    async def inactive_page(request: Request, days: int = 30, _: int = Depends(admin_required)):
+        days = days if days in (7, 14, 30, 60, 90) else 30
+        return await render(request, "inactive.html", days=days, users=await get_ctx().db.inactive_users(days),
+                            default_text=DEFAULT_REMIND, page="inactive")
+
+    @app.post("/inactive/remind", response_class=HTMLResponse)
+    async def inactive_remind(request: Request, admin_id: int = Depends(csrf_required)):
+        form = await request.form()
+        ids = [int(x) for x in form.getlist("users") if str(x).isdigit()]
+        text = str(form.get("text", "")).strip() or DEFAULT_REMIND
+        if not ids:
+            return HTMLResponse('<span class="err">Kamida bitta xodimni belgilang.</span>')
+        try:
+            ann_id = await announce_mod.make_draft("reminder", "Eslatma", text, None, "",
+                                                   {"mode": "users", "users": ids}, False, admin_id)
+        except ValueError as exc:
+            return HTMLResponse(f'<span class="err">{html.escape(str(exc))}</span>')
+        await announce_mod.start(ann_id)
+        return _hx(f"/announcements/{ann_id}?notice=" + quote("Eslatma yuborilmoqda."))
+
+    # ---------------- AI xarajatlari ----------------
+    PURPOSES = {"answer": "Xodimlarga javob", "suggest": "Admin uchun AI taklif", "report": "Hisobotlar",
+                "video_plan": "Video rejalar", "quiz": "Viktorina savollari", "faq": "FAQ tahlili", "other": "Boshqa"}
+
+    @app.get("/usage", response_class=HTMLResponse)
+    async def usage_page(request: Request, _: int = Depends(admin_required)):
+        ctx = get_ctx()
+        prices = await ops.get_prices()
+        month_since = ops.month_start_utc()
+        periods = []
+        for label, since in (("Bugun", ops.day_start_utc(0)), ("Oxirgi 7 kun", ops.day_start_utc(6)), ("Shu oy", month_since)):
+            u = await ctx.db.usage_sum(since)
+            periods.append({"label": label, **u, "cost": ops.cost(u["tin"], u["tout"], prices)})
+        by_purpose = []
+        for r in await ctx.db.usage_by_purpose(month_since):
+            by_purpose.append({**r, "label": PURPOSES.get(r["purpose"], r["purpose"]), "cost": ops.cost(r["tin"], r["tout"], prices)})
+        days = await ctx.db.usage_by_day(ops.day_start_utc(13), ops.tz_offset_min())
+        peak = max([d["tin"] + d["tout"] for d in days] or [1]) or 1
+        month = periods[2]
+        pct = int(month["cost"] / prices["budget_month"] * 100) if prices["budget_month"] > 0 else 0
+        return await render(request, "usage.html", periods=periods, by_purpose=by_purpose, days=days, peak=peak,
+                            prices=prices, pct=pct, priced=(prices["price_in"] > 0 or prices["price_out"] > 0),
+                            page="usage", notice=request.query_params.get("notice"))
+
+    @app.post("/usage/settings", response_class=HTMLResponse)
+    async def usage_settings(price_in: str = Form("0"), price_out: str = Form("0"), budget: str = Form("0"),
+                             _: int = Depends(csrf_required)):
+        db = get_ctx().db
+        try:
+            vals = [max(0.0, float(x.replace(",", ".") or 0)) for x in (price_in, price_out, budget)]
+        except ValueError:
+            return HTMLResponse('<span class="err">Raqam kiriting (masalan: 2.50).</span>')
+        for key, v in zip(("price_in", "price_out", "budget_month"), vals):
+            await db.set_kv(key, str(v))
+        await db.set_kv("budget_alert80", "")
+        await db.set_kv("budget_alert100", "")
+        return _hx("/usage?notice=" + quote("Saqlandi."))
+
+    # ---------------- tizim holati, xatolar jurnali, reset ----------------
+    @app.get("/system", response_class=HTMLResponse)
+    async def system_page(request: Request, _: int = Depends(admin_required)):
+        ctx = get_ctx()
+        muted = []
+        for uid, left in spam.muted_users():
+            u = await ctx.db.get_user(uid)
+            muted.append({"id": uid, "name": (u or {}).get("full_name") or str(uid), "left": left // 60 + 1})
+        return await render(request, "system.html", errors=await ctx.db.list_errors(50), jobs=ops.scheduler_jobs(),
+                            uptime=ops.uptime_text(), muted=muted, spam=await ctx.db.list_spam(20),
+                            last_ok=await ctx.db.last_usage(True), last_bad=await ctx.db.last_usage(False),
+                            fails=ops._consec_fail, preview=await ctx.db.reset_preview(),
+                            errors_24h=await ctx.db.count_errors(ops.day_start_utc(0)), page="system",
+                            notice=request.query_params.get("notice"))
+
+    @app.post("/system/check", response_class=HTMLResponse)
+    async def system_check(request: Request, _: int = Depends(csrf_required)):
+        return await render(request, "_health_checks.html", checks=await ops.run_checks())
+
+    @app.post("/system/errors/clear", response_class=HTMLResponse)
+    async def system_errors_clear(_: int = Depends(csrf_required)):
+        await get_ctx().db.clear_errors()
+        return _hx("/system?notice=" + quote("Xatolar jurnali tozalandi."))
+
+    @app.post("/system/unmute/{user_id}", response_class=HTMLResponse)
+    async def system_unmute(user_id: int, _: int = Depends(csrf_required)):
+        spam.unmute(user_id)
+        return _hx("/system?notice=" + quote("To'xtatish bekor qilindi."))
+
+    @app.post("/system/reset", response_class=HTMLResponse)
+    async def system_reset(confirm: str = Form(""), _: int = Depends(csrf_required)):
+        if confirm.strip().upper() != "TOZALASH":
+            return HTMLResponse('<span class="err">Tasdiqlash uchun TOZALASH so\'zini yozing.</span>')
+        ctx = get_ctx()
+        n = await ctx.db.reset_data()
+        from ..bot import handlers as bot_handlers
+
+        spam.clear()
+        bot_handlers._rate.clear()
+        quiz_mod.reset_state()
+        await ctx.hub.broadcast({"type": "reset"})
+        return _hx("/system?notice=" + quote(f"Tozalandi: {n} ta yozuv o'chirildi. Foydalanuvchilar, bilimlar bazasi, "
+                                             "tasdiqlangan FAQ, video kutubxona va shablonlar saqlandi."))
+
+    # ---------------- ish vaqti va bayramlar ----------------
+    @app.get("/schedule", response_class=HTMLResponse)
+    async def schedule_page(request: Request, _: int = Depends(admin_required)):
+        ctx = get_ctx()
+        now = services.local_now()
+        return await render(request, "schedule.html", s=ctx.settings, holidays=await ctx.db.list_holidays(),
+                            today_holiday=services.holiday_name(now), today_work=services.is_workday(now),
+                            in_hours=services.in_work_hours(now), page="schedule", notice=request.query_params.get("notice"))
+
+    @app.post("/schedule/save", response_class=HTMLResponse)
+    async def schedule_save(request: Request, _: int = Depends(csrf_required)):
+        form = await request.form()
+        start, end = str(form.get("start", "")), str(form.get("end", ""))
+        days = sorted({int(x) for x in form.getlist("days") if str(x).isdigit() and 1 <= int(x) <= 7})
+        try:
+            (sh, sm), (eh, em) = [tuple(int(p) for p in v.split(":")) for v in (start, end)]
+            assert 0 <= sh < 24 and 0 <= eh < 24 and 0 <= sm < 60 and 0 <= em < 60
+        except Exception:  # noqa: BLE001
+            return HTMLResponse('<span class="err">Vaqtni SS:DD ko\'rinishida kiriting.</span>')
+        if (sh, sm) >= (eh, em):
+            return HTMLResponse('<span class="err">Tugash vaqti boshlanishidan keyin bo\'lishi kerak.</span>')
+        if not days:
+            return HTMLResponse('<span class="err">Kamida bitta ish kunini tanlang.</span>')
+        db = get_ctx().db
+        await db.set_kv("work_start", f"{sh:02d}:{sm:02d}")
+        await db.set_kv("work_end", f"{eh:02d}:{em:02d}")
+        await db.set_kv("work_days", ",".join(map(str, days)))
+        await services.load_worktime()
+        return _hx("/schedule?notice=" + quote("Ish vaqti saqlandi."))
+
+    @app.post("/schedule/holidays", response_class=HTMLResponse)
+    async def holiday_add(day: str = Form(""), name: str = Form(""), recurring: str = Form(""),
+                          _: int = Depends(csrf_required)):
+        name = " ".join(name.split())
+        try:
+            d = datetime.strptime(day, "%Y-%m-%d")
+        except ValueError:
+            return HTMLResponse('<span class="err">Sanani tanlang.</span>')
+        if len(name) < 2:
+            return HTMLResponse('<span class="err">Bayram nomini kiriting.</span>')
+        await get_ctx().db.add_holiday(d.strftime("%m-%d") if recurring else day, name, bool(recurring))
+        await services.load_worktime()
+        return _hx("/schedule?notice=" + quote("Qo'shildi."))
+
+    @app.post("/schedule/holidays/{hid}/delete", response_class=HTMLResponse)
+    async def holiday_delete(hid: int, _: int = Depends(csrf_required)):
+        await get_ctx().db.delete_holiday(hid)
+        await services.load_worktime()
+        return _hx("/schedule?notice=" + quote("O'chirildi."))
+
+    @app.post("/quiz/announce-ranking", response_class=HTMLResponse)
+    async def quiz_announce_ranking(days: int = Form(7), admin_id: int = Depends(csrf_required)):
+        ctx = get_ctx()
+        days = days if days in (1, 7, 30, 90) else 7
+        since = (datetime.now(ZoneInfo(ctx.settings.timezone)) - timedelta(days=days - 1)).strftime("%Y-%m-%d")
+        ranking = quiz_mod.ranking((await ctx.db.quiz_overview(since))["by_user"])[:5]
+        if not ranking:
+            return _hx("/quiz?notice=" + quote("Hali reyting uchun ma'lumot yo'q."))
+        medals = ["🥇", "🥈", "🥉", "4.", "5."]
+        lines = [f"{medals[i]} {r['full_name']} — {r['correct']}/{r['answers']} ({r['pct']}%)" for i, r in enumerate(ranking)]
+        label = "bugungi" if days == 1 else f"oxirgi {days} kunlik"
+        text = f"Kunlik test bo'yicha {label} eng faol xodimlar:\n\n" + "\n".join(lines) + "\n\nHammaga rahmat, davom eting!"
+        ann_id = await announce_mod.make_draft("info", "Test reytingi", text, None, "", {"mode": "all"}, False, admin_id)
+        return _hx(f"/announcements/{ann_id}?notice=" + quote("Reyting e'loni tayyor. Ko'rib chiqing va yuboring."))
 
     # ---------------- jonli hodisalar ----------------
     @app.websocket("/ws")

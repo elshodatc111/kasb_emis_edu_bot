@@ -167,9 +167,13 @@ async def test_availability_messages(ctx, tg, monkeypatch):
     monkeypatch.setattr(services, "local_now", lambda: dt(2026, 9, 26, 15, 0))  # shanba
     await tg.text(EMP, "Yana noma'lum savol")
     t = last_to(ctx, EMP).text
-    assert "ish vaqtidan tashqari" in t and "09:00–19:00" in t
+    assert "dam olish kuni" in t and "dushanba" in t
+    monkeypatch.setattr(services, "local_now", lambda: dt(2026, 9, 29, 21, 0))  # seshanba 21:00
+    await tg.text(EMP, "Uchinchi noma'lum savol")
+    t = last_to(ctx, EMP).text
+    assert "ish vaqtidan tashqari" in t and "09:00–19:00" in t and "ertaga" in t
     # adminga har doim darhol xabar boradi
-    assert sum("Javobsiz savol" in x for x in ctx.session.texts_to(ADMIN)) == 2
+    assert sum("Javobsiz savol" in x for x in ctx.session.texts_to(ADMIN)) == 3
 
 
 async def test_reminders(ctx, tg):

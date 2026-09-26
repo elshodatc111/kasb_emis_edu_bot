@@ -257,3 +257,28 @@ input[type=radio] { width: 18px; height: 18px; accent-color: var(--blue); paddin
 .kind-pill.reminder { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
 .progress { height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }
 .progress i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--blue-600)); transition: width .4s; }
+
+/* ============ Tizim, izohlar, bildirishnoma ============ */
+mark { background: color-mix(in srgb, var(--red) 22%, transparent); color: inherit; border-radius: 4px; padding: 0 2px; }
+.notes textarea { min-height: 0; }
+.note-item { margin-top: 10px; padding: 10px 12px; border-radius: var(--radius-sm); background: color-mix(in srgb, #f5b301 14%, var(--surface)); border: 1px solid color-mix(in srgb, #f5b301 35%, transparent); font-size: 14px; }
+.danger-link { color: var(--red); margin-left: 8px; text-decoration: none; font-weight: 600; }
+details.notes-box { border-bottom: 1px solid var(--line); background: var(--surface-2); }
+details.notes-box > summary { cursor: pointer; padding: 9px 16px; font-weight: 600; font-size: 13.5px; color: var(--muted); list-style: none; display: flex; align-items: center; gap: 8px; }
+details.notes-box[open] > summary { color: var(--text); }
+details.notes-box .notes { padding: 0 16px 14px; max-height: 260px; overflow: auto; }
+.checks { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.check-row { display: flex; gap: 12px; align-items: center; padding: 14px 16px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+.check-row.ok .ic { color: var(--ok); } .check-row.bad { border-color: var(--red); background: var(--red-soft); } .check-row.bad .ic { color: var(--red); }
+.err-item { border-top: 1px solid var(--line); padding: 8px 0; } .err-item summary { cursor: pointer; font-size: 14px; }
+.err-item pre { white-space: pre-wrap; word-break: break-word; font-size: 12px; background: var(--surface-2); padding: 10px; border-radius: 8px; max-height: 260px; overflow: auto; }
+.danger-zone { border-color: color-mix(in srgb, var(--red) 40%, var(--line)); }
+.notif-btn { display: flex; align-items: center; gap: 8px; width: 100%; margin-bottom: 8px; justify-content: flex-start; font-size: 13.5px; }
+.notif-btn.on { background: var(--blue-soft); color: var(--blue); border-color: var(--blue); }
+.rank-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.rank-row:last-child { border-bottom: 0; } .rank-no { width: 30px; font-size: 20px; text-align: center; font-weight: 700; }
+.tag.mine { background: var(--blue-soft); color: var(--blue); }
+
+/* Menyu uzun bo'lganda o'zi aylanadi, pastki qism (mavzu, profil) doim ko'rinib turadi */
+.side nav { flex: 1; min-height: 0; overflow-y: auto; margin-right: -6px; padding-right: 6px; scrollbar-width: thin; }
+.side nav a { padding: 8px 12px; }

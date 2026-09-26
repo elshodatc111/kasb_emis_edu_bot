@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Tizim holati{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Tizim holati</h1><p>Bot, OpenAI va baza ishlayaptimi, oxirgi xatolar va spam himoyasi.</p></div>
+  <button class="ghost" hx-post="/system/check" hx-target="#checks" hx-swap="innerHTML" hx-disabled-elt="this">{{ icon('refresh', 16) }} Qayta tekshirish</button></div>
+{% include "_notice.html" %}
+<div id="checks" hx-post="/system/check" hx-trigger="load" hx-swap="innerHTML"><p class="muted">Tekshirilmoqda...</p></div>
+<div class="cards" style="margin-top:18px">
+  <div class="stat"><span>Ishlagan vaqti</span><b style="font-size:22px">{{ uptime }}</b><i class="ic">{{ icon('clock', 20) }}</i></div>
+  <div class="stat {{ 'warn' if errors_24h }}"><span>Bugungi xatolar</span><b>{{ errors_24h }}</b><i class="ic">{{ icon('alert', 20) }}</i></div>
+  <div class="stat ok"><span>Oxirgi muvaffaqiyatli AI so'rovi</span><b style="font-size:18px">{{ last_ok.created_at|local if last_ok else '—' }}</b><i class="ic">{{ icon('sparkles', 20) }}</i></div>
+  <div class="stat {{ 'warn' if fails }}"><span>Ketma-ket AI xatolari</span><b>{{ fails }}</b><small>{% if last_bad %}oxirgisi: {{ last_bad.created_at|local }}{% endif %}</small><i class="ic">{{ icon('ban', 20) }}</i></div>
+</div>
+<div class="grid2">
+  <section class="card"><h2>{{ icon('clock', 18) }} Rejalashtirilgan vazifalar</h2>
+    <table>{% for j in jobs %}<tr><td>{{ {'daily': 'Kunlik hisobot', 'weekly': 'Haftalik hisobot', 'monthly': 'Oylik hisobot', 'remind': 'Javobsiz suhbatlar eslatmasi', 'quiz_tick': 'Viktorina yuborish', 'quiz_prepare': 'Viktorina savollari', 'faq': 'FAQ tahlili', 'kb_sync': 'Bilimlar bazasi sinxroni', 'announce': "Rejalashtirilgan e'lonlar"}.get(j.id, j.id) }}</td><td class="num">{{ j.next }}</td></tr>
+      {% else %}<tr><td class="muted">Ma'lumot yo'q</td></tr>{% endfor %}</table></section>
+  <section class="card"><h2>{{ icon('shield', 18) }} Spam himoyasi</h2>
+    {% for m in muted %}<div class="row" style="justify-content:space-between;margin-bottom:8px"><span><b>{{ m.name }}</b> <span class="muted small">{{ m.left }} daq. to'xtatilgan</span></span>
+      <button class="sm ghost" hx-post="/system/unmute/{{ m.id }}">Bekor qilish</button></div>{% endfor %}
+    <table>{% for e in spam %}<tr><td><a href="/chats/{{ e.user_id }}">{{ e.full_name or e.user_id }}</a></td><td><span class="tag {{ 'warn' if e.kind == 'muted' else '' }}">{{ 'to\'xtatildi' if e.kind == 'muted' else 'takror savol' }}</span></td><td class="small muted">{{ e.text[:40] }}</td><td class="small muted">{{ e.created_at|local }}</td></tr>
+      {% else %}<tr><td class="muted">Spam holatlari yo'q</td></tr>{% endfor %}</table>
+    <p class="muted small" style="margin-top:8px">Bir xil savol 10 daqiqa ichida takrorlansa, AI chaqirilmaydi. 4-marta yuborilsa, xodim 15 daqiqaga to'xtatiladi.</p></section>
+</div>
+<section class="card">
+  <div class="row" style="justify-content:space-between"><h2 style="margin:0">{{ icon('alert', 18) }} Oxirgi xatolar</h2>
+    {% if errors %}<button class="sm ghost" hx-post="/system/errors/clear" hx-confirm="Jurnalni tozalaysizmi?">{{ icon('trash', 15) }} Tozalash</button>{% endif %}</div>
+  {% for e in errors %}
+  <details class="err-item"><summary><span class="muted small">{{ e.created_at|local }}</span> · <span class="tag">{{ e.source }}</span> {{ e.message[:140] }}</summary>
+    <pre>{{ e.detail or e.message }}</pre></details>
+  {% else %}<p class="muted">Xato yo'q. Hammasi joyida.</p>{% endfor %}
+</section>
+<section class="card danger-zone">
+  <h2>{{ icon('alert', 18) }} Ma'lumotlarni tozalash (Reset)</h2>
+  <p class="small">Sinov vaqtida yozilgan chatlar va boshqa yozuvlarni o'chiradi. <b>Qo'llanmalar va vector store o'chmaydi.</b>
+    Foydalanuvchilar (ro'yxatdan o'tganlar), bilimlar bazasi, tasdiqlangan FAQ, video kutubxona, shablonlar va sozlamalar saqlanadi.</p>
+  <table>{% for label, n in preview %}<tr><td>{{ label }}</td><td class="num"><b>{{ n }}</b></td></tr>{% endfor %}</table>
+  <form hx-post="/system/reset" hx-target="#rst" hx-swap="innerHTML" hx-confirm="Bu amalni ortga qaytarib bo'lmaydi. Davom etasizmi?">
+    <label>Tasdiqlash uchun <b>TOZALASH</b> so'zini yozing</label>
+    <div class="row"><input name="confirm" autocomplete="off" placeholder="TOZALASH" style="max-width:240px"><button class="danger" type="submit">{{ icon('trash', 16) }} Hammasini tozalash</button><span id="rst"></span></div>
+  </form>
+</section>
+{% endblock %}

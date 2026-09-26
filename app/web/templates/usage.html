@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}AI xarajatlari{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>AI xarajatlari</h1>
+  <p>OpenAI'ga yuborilgan so'rovlar, sarflangan tokenlar va taxminiy narx. Narxni quyida o'zingiz kiritasiz.</p></div></div>
+{% include "_notice.html" %}
+<div class="cards">
+  {% for p in periods %}
+  <div class="stat"><span>{{ p.label }}</span><b>{% if priced %}${{ '%.2f' % p.cost }}{% else %}{{ '{:,}'.format(p.tin + p.tout).replace(',', ' ') }}{% endif %}</b>
+    <small>{{ p.requests }} so'rov · {{ '{:,}'.format(p.tin + p.tout).replace(',', ' ') }} token{% if p.errors %} · <span style="color:var(--red)">{{ p.errors }} xato</span>{% endif %}</small>
+    <i class="ic">{{ icon('wallet', 20) }}</i></div>
+  {% endfor %}
+</div>
+{% if prices.budget_month > 0 and priced %}
+<section class="card"><h2>{{ icon('target', 18) }} Oylik limit</h2>
+  <div class="progress" style="margin:10px 0"><i style="width:{{ [pct, 100]|min }}%;{% if pct >= 80 %}background:var(--red){% endif %}"></i></div>
+  <p class="small">{{ pct }}% ishlatildi (${{ '%.2f' % periods[2].cost }} / ${{ '%.2f' % prices.budget_month }}). 80% va 100% ga yetganda adminlarga Telegramda xabar keladi.</p></section>
+{% endif %}
+<div class="grid2">
+  <section class="card">
+    <h2>{{ icon('chart', 18) }} Oxirgi 14 kun (tokenlar)</h2>
+    {% for d in days %}
+    <div class="bar"><span>{{ d.day[5:] }}</span><div class="track"><i style="width:{{ (d.tin + d.tout) * 100 // peak }}%"></i></div><span class="val">{{ '{:,}'.format(d.tin + d.tout).replace(',', ' ') }} ({{ d.requests }})</span></div>
+    {% else %}<p class="muted">Hali so'rov yo'q</p>{% endfor %}
+  </section>
+  <section class="card">
+    <h2>{{ icon('database', 18) }} Shu oy: nimaga ketdi</h2>
+    <table>
+      {% for r in by_purpose %}<tr><td>{{ r.label }}</td><td class="num">{{ r.requests }} so'rov</td><td class="num">{{ '{:,}'.format(r.tin + r.tout).replace(',', ' ') }}</td>{% if priced %}<td class="num">${{ '%.2f' % r.cost }}</td>{% endif %}</tr>
+      {% else %}<tr><td class="muted">Ma'lumot yo'q</td></tr>{% endfor %}
+    </table>
+  </section>
+</div>
+<section class="card form-card">
+  <h2>{{ icon('edit', 18) }} Narx va limit</h2>
+  <form hx-post="/usage/settings" hx-target="#st" hx-swap="innerHTML">
+    <div class="grid2" style="margin:0">
+      <div><label>Kirish tokeni: 1 mln token narxi ($)</label><input name="price_in" value="{{ prices.price_in }}" inputmode="decimal"></div>
+      <div><label>Chiqish tokeni: 1 mln token narxi ($)</label><input name="price_out" value="{{ prices.price_out }}" inputmode="decimal"></div>
+    </div>
+    <label>Oylik limit ($, 0 = cheklanmagan)</label><input name="budget" value="{{ prices.budget_month }}" inputmode="decimal" style="max-width:240px">
+    <div class="muted small" style="margin-top:8px">Narxni OpenAI narxlar sahifasidan o'zingiz kiriting. Panel taxminiy summani hisoblaydi, haqiqiy hisob-kitob OpenAI'da.</div>
+    <div class="row" style="margin-top:16px"><button type="submit">{{ icon('save', 17) }} Saqlash</button><span id="st"></span></div>
+  </form>
+</section>
+{% endblock %}

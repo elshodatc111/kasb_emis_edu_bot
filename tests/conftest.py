@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import pytest
 from aiogram import Bot
 from aiogram.client.session.base import BaseSession
-from aiogram.methods import GetFile, SendMessage, SendPhoto, SendVideo
+from aiogram.methods import GetFile, GetMe, SendMessage, SendPhoto, SendVideo
 from aiogram.types import Chat, File, Message, PhotoSize, Update, User, Video
 
 from app.agent import AgentAnswer, AgentError, TexnikumAgent
@@ -45,6 +45,8 @@ class FakeSession(BaseSession):
             return self._msg(method.chat_id, photo=[PhotoSize(file_id="PH_SENT", file_unique_id="u", width=1, height=1)])
         if isinstance(method, SendVideo):
             return self._msg(method.chat_id, video=Video(file_id="VID_SENT", file_unique_id="v", width=1, height=1, duration=1))
+        if isinstance(method, GetMe):
+            return User(id=123456, is_bot=True, first_name="Bot", username="texnikum_test_bot")
         if isinstance(method, GetFile):
             return File(file_id=method.file_id, file_unique_id="x", file_path=f"photos/{method.file_id}.jpg")
         return True
@@ -118,6 +120,9 @@ async def ctx(tmp_path):
     from app.bot import handlers
 
     handlers._rate.clear()
+    from app import spam
+
+    spam.clear()
     c.session = session  # type: ignore[attr-defined]
     yield c
     await db.close()

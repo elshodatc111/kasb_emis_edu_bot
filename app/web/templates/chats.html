@@ -9,6 +9,8 @@
         <option value="all" {{ 'selected' if filter == 'all' }}>Hammasi</option>
         <option value="attention" {{ 'selected' if filter == 'attention' }}>Diqqat talab</option>
         <option value="unread" {{ 'selected' if filter == 'unread' }}>O'qilmagan</option>
+        <option value="mine" {{ 'selected' if filter == 'mine' }}>Mening suhbatlarim</option>
+        <option value="unassigned" {{ 'selected' if filter == 'unassigned' }}>Biriktirilmagan</option>
       </select>
       <div class="search">{{ icon('search', 16) }}<input name="q" value="{{ q }}" placeholder="Qidirish..."></div>
     </form>
@@ -17,6 +19,8 @@
   <div class="chat-col" id="chat-pane">
     {% if user %}
       {% include "_chat_head.html" %}
+      <details class="notes-box"><summary>{{ icon('note', 15) }} Ichki izohlar ({{ notes|length }}) <span class="muted small">faqat adminlarga ko'rinadi</span></summary>
+        {% set uid = user.id %}{% include "_notes.html" %}</details>
       <div id="msgs" class="msgs" hx-get="/chats/{{ user.id }}/messages" hx-trigger="refresh-msgs from:body, every 20s"
            hx-vals='js:{after: window.lastMsgId()}' hx-swap="beforeend" hx-sync="this:replace">
         {% include "_messages.html" %}

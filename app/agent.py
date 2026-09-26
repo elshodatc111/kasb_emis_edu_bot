@@ -153,7 +153,7 @@ class TexnikumAgent:
 
     # ---------- past daraja ----------
     async def _call(self, *, instructions: str, messages: list[dict[str, str]], model: str, use_search: bool,
-                    max_output_tokens: int) -> tuple[str, list[str], int, int]:
+                    max_output_tokens: int, purpose: str = "other") -> tuple[str, list[str], int, int]:
         if not self.s.openai_api_key and not hasattr(self.client, "_is_fake"):
             raise AgentError("OPENAI_API_KEY sozlanmagan")
         kwargs: dict[str, Any] = dict(
@@ -170,6 +170,9 @@ class TexnikumAgent:
             resp = await self.client.responses.create(**kwargs)
         except Exception as exc:  # noqa: BLE001
             log.exception("OpenAI so'rovi xato berdi")
+            from . import ops
+
+            await ops.record_usage(purpose, model, 0, 0, ok=False, error=str(exc))
             raise AgentError(str(exc)) from exc
         text = clean_citations(getattr(resp, "output_text", None) or "")
         sources: list[str] = []
@@ -183,7 +186,20 @@ class TexnikumAgent:
                         if name and name not in sources:
                             sources.append(name)
         usage = getattr(resp, "usage", None)
-        return (text, sources, int(getattr(usage, "input_tokens", 0) or 0), int(getattr(usage, "output_tokens", 0) or 0))
+        tin, tout = int(getattr(usage, "input_tokens", 0) or 0), int(getattr(usage, "output_tokens", 0) or 0)
+        from . import ops
+
+        await ops.record_usage(purpose, model, tin, tout)
+        return (text, sources, tin, tout)
+
+    async def ping(self) -> str:
+        """Ulanishni tekshiradi (vector store'ni o'qiydi, token sarflamaydi)."""
+        if hasattr(self.client, "_is_fake"):
+            return "ok"
+        from .kb import _vs_api
+
+        await _vs_api(self.client).retrieve(self.s.vector_store_id)
+        return "ok"
 
     # ---------- bot uchun ----------
     async def answer(self, question: str, role: str | None, history: list[dict],
@@ -205,7 +221,7 @@ class TexnikumAgent:
         instructions = (ANSWER_INSTRUCTIONS.replace("{role}", role or "noma'lum")
                         .replace("{kb}", kb_block).replace("{videos}", video_block))
         text, sources, tin, tout = await self._call(
-            instructions=instructions, messages=msgs, model=self.s.model, use_search=True, max_output_tokens=3000)
+            instructions=instructions, messages=msgs, model=self.s.model, use_search=True, max_output_tokens=3000, purpose="answer")
         data = _extract_json(text)
         if data is None:
             clean = text.strip()
@@ -239,14 +255,14 @@ class TexnikumAgent:
                 lines.append(f"{who}: {m['text']}")
         text, _, _, _ = await self._call(
             instructions=SUGGEST_INSTRUCTIONS, messages=[{"role": "user", "content": "\n".join(lines)}],
-            model=self.s.model, use_search=True, max_output_tokens=2000)
+            model=self.s.model, use_search=True, max_output_tokens=2000, purpose="suggest")
         return text.strip()
 
     async def report_summary(self, label: str, stats: dict, samples: dict) -> str:
         payload = json.dumps({"davr": label, "statistika": stats, "namuna_savollar": samples}, ensure_ascii=False)
         text, _, _, _ = await self._call(
             instructions=REPORT_INSTRUCTIONS, messages=[{"role": "user", "content": payload}],
-            model=self.s.report_model, use_search=False, max_output_tokens=6000)
+            model=self.s.report_model, use_search=False, max_output_tokens=6000, purpose="report")
         return text.strip()
 
     async def video_plan(self, topic: str, roles: list[str], questions: list[dict]) -> str:
@@ -255,7 +271,7 @@ class TexnikumAgent:
         payload = json.dumps({"mavzu": topic, "rollar": roles, "real_savollar": qs}, ensure_ascii=False)
         text, _, _, _ = await self._call(
             instructions=VIDEO_INSTRUCTIONS, messages=[{"role": "user", "content": payload}],
-            model=self.s.report_model, use_search=True, max_output_tokens=8000)
+            model=self.s.report_model, use_search=True, max_output_tokens=8000, purpose="video_plan")
         return text.strip()
 
 
@@ -267,7 +283,7 @@ class TexnikumAgent:
         payload = json.dumps({"rol": role, "manba": guide, "savollar_soni": n,
                               "quyidagi_savollarni_takrorlama": avoid[-60:], "mavzular": TOPIC_LIST}, ensure_ascii=False)
         text, _, _, _ = await self._call(instructions=QUIZ_INSTRUCTIONS, messages=[{"role": "user", "content": payload}],
-                                         model=self.s.model, use_search=True, max_output_tokens=6000)
+                                         model=self.s.model, use_search=True, max_output_tokens=6000, purpose="quiz")
         data = _extract_json(text) or {}
         items = data.get("questions") or []
         out = []
@@ -284,7 +300,7 @@ class TexnikumAgent:
     async def faq_clusters(self, items: list[dict], existing: list[dict]) -> list[dict]:
         payload = json.dumps({"savol_javoblar": items, "mavjud_faq": existing, "mavzular": TOPIC_LIST}, ensure_ascii=False)
         text, _, _, _ = await self._call(instructions=FAQ_INSTRUCTIONS, messages=[{"role": "user", "content": payload}],
-                                         model=self.s.report_model, use_search=False, max_output_tokens=6000)
+                                         model=self.s.report_model, use_search=False, max_output_tokens=6000, purpose="faq")
         data = _extract_json(text) or {}
         res = data.get("faq") or []
         return [r for r in res if isinstance(r, dict)] if isinstance(res, list) else []

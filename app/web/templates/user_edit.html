@@ -1,5 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Foydalanuvchini tahrirlash{% endblock %}
+{% block title %}Foydalanuvchini tahrirlash<div class="card form-card" style="margin-top:18px">
+  <h2>{{ icon('note', 18) }} Ichki izohlar</h2>
+  <p class="muted small">Faqat adminlarga ko'rinadi, xodimga ham, AIga ham yuborilmaydi.</p>
+  {% set uid = u.id %}{% include "_notes.html" %}
+</div>
+{% endblock %}
 {% block content %}
 <a class="back" href="/users">{{ icon('arrow-left', 16) }} Foydalanuvchilar</a>
 <div class="page-head"><div><h1>Foydalanuvchini tahrirlash</h1></div></div>
