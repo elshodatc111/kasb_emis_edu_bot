@@ -143,8 +143,10 @@ def load_settings(env_file: str | None = None) -> Settings:
         vector_store_id=g("OPENAI_VECTOR_STORE_ID", "").strip(),
         model=model,
         report_model=(g("OPENAI_REPORT_MODEL", "").strip() or model),
-        web_host=g("WEB_HOST", "127.0.0.1").strip(),
-        web_port=int(g("WEB_PORT", "8000") or 8000),
+        # IP/PORT: ba'zi hostinglar (masalan alwaysdata) bu nomlar bilan avtomatik port/manzil
+        # beradi — shular mavjud bo'lsa ustunlik beriladi, aks holda .env dagi WEB_HOST/WEB_PORT.
+        web_host=g("IP", g("WEB_HOST", "127.0.0.1")).strip(),
+        web_port=int(g("PORT", g("WEB_PORT", "8000")) or 8000),
         base_url=g("BASE_URL", "http://127.0.0.1:8000").strip().rstrip("/"),
         cookie_secure=g("COOKIE_SECURE", "0").strip() in ("1", "true", "True"),
         secret_key=_secret(g("SECRET_KEY", "").strip()),
