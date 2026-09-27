@@ -151,11 +151,20 @@ class Database(FeaturesMixin, OpsMixin):
                           tech_name: str | None, role: str | None, status: str = "pending") -> int:
         now = ts()
         approved = now if status == "approved" else None
-        return await self._exec(
-            "INSERT INTO users (tg_id, tg_username, full_name, phone, tech_name, role, status, created_at, approved_at, last_message_at)"
-            " VALUES (?,?,?,?,?,?,?,?,?,?)",
-            (tg_id, tg_username, full_name, phone, tech_name, role, status, now, approved, now),
-        )
+        try:
+            return await self._exec(
+                "INSERT INTO users (tg_id, tg_username, full_name, phone, tech_name, role, status, created_at, approved_at, last_message_at)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (tg_id, tg_username, full_name, phone, tech_name, role, status, now, approved, now),
+            )
+        except aiosqlite.IntegrityError:
+            # Telegram bir xil /start yangilanishini bir necha marta (masalan bot qayta ishga
+            # tushganda pending update'lar qayta yuborilganda) deyarli bir vaqtda yuborishi mumkin —
+            # shu tg_id uchun boshqa so'rov allaqachon yozuvni yaratgan bo'lsa, xato bermay o'shani qaytaramiz.
+            existing = await self.get_user_by_tg(tg_id)
+            if existing:
+                return existing["id"]
+            raise
 
     async def update_registration(self, user_id: int, tg_username: str | None, full_name: str, phone: str | None,
                                   tech_name: str | None, role: str | None) -> None:

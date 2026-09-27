@@ -184,6 +184,22 @@ async def test_admin_start_autoapproved(ctx, tg):
     assert u["status"] == "approved" and u["role"] == "Administrator"
 
 
+async def test_concurrent_start_does_not_crash(ctx):
+    # Bot qayta ishga tushganda Telegram bir xil /start update'ini bir necha marta (deyarli bir
+    # vaqtda) qayta yuborishi mumkin — ikkalasi ham `get_user_by_tg` orqali "hali yo'q" deb topib,
+    # bir vaqtda create_user'ga murojaat qilishi mumkin. Bu UNIQUE constraint xatosiga olib
+    # kelmasligi kerak (real alwaysdata joylashtiruvida shu sabab bilan xato chiqqan edi).
+    import asyncio
+
+    results = await asyncio.gather(
+        ctx.db.create_user(ADMIN, "u", "Admin", None, None, "Administrator", status="approved"),
+        ctx.db.create_user(ADMIN, "u", "Admin", None, None, "Administrator", status="approved"),
+    )
+    assert results[0] == results[1]                              # ikkalasi ham bitta yozuvni qaytaradi
+    u = await ctx.db.get_user_by_tg(ADMIN)
+    assert u["status"] == "approved"
+
+
 async def test_blocked_user_ignored(ctx, tg):
     user = await _approved(ctx, tg)
     await ctx.db.set_status(user["id"], "blocked")
