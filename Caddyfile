@@ -1,0 +1,13 @@
+# Caddy avtomatik ravishda bu domen uchun bepul Let's Encrypt HTTPS sertifikati oladi va yangilab boradi.
+# DOMAIN qiymati .env faylidan olinadi (masalan: texnikum-elshod.duckdns.org).
+{$DOMAIN} {
+	reverse_proxy texnikum:8000
+
+	encode gzip
+
+	# Xatolar (masalan sertifikat hali tayyor bo'lmaganda) haqida asosiy loglar
+	log {
+		output stdout
+		format console
+	}
+}

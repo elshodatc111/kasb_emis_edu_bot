@@ -1,4 +1,7 @@
-# Serverga joylash uchun (keyinroq). HTTPS uchun oldiga Caddy/Nginx qo'ying va .env da COOKIE_SECURE=1, BASE_URL ni o'zgartiring.
+# Productionda ishga tushirish: `docker compose up -d --build`.
+# Caddy avtomatik ravishda .env dagi DOMAIN uchun bepul Let's Encrypt HTTPS sertifikati oladi
+# va barcha trafikni texnikum konteyneriga yo'naltiradi. .env da COOKIE_SECURE=1 va
+# BASE_URL=https://<DOMAIN> qilib qo'yishni unutmang (DEPLOY.md ga qarang).
 services:
   texnikum:
     build: .
@@ -6,7 +9,25 @@ services:
     env_file: .env
     environment:
       WEB_HOST: 0.0.0.0
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"          # faqat ichki tarmoq uchun (Caddy orqali); tashqariga to'g'ridan-to'g'ri ochilmaydi
     volumes:
       - ./data:/srv/app/data
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - texnikum
+    env_file: .env       # DOMAIN o'zgaruvchisini Caddyfile ichida ishlatish uchun
+    ports:
+      - "80:80"          # Let's Encrypt tekshiruvi va HTTP->HTTPS yo'naltirish uchun
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
