@@ -22,6 +22,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from .. import announce as announce_mod
+from .. import billing as billing_mod
 from .. import ops, spam
 from .. import faq as faq_mod
 from .. import kb as kb_mod
@@ -879,6 +880,31 @@ def create_app() -> FastAPI:
     PURPOSES = {"answer": "Xodimlarga javob", "suggest": "Admin uchun AI taklif", "report": "Hisobotlar",
                 "video_plan": "Video rejalar", "quiz": "Viktorina savollari", "faq": "FAQ tahlili", "other": "Boshqa"}
 
+    async def _real_billing() -> dict | None:
+        ctx = get_ctx()
+        if not ctx.settings.openai_admin_key:
+            return None
+        bal_value = await ctx.db.get_kv("balance_value")
+        bal_day = await ctx.db.get_kv("balance_day")
+        span = 30
+        if bal_day:
+            days_since = (datetime.now(timezone.utc).date() - datetime.strptime(bal_day, "%Y-%m-%d").date()).days
+            span = min(180, max(30, days_since + 2))
+        data = await billing_mod.fetch(span)
+        if not data["available"]:
+            hints = {"no_key": "OPENAI_ADMIN_KEY sozlanmagan.",
+                     "error": data.get("error") or "OpenAI bilan bog'lanib bo'lmadi."}
+            return {"ok": False, "message": hints.get(data.get("reason"), hints["error"])}
+        dc, du = data["days_cost"], data["days_usage"]
+        today0, week0, month0 = ops.day_start_utc(0)[:10], ops.day_start_utc(6)[:10], ops.month_start_utc()[:10]
+        real = {"ok": True, "today": billing_mod.sum_cost_since(dc, today0), "week": billing_mod.sum_cost_since(dc, week0),
+                "month": billing_mod.sum_cost_since(dc, month0), "days": dc[-14:], "usage_days": du[-14:],
+                "bal_value": bal_value, "bal_day": bal_day, "balance": None}
+        real["peak"] = max([d["usd"] for d in real["days"]] or [0.01]) or 0.01
+        if bal_value:
+            real["balance"] = float(bal_value) - billing_mod.sum_cost_since(dc, bal_day or today0)
+        return real
+
     @app.get("/usage", response_class=HTMLResponse)
     async def usage_page(request: Request, _: int = Depends(admin_required)):
         ctx = get_ctx()
@@ -897,6 +923,7 @@ def create_app() -> FastAPI:
         pct = int(month["cost"] / prices["budget_month"] * 100) if prices["budget_month"] > 0 else 0
         return await render(request, "usage.html", periods=periods, by_purpose=by_purpose, days=days, peak=peak,
                             prices=prices, pct=pct, priced=(prices["price_in"] > 0 or prices["price_out"] > 0),
+                            has_admin_key=bool(ctx.settings.openai_admin_key), real=await _real_billing(),
                             page="usage", notice=request.query_params.get("notice"))
 
     @app.post("/usage/settings", response_class=HTMLResponse)
@@ -912,6 +939,30 @@ def create_app() -> FastAPI:
         await db.set_kv("budget_alert80", "")
         await db.set_kv("budget_alert100", "")
         return _hx("/usage?notice=" + quote("Saqlandi."))
+
+    @app.post("/usage/balance", response_class=HTMLResponse)
+    async def usage_balance(value: str = Form(""), day: str = Form(""), _: int = Depends(csrf_required)):
+        try:
+            v = float(value.replace(",", "."))
+            assert v >= 0
+        except (ValueError, AssertionError):
+            return HTMLResponse('<span class="err">Balansni raqam bilan kiriting (masalan: 25.00).</span>')
+        try:
+            d = datetime.strptime(day, "%Y-%m-%d") if day else datetime.now(timezone.utc)
+        except ValueError:
+            return HTMLResponse('<span class="err">Sanani tanlang.</span>')
+        if d.date() > datetime.now(timezone.utc).date():
+            return HTMLResponse('<span class="err">Sana kelajakda bo\'lmasligi kerak.</span>')
+        db = get_ctx().db
+        await db.set_kv("balance_value", str(v))
+        await db.set_kv("balance_day", d.strftime("%Y-%m-%d"))
+        billing_mod.clear_cache()
+        return _hx("/usage?notice=" + quote("Balans saqlandi."))
+
+    @app.post("/usage/refresh", response_class=HTMLResponse)
+    async def usage_refresh(_: int = Depends(csrf_required)):
+        billing_mod.clear_cache()
+        return _hx("/usage?notice=" + quote("OpenAI'dan yangi ma'lumot olindi."))
 
     # ---------------- tizim holati, xatolar jurnali, reset ----------------
     @app.get("/system", response_class=HTMLResponse)

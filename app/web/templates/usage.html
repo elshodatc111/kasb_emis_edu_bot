@@ -2,8 +2,64 @@
 {% block title %}AI xarajatlari{% endblock %}
 {% block content %}
 <div class="page-head"><div><h1>AI xarajatlari</h1>
-  <p>OpenAI'ga yuborilgan so'rovlar, sarflangan tokenlar va taxminiy narx. Narxni quyida o'zingiz kiritasiz.</p></div></div>
+  <p>OpenAI hisobingizdagi haqiqiy xarajat va bizning taxminiy hisobimiz.</p></div>
+  {% if has_admin_key %}<button class="ghost" hx-post="/usage/refresh" hx-target="#st0" hx-swap="innerHTML" hx-disabled-elt="this">{{ icon('refresh', 16) }} Yangilash</button>{% endif %}</div>
 {% include "_notice.html" %}
+<span id="st0"></span>
+
+<section class="card">
+  <h2>{{ icon('external', 18) }} OpenAI'dagi haqiqiy holat</h2>
+  {% if not has_admin_key %}
+  <p class="small">Bu bo'lim OpenAI hisobingizdagi <b>haqiqiy</b> kunlik xarajat va balansni ko'rsatadi, siz platform.openai.com'ga kirmasdan.
+    Buning uchun alohida <b>Admin API key</b> kerak (oddiy OPENAI_API_KEY dan farqli, faqat tashkilot egasi yaratadi):</p>
+  <ol class="small" style="padding-left:18px;line-height:1.9">
+    <li><a href="https://platform.openai.com/settings/organization/admin-keys" target="_blank" rel="noopener">platform.openai.com/settings/organization/admin-keys</a> sahifasiga kiring</li>
+    <li>"Create new secret key" tugmasini bosing, kalitga <b>xarajatlarni o'qish (Read)</b> huquqini bering</li>
+    <li>Kalitni nusxalab, kompyuteringizdagi <code>.env</code> fayliga <code>OPENAI_ADMIN_KEY=...</code> qatorini qo'shing</li>
+    <li>Botni to'xtatib, <code>run.bat</code> ni qayta ishga tushiring</li>
+  </ol>
+  <p class="muted small">Kalitni menga (chatga) yubormang — faqat <code>.env</code> fayliga o'zingiz yozing.</p>
+  {% elif not real.ok %}
+  <div class="check-row bad"><span class="ic">{{ icon('alert', 20) }}</span><div><b>OpenAI'dan ma'lumot olib bo'lmadi</b><div class="small muted">{{ real.message }}</div></div></div>
+  {% else %}
+  <div class="cards">
+    {% if real.balance is not none %}
+    <div class="stat {{ 'warn' if real.balance < 5 }}"><span>Hisoblangan balans</span><b>${{ '%.2f' % real.balance }}</b>
+      <small>${{ '%.2f' % (real.bal_value|float) }} ({{ real.bal_day }}) dan hisoblangan</small><i class="ic">{{ icon('wallet', 20) }}</i></div>
+    {% endif %}
+    <div class="stat"><span>Bugungi real xarajat</span><b>${{ '%.2f' % real.today }}</b><i class="ic">{{ icon('activity', 20) }}</i></div>
+    <div class="stat"><span>Oxirgi 7 kun (real)</span><b>${{ '%.2f' % real.week }}</b><i class="ic">{{ icon('chart', 20) }}</i></div>
+    <div class="stat"><span>Shu oy (real)</span><b>${{ '%.2f' % real.month }}</b><i class="ic">{{ icon('calendar', 20) }}</i></div>
+  </div>
+  <div class="grid2" style="margin-top:6px">
+    <section class="card" style="box-shadow:none;border:1px solid var(--line)">
+      <h2 style="font-size:15px">{{ icon('chart', 16) }} Oxirgi 14 kun (real xarajat, $)</h2>
+      {% for d in real.days %}
+      <div class="bar"><span>{{ d.day[5:] }}</span><div class="track"><i style="width:{{ (d.usd * 100 / real.peak)|round|int }}%"></i></div><span class="val">${{ '%.2f' % d.usd }}</span></div>
+      {% else %}<p class="muted">Ma'lumot yo'q</p>{% endfor %}
+    </section>
+    <section class="card" style="box-shadow:none;border:1px solid var(--line)">
+      <h2 style="font-size:15px">{{ icon('database', 16) }} Oxirgi 14 kun (real tokenlar)</h2>
+      {% for d in real.usage_days %}
+      <div class="row" style="justify-content:space-between;padding:4px 0;font-size:13.5px"><span class="muted">{{ d.day[5:] }}</span>
+        <span>{{ '{:,}'.format(d.tin + d.tout).replace(',', ' ') }} <span class="muted">({{ d.requests }} so'rov)</span></span></div>
+      {% else %}<p class="muted">Ma'lumot yo'q</p>{% endfor %}
+    </section>
+  </div>
+  <form hx-post="/usage/balance" hx-target="#bal-st" hx-swap="innerHTML" style="margin-top:16px">
+    <label>{{ icon('wallet', 14) }} Balansni sozlash (OpenAI'ga pul to'ldirganda yoki hisobotni to'g'rilash uchun)</label>
+    <div class="row">
+      <input name="value" placeholder="Masalan: 25.00" inputmode="decimal" value="{{ real.bal_value or '' }}" style="max-width:160px">
+      <input type="date" name="day" value="{{ real.bal_day or '' }}" style="max-width:170px">
+      <button class="ghost sm" type="submit">{{ icon('save', 15) }} Saqlash</button><span id="bal-st"></span>
+    </div>
+    <div class="muted small" style="margin-top:6px">Shu sanadagi balansni kiritasiz, undan keyin OpenAI'dagi haqiqiy kunlik xarajat avtomatik ayirib boriladi.</div>
+  </form>
+  {% endif %}
+</section>
+
+<h2 style="margin:22px 0 12px">{{ icon('database', 18) }} Bizning taxminiy hisobimiz</h2>
+<p class="muted small" style="margin-top:-8px">Botning o'zi yozib borgan so'rovlar soni va tokenlar. Narxni pastda o'zingiz kiritsangiz, taxminiy summa chiqadi (aniq hisob-kitob yuqoridagi OpenAI ma'lumotida).</p>
 <div class="cards">
   {% for p in periods %}
   <div class="stat"><span>{{ p.label }}</span><b>{% if priced %}${{ '%.2f' % p.cost }}{% else %}{{ '{:,}'.format(p.tin + p.tout).replace(',', ' ') }}{% endif %}</b>
@@ -12,7 +68,7 @@
   {% endfor %}
 </div>
 {% if prices.budget_month > 0 and priced %}
-<section class="card"><h2>{{ icon('target', 18) }} Oylik limit</h2>
+<section class="card"><h2>{{ icon('target', 18) }} Oylik limit (bizning hisobimiz bo'yicha)</h2>
   <div class="progress" style="margin:10px 0"><i style="width:{{ [pct, 100]|min }}%;{% if pct >= 80 %}background:var(--red){% endif %}"></i></div>
   <p class="small">{{ pct }}% ishlatildi (${{ '%.2f' % periods[2].cost }} / ${{ '%.2f' % prices.budget_month }}). 80% va 100% ga yetganda adminlarga Telegramda xabar keladi.</p></section>
 {% endif %}
@@ -32,14 +88,14 @@
   </section>
 </div>
 <section class="card form-card">
-  <h2>{{ icon('edit', 18) }} Narx va limit</h2>
+  <h2>{{ icon('edit', 18) }} Narx va limit (bizning hisobimiz uchun)</h2>
   <form hx-post="/usage/settings" hx-target="#st" hx-swap="innerHTML">
     <div class="grid2" style="margin:0">
       <div><label>Kirish tokeni: 1 mln token narxi ($)</label><input name="price_in" value="{{ prices.price_in }}" inputmode="decimal"></div>
       <div><label>Chiqish tokeni: 1 mln token narxi ($)</label><input name="price_out" value="{{ prices.price_out }}" inputmode="decimal"></div>
     </div>
     <label>Oylik limit ($, 0 = cheklanmagan)</label><input name="budget" value="{{ prices.budget_month }}" inputmode="decimal" style="max-width:240px">
-    <div class="muted small" style="margin-top:8px">Narxni OpenAI narxlar sahifasidan o'zingiz kiriting. Panel taxminiy summani hisoblaydi, haqiqiy hisob-kitob OpenAI'da.</div>
+    <div class="muted small" style="margin-top:8px">Narxni OpenAI narxlar sahifasidan o'zingiz kiriting. Panel taxminiy summani hisoblaydi, haqiqiy hisob-kitob yuqoridagi OpenAI bo'limida.</div>
     <div class="row" style="margin-top:16px"><button type="submit">{{ icon('save', 17) }} Saqlash</button><span id="st"></span></div>
   </form>
 </section>

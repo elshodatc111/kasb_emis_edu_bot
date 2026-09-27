@@ -55,7 +55,7 @@ async def test_answer_flow_formatted(ctx, tg):
     last = ctx.session.sent(SendMessage)[-1]
     assert last.reply_markup is None  # Foydali/Foydasiz tugmalari yo'q
     assert last.parse_mode == "HTML"
-    assert "Texnik yordam markazi" in last.text and "Manba: O'qituvchi qo'llanmasi, 5" in last.text
+    assert "AI Menejer" in last.text and "Manba: O'qituvchi qo'llanmasi, 5" in last.text
     assert "filecite" not in last.text
 
 
@@ -63,6 +63,15 @@ async def test_clean_citations_and_html():
     from app.format import bot_html, clean_citations
     dirty = "Matn.\ue200filecite\ue202turn3file7\ue202turn3file6\ue201 Oxiri"
     assert clean_citations(dirty) == "Matn. Oxiri"
+
+
+async def test_bullet_dashes_and_real_hyphens_preserved():
+    """Ro'yxat uchun "- band" ▫️ ga aylanadi, lekin so'z ichidagi va telefon raqamidagi chiziqcha o'chib ketmasligi kerak."""
+    from app.format import bot_html
+    body = "- Eslatma: PINFL yopiladi\nTelefon: +998-90-123-45-67, ko'p-tarmoqli tizim"
+    html_out = bot_html("", body)
+    assert "▫️ Eslatma: PINFL yopiladi" in html_out
+    assert "+998-90-123-45-67" in html_out and "ko'p-tarmoqli" in html_out
     out = bot_html("Sarlavha", "1. **Menyu** ni oching <b>x</b>\n2. Saqlang", "Qo'llanma, 1.1")
     assert "<b>1.</b> <b>Menyu</b>" in out and "&lt;b&gt;x&lt;/b&gt;" in out
 

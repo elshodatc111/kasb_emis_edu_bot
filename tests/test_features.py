@@ -341,7 +341,7 @@ async def test_admin_name_shown(web, ctx, tg):
     csrf = await login(web, ctx)
     user = await make_user(ctx, tg)
     await web.post(f"/chats/{user['id']}/send", data={"text": "Salom"}, headers={"X-CSRF-Token": csrf})
-    assert any("Admin: Elshod Karimov" in t for t in ctx.session.texts_to(EMP))
+    assert any("Elshod Karimov" in t for t in ctx.session.texts_to(EMP))
     msgs = [m for m in await ctx.db.list_messages(user["id"]) if m["sender"] == "admin"]
     assert msgs[0]["author"] == "Elshod Karimov"
     page = await web.get(f"/chats/{user['id']}")

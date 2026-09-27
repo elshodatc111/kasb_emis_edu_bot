@@ -120,9 +120,10 @@ async def ctx(tmp_path):
     from app.bot import handlers
 
     handlers._rate.clear()
-    from app import spam
+    from app import billing, spam
 
     spam.clear()
+    billing.clear_cache()
     c.session = session  # type: ignore[attr-defined]
     yield c
     await db.close()

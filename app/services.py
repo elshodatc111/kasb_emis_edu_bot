@@ -101,7 +101,7 @@ async def admin_send(user_id: int, text: str | None = None, admin_id: int | None
     kind, file_id, tg_msg_id = "text", None, None
     if file_bytes:
         inp = BufferedInputFile(file_bytes, filename=filename)
-        caption = admin_html(author, text[:800]) if text else f"👤 <b>Admin: {html.escape(author, quote=False)}</b>"
+        caption = admin_html(author, text[:800]) if text else f"🧑‍💼 <b>{html.escape(author, quote=False)}</b>"
         if content_type.startswith("image/"):
             sent = await c.bot.send_photo(user["tg_id"], inp, caption=caption, parse_mode="HTML")
             kind, file_id = "photo", sent.photo[-1].file_id

@@ -1,6 +1,6 @@
 {% for m in messages %}
 <div class="msg {{ m.sender }}" data-id="{{ m.id }}">
-  <div class="who">{% if m.sender == 'admin' %}Admin: {{ m.author or 'Administrator' }}{% elif m.sender == 'bot' %}Texnik yordam markazi (AI){% else %}Xodim{% endif %} · {{ m.created_at|local }}
+  <div class="who">{% if m.sender == 'admin' %}Admin: {{ m.author or 'Administrator' }}{% elif m.sender == 'bot' %}AI Menejer{% else %}Xodim{% endif %} · {{ m.created_at|local }}
     {% if m.topic %}<span class="tag">{{ m.topic }}</span>{% endif %}
     {% if m.sender == 'user' and m.found == 0 %}<span class="tag warn">javobsiz</span>{% endif %}
   </div>

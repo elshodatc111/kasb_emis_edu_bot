@@ -3,7 +3,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import timedelta
+import time
+from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
 from aiogram.methods import SendMessage
@@ -327,3 +328,88 @@ async def test_reset_wipes_chats_but_keeps_setup(web, ctx, tg):  # noqa: F811
     await tg.text(EMP, "Test savoli")
     assert ctx.agent.questions.count("Test savoli") == 2
     assert (await web.get("/system")).status_code == 200
+
+
+# ------------------------------------------------------------------ OpenAI'dagi haqiqiy xarajat (Admin API)
+def _cost_bucket(day_ts: int, usd: float) -> dict:
+    return {"start_time": day_ts, "end_time": day_ts + 86400, "object": "bucket",
+            "results": [{"object": "organization.costs.result", "amount": {"currency": "usd", "value": usd}}]}
+
+
+def _usage_bucket(day_ts: int, tin: int, tout: int, n: int = 1) -> dict:
+    return {"start_time": day_ts, "end_time": day_ts + 86400, "object": "bucket",
+            "results": [{"object": "organization.usage.completions.result", "input_tokens": tin, "output_tokens": tout,
+                        "num_model_requests": n}]}
+
+
+async def test_usage_page_without_admin_key_shows_instructions(web, ctx):  # noqa: F811
+    await login(web, ctx)
+    assert ctx.settings.openai_admin_key == ""
+    page = await web.get("/usage")
+    assert "admin-keys" in page.text and "OPENAI_ADMIN_KEY" in page.text
+    assert "Bizning taxminiy hisobimiz" in page.text
+
+
+async def test_usage_page_shows_real_openai_costs(web, ctx, monkeypatch):  # noqa: F811
+    from app import billing
+
+    csrf = await login(web, ctx)
+    ctx.settings.openai_admin_key = "sk-admin-test"
+    today = int(time.time())
+    day0 = today - (today % 86400)
+
+    async def fake_paged(path, start, end, limit):
+        if path == "/costs":
+            return [_cost_bucket(day0 - 86400, 1.5), _cost_bucket(day0, 2.25)]
+        return [_usage_bucket(day0 - 86400, 10000, 5000, 3), _usage_bucket(day0, 8000, 4000, 2)]
+
+    monkeypatch.setattr(billing, "_paged", fake_paged)
+    page = await web.get("/usage")
+    assert "$2.25" in page.text and "$3.75" in page.text          # bugungi va 7 kunlik jami
+    assert "admin-keys" not in page.text
+    r = await web.post("/usage/balance", headers={"X-CSRF-Token": csrf},
+                       data={"value": "10", "day": datetime.fromtimestamp(day0 - 86400, tz=timezone.utc).strftime("%Y-%m-%d")})
+    assert "HX-Redirect" in r.headers
+    page = await web.get("/usage")
+    assert "$6.25" in page.text                                    # 10 - (1.5 + 2.25)
+    r = await web.post("/usage/refresh", headers={"X-CSRF-Token": csrf})
+    assert "HX-Redirect" in r.headers
+    r = await web.post("/usage/balance", headers={"X-CSRF-Token": csrf}, data={"value": "abc", "day": ""})
+    assert "raqam" in r.text.lower()
+
+
+async def test_usage_page_handles_openai_error(web, ctx, monkeypatch):  # noqa: F811
+    from app import billing
+
+    await login(web, ctx)
+    ctx.settings.openai_admin_key = "sk-admin-bad"
+
+    async def fake_paged(path, start, end, limit):
+        raise RuntimeError("OPENAI_ADMIN_KEY noto'g'ri yoki muddati o'tgan")
+
+    monkeypatch.setattr(billing, "_paged", fake_paged)
+    page = await web.get("/usage")
+    text = page.text.replace("&#39;", "'")
+    assert "olib bo'lmadi" in text
+    assert "noto'g'ri yoki muddati o'tgan" in text
+    errs = await ctx.db.list_errors()
+    assert errs and errs[0]["source"] == "openai_billing"
+
+
+async def test_billing_cache_avoids_repeated_requests(ctx, monkeypatch):
+    from app import billing
+
+    ctx.settings.openai_admin_key = "sk-admin-cache"
+    calls = []
+
+    async def fake_paged(path, start, end, limit):
+        calls.append(path)
+        return []
+
+    monkeypatch.setattr(billing, "_paged", fake_paged)
+    await billing.fetch(30)
+    await billing.fetch(30)
+    assert len(calls) == 2                                         # bitta fetch = costs + usage, keshdan qayta o'qiladi
+    billing.clear_cache()
+    await billing.fetch(30)
+    assert len(calls) == 4

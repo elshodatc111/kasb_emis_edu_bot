@@ -134,13 +134,13 @@ async def test_admin_sends_text_photo_video(web, ctx, tg, tmp_path, monkeypatch)
     h = {"X-CSRF-Token": csrf}
     r = await web.post(f"/chats/{user['id']}/send", data={"text": "Salom, yordam beraman"}, headers=h)
     assert r.status_code == 200 and r.headers["hx-trigger"] == "refresh-msgs,list-refresh"
-    assert any("Salom, yordam beraman" in t and "Admin: Administrator" in t for t in ctx.session.texts_to(EMP))
+    assert any("Salom, yordam beraman" in t and "Administrator" in t for t in ctx.session.texts_to(EMP))
 
     r = await web.post(f"/chats/{user['id']}/send", data={"text": "Mana ko'rsatma"}, headers=h,
                        files={"file": ("shot.png", b"\x89PNG-data", "image/png")})
     assert r.headers.get("hx-trigger")
     photo = ctx.session.sent(SendPhoto)[0]
-    assert "Mana ko'rsatma" in photo.caption and "Admin:" in photo.caption and photo.photo.data == b"\x89PNG-data"
+    assert "Mana ko'rsatma" in photo.caption and "Administrator" in photo.caption and photo.photo.data == b"\x89PNG-data"
 
     r = await web.post(f"/chats/{user['id']}/send", data={"text": ""}, headers=h,
                        files={"file": ("demo.mp4", b"video-bytes", "video/mp4")})

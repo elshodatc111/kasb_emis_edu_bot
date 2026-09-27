@@ -29,7 +29,7 @@ router = Router(name="main")
 _rate: dict[int, deque] = defaultdict(deque)
 
 HELP_TEXT = (
-    "🎓 Men Prof ta'lim tizimi bo'yicha savollaringizga qo'llanmalar asosida javob beraman.\n\n"
+    "🤖 Men AI Menejer — Prof ta'lim tizimi bo'yicha savollaringizga qo'llanmalar asosida javob beraman.\n\n"
     "✍️ Savolingizni matn ko'rinishida yozing.\n"
     "🖼 Rasm (skrinshot) yuborishingiz mumkin, lekin bot rasmni ko'rmaydi va tahlil qilmaydi, u faqat adminga ko'rinadi. "
     "Iltimos, rasmda shaxsiy ma'lumotlarni (PINFL, pasport) yopib yuboring.\n"

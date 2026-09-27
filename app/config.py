@@ -65,6 +65,7 @@ class Settings:
     admin_ids: list[int] = field(default_factory=list)
     admin_names: dict[int, str] = field(default_factory=dict)
     openai_api_key: str = ""
+    openai_admin_key: str = ""
     vector_store_id: str = ""
     model: str = "gpt-6-luna"
     report_model: str = "gpt-6-luna"
@@ -132,6 +133,7 @@ def load_settings(env_file: str | None = None) -> Settings:
         admin_ids=admin_ids,
         admin_names=admin_names,
         openai_api_key=g("OPENAI_API_KEY", "").strip(),
+        openai_admin_key=g("OPENAI_ADMIN_KEY", "").strip(),
         vector_store_id=g("OPENAI_VECTOR_STORE_ID", "").strip(),
         model=model,
         report_model=(g("OPENAI_REPORT_MODEL", "").strip() or model),
