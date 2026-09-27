@@ -23,4 +23,7 @@
   <a href="/schedule" class="{{ 'on' if page == 'schedule' }}">{{ icon('calendar') }}<span class="grow">Ish vaqti va bayramlar</span></a>
   <a href="/system" class="{{ 'on' if page == 'system' }}">{{ icon('activity') }}<span class="grow">Tizim holati</span>
     {% if counts and counts.errors_today %}<b class="badge warn">{{ counts.errors_today }}</b>{% endif %}</a>
+  {% if is_super_admin %}
+  <a href="/admins" class="{{ 'on' if page == 'admins' }}">{{ icon('shield') }}<span class="grow">Adminlar</span></a>
+  {% endif %}
 </nav>

@@ -144,6 +144,21 @@ async def csrf_required(request: Request, admin_id: int = Depends(admin_required
     return admin_id
 
 
+def super_admin_required(admin_id: int = Depends(admin_required)) -> int:
+    """Adminlarni boshqarish (qo'shish/tahrirlash/o'chirish) faqat .env dagi asosiy adminlarga ruxsat etiladi."""
+    if admin_id not in get_ctx().settings.env_admin_ids:
+        raise HTTPException(status_code=403, detail="Bu bo'lim faqat .env dagi asosiy adminlar uchun.")
+    return admin_id
+
+
+async def super_csrf_required(request: Request, admin_id: int = Depends(super_admin_required)) -> int:
+    token = request.headers.get("X-CSRF-Token", "")
+    expected = request.session.get("csrf", "")
+    if not expected or not secrets.compare_digest(token, expected):
+        raise HTTPException(status_code=403, detail="CSRF tekshiruvi o'tmadi. Sahifani yangilang.")
+    return admin_id
+
+
 async def render(request: Request, name: str, status_code: int = 200, **context) -> HTMLResponse:
     c = get_ctx()
     if "csrf" not in request.session:
@@ -154,6 +169,7 @@ async def render(request: Request, name: str, status_code: int = 200, **context)
     aid = request.session.get("admin_id")
     context.update(csrf=request.session["csrf"], admin_id=aid, counts=counts,
                    admin_name=c.settings.admin_name(aid) if aid else "",
+                   is_super_admin=bool(aid) and aid in c.settings.env_admin_ids,
                    base_url=c.settings.base_url)
     return templates.TemplateResponse(request, name, context, status_code=status_code)
 
@@ -688,6 +704,32 @@ def create_app() -> FastAPI:
         n = await quiz_mod.prepare_pools()
         return _hx("/quiz?notice=" + quote(f"{n} ta yangi savol tayyorlandi."))
 
+    @app.post("/quiz/settings", response_class=HTMLResponse)
+    async def quiz_settings_save(request: Request, _: int = Depends(csrf_required)):
+        form = await request.form()
+        start, end = str(form.get("start", "")), str(form.get("end", ""))
+        size_raw = str(form.get("size", "")).strip()
+        days = sorted({int(x) for x in form.getlist("days") if str(x).isdigit() and 1 <= int(x) <= 7})
+        try:
+            (sh, sm), (eh, em) = [tuple(int(p) for p in v.split(":")) for v in (start, end)]
+            assert 0 <= sh < 24 and 0 <= eh < 24 and 0 <= sm < 60 and 0 <= em < 60
+        except Exception:  # noqa: BLE001
+            return HTMLResponse('<span class="err">Vaqtni SS:DD ko\'rinishida kiriting.</span>')
+        if (sh, sm) >= (eh, em):
+            return HTMLResponse('<span class="err">Tugash vaqti boshlanishidan keyin bo\'lishi kerak.</span>')
+        if not days:
+            return HTMLResponse('<span class="err">Kamida bitta kunni tanlang.</span>')
+        if not size_raw.isdigit() or not (1 <= int(size_raw) <= 30):
+            return HTMLResponse('<span class="err">Savollar soni 1 dan 30 gacha bo\'lishi kerak.</span>')
+        db = get_ctx().db
+        await db.set_kv("quiz_start", f"{sh:02d}:{sm:02d}")
+        await db.set_kv("quiz_end", f"{eh:02d}:{em:02d}")
+        await db.set_kv("quiz_size", size_raw)
+        await db.set_kv("quiz_days", ",".join(map(str, days)))
+        await services.load_quiz_settings()
+        ops.reschedule_quiz_prepare()
+        return _hx("/quiz?notice=" + quote("Test sozlamalari saqlandi."))
+
 
     # ---------------- ommaviy e'lonlar ----------------
     @app.get("/announcements", response_class=HTMLResponse)
@@ -1057,6 +1099,63 @@ def create_app() -> FastAPI:
         await get_ctx().db.delete_holiday(hid)
         await services.load_worktime()
         return _hx("/schedule?notice=" + quote("O'chirildi."))
+
+    # ---------------- adminlarni boshqarish (faqat .env dagi asosiy adminlar) ----------------
+    @app.get("/admins", response_class=HTMLResponse)
+    async def admins_page(request: Request, _: int = Depends(super_admin_required)):
+        ctx = get_ctx()
+        env_admins = [{"tg_id": tid, "name": ctx.settings.env_admin_names.get(tid) or "Administrator"}
+                     for tid in ctx.settings.env_admin_ids]
+        return await render(request, "admins.html", env_admins=env_admins, admins=await ctx.db.list_admins(),
+                            page="admins", notice=request.query_params.get("notice"))
+
+    @app.post("/admins/add", response_class=HTMLResponse)
+    async def admins_add(tg_id: str = Form(""), name: str = Form(""), admin_id: int = Depends(super_csrf_required)):
+        tg_id = tg_id.strip()
+        name = " ".join(name.split())
+        if not tg_id.isdigit():
+            return HTMLResponse('<span class="err">Telegram ID faqat raqamlardan iborat bo\'lishi kerak.</span>')
+        uid = int(tg_id)
+        if len(name) < 2:
+            return HTMLResponse('<span class="err">Ism-familiyani kiriting.</span>')
+        ctx = get_ctx()
+        if uid in ctx.settings.env_admin_ids or await ctx.db.get_admin_by_tg(uid):
+            return HTMLResponse('<span class="err">Bu Telegram ID allaqachon admin sifatida ro\'yxatda bor.</span>')
+        await ctx.db.add_admin(uid, name, admin_id)
+        await services.load_admins()
+        try:
+            await ctx.bot.send_message(
+                uid, f"✅ Sizga \"{ctx.settings.base_url}\" veb-panelida admin huquqi berildi, {name}.\n"
+                     "Panelga kirish uchun login sahifasida shu Telegram ID'ingizni kiriting, botga bir martalik kod keladi.")
+        except TelegramAPIError:
+            pass  # hali botga /start bosmagan bo'lishi mumkin — birinchi kirishda o'zi ko'radi
+        return _hx("/admins?notice=" + quote(f"{name} admin sifatida qo'shildi."))
+
+    @app.post("/admins/{admin_row_id}/edit", response_class=HTMLResponse)
+    async def admins_edit(admin_row_id: int, name: str = Form(""), _: int = Depends(super_csrf_required)):
+        name = " ".join(name.split())
+        if len(name) < 2:
+            return HTMLResponse('<span class="err">Ism-familiyani kiriting.</span>')
+        ctx = get_ctx()
+        if not await ctx.db.get_admin(admin_row_id):
+            return HTMLResponse('<span class="err">Topilmadi.</span>')
+        await ctx.db.update_admin(admin_row_id, name)
+        await services.load_admins()
+        return _hx("/admins?notice=" + quote("Saqlandi."))
+
+    @app.post("/admins/{admin_row_id}/delete", response_class=HTMLResponse)
+    async def admins_delete(admin_row_id: int, _: int = Depends(super_csrf_required)):
+        ctx = get_ctx()
+        row = await ctx.db.get_admin(admin_row_id)
+        if not row:
+            return _hx("/admins")
+        await ctx.db.delete_admin(admin_row_id)
+        await services.load_admins()
+        try:
+            await ctx.bot.send_message(row["tg_id"], "❗ Sizning admin huquqingiz veb-panelda bekor qilindi.")
+        except TelegramAPIError:
+            pass
+        return _hx("/admins?notice=" + quote(f"{row['name']} o'chirildi."))
 
     @app.post("/quiz/announce-ranking", response_class=HTMLResponse)
     async def quiz_announce_ranking(days: int = Form(7), admin_id: int = Depends(csrf_required)):

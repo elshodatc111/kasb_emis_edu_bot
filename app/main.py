@@ -66,6 +66,9 @@ async def amain() -> None:
     ops.scheduler = scheduler
     ops.install_error_log()
     await services.load_worktime()
+    await services.load_admins()
+    await services.load_quiz_settings()
+    ops.reschedule_quiz_prepare()  # panelda saqlangan test vaqti .env dagidan farq qilishi mumkin
 
     try:
         me = await bot.get_me()

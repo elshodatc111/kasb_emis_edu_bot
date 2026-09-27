@@ -108,8 +108,8 @@ class FakeAgent(TexnikumAgent):
 
 @pytest.fixture
 async def ctx(tmp_path):
-    settings = Settings(bot_token="123456:TEST", admin_ids=[ADMIN], openai_api_key="k", vector_store_id="vs_test",
-                        base_url="http://panel.test", secret_key="s" * 32, rate_limit_per_min=3)
+    settings = Settings(bot_token="123456:TEST", admin_ids=[ADMIN], env_admin_ids=[ADMIN], openai_api_key="k",
+                        vector_store_id="vs_test", base_url="http://panel.test", secret_key="s" * 32, rate_limit_per_min=3)
     db = Database(":memory:")
     await db.connect()
     session = FakeSession()

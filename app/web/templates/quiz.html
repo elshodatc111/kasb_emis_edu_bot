@@ -2,7 +2,7 @@
 {% block title %}Kunlik test{% endblock %}
 {% block content %}
 <div class="page-head"><div><h1>Kunlik test (viktorina)</h1>
-  <p>Har kuni {{ '%02d:%02d' % s.quiz_start }}–{{ '%02d:%02d' % s.quiz_end }} oralig'ida har bir tasdiqlangan xodimga roli bo'yicha {{ s.quiz_size }} ta takrorlanmaydigan savol yuboriladi.</p></div></div>
+  <p>Belgilangan kunlarda soat {{ '%02d:%02d' % s.quiz_start }}–{{ '%02d:%02d' % s.quiz_end }} oralig'ida har bir tasdiqlangan xodimga roli bo'yicha {{ s.quiz_size }} ta takrorlanmaydigan savol yuboriladi. Vaqtni pastda o'zgartirishingiz mumkin.</p></div></div>
 {% include "_notice.html" %}
 <div class="row" style="margin-bottom:16px">
   {% for d, label in [(1,'Bugun'),(7,'7 kun'),(30,'30 kun'),(90,'90 kun')] %}
@@ -12,6 +12,25 @@
   <button class="sm" hx-post="/quiz/send-now" hx-confirm="Testni hozir hamma tasdiqlangan xodimga yuborasizmi?" hx-disabled-elt="this" hx-indicator="#spin">{{ icon('send', 15) }} Testni hozir yuborish</button>
   <span id="spin" class="htmx-indicator muted">Bajarilmoqda...</span>
 </div>
+
+<section class="card form-card">
+  <h2>{{ icon('clock', 18) }} Test vaqti va sozlamalari</h2>
+  <form hx-post="/quiz/settings" hx-target="#qst" hx-swap="innerHTML">
+    <div class="grid2" style="margin:0">
+      <div><label>Boshlanishi</label><input type="time" name="start" value="{{ '%02d:%02d' % s.quiz_start }}" required></div>
+      <div><label>Tugashi</label><input type="time" name="end" value="{{ '%02d:%02d' % s.quiz_end }}" required></div>
+    </div>
+    <label>Xodimga nechta savol berilsin</label><input name="size" type="number" min="1" max="30" value="{{ s.quiz_size }}" style="max-width:120px" required>
+    <label>Qaysi kunlari o'tkazilsin</label>
+    <div class="seg">
+      {% for n, d in [(1,'Dushanba'),(2,'Seshanba'),(3,'Chorshanba'),(4,'Payshanba'),(5,'Juma'),(6,'Shanba'),(7,'Yakshanba')] %}
+      <label style="padding:8px 12px"><input type="checkbox" name="days" value="{{ n }}" {{ 'checked' if n in s.quiz_days }}> {{ d }}</label>{% endfor %}
+    </div>
+    <div class="row" style="margin-top:16px"><button type="submit">{{ icon('save', 17) }} Saqlash</button><span id="qst"></span></div>
+    <div class="muted small" style="margin-top:8px">O'zgartirilgan vaqt darhol kuchga kiradi (botni qayta ishga tushirish shart emas).</div>
+  </form>
+</section>
+
 <div class="cards">
   <div class="stat"><span>Yuborilgan testlar</span><b>{{ o.sessions }}</b><i class="ic">{{ icon('send', 20) }}</i></div>
   <div class="stat ok"><span>Yakunlaganlar</span><b>{{ o.done }}</b><i class="ic">{{ icon('check-circle', 20) }}</i></div>

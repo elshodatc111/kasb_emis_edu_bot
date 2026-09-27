@@ -64,6 +64,10 @@ class Settings:
     bot_token: str = ""
     admin_ids: list[int] = field(default_factory=list)
     admin_names: dict[int, str] = field(default_factory=dict)
+    # .env dagi ADMIN_IDS ning o'zgarmas nusxasi (asosiy adminlar). admin_ids/admin_names esa
+    # panelda qo'shilgan adminlar bilan birlashtirilib, ishlash vaqtida yangilanadi (services.load_admins).
+    env_admin_ids: list[int] = field(default_factory=list)
+    env_admin_names: dict[int, str] = field(default_factory=dict)
     openai_api_key: str = ""
     openai_admin_key: str = ""
     vector_store_id: str = ""
@@ -130,8 +134,10 @@ def load_settings(env_file: str | None = None) -> Settings:
     admin_ids, admin_names = _admins(g("ADMIN_IDS", ""))
     return Settings(
         bot_token=g("BOT_TOKEN", "").strip(),
-        admin_ids=admin_ids,
-        admin_names=admin_names,
+        admin_ids=list(admin_ids),
+        admin_names=dict(admin_names),
+        env_admin_ids=list(admin_ids),
+        env_admin_names=dict(admin_names),
         openai_api_key=g("OPENAI_API_KEY", "").strip(),
         openai_admin_key=g("OPENAI_ADMIN_KEY", "").strip(),
         vector_store_id=g("OPENAI_VECTOR_STORE_ID", "").strip(),

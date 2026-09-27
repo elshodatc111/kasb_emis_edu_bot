@@ -8,6 +8,8 @@ import traceback
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
+from apscheduler.triggers.cron import CronTrigger
+
 from .context import get_ctx
 
 log = logging.getLogger(__name__)
@@ -170,6 +172,21 @@ async def run_checks() -> list[dict]:
     except Exception as exc:  # noqa: BLE001
         out.append({"name": "Ma'lumotlar bazasi", "ok": False, "detail": str(exc)[:200]})
     return out
+
+
+def reschedule_quiz_prepare() -> None:
+    """Panelda kunlik test boshlanish vaqti o'zgartirilganda, savollarni oldindan tayyorlash
+    vazifasini ham (test boshlanishidan ~50 daqiqa oldin) qayta rejalashtiradi."""
+    if scheduler is None:
+        return
+    s = get_ctx().settings
+    qh, qm = s.quiz_start
+    prep = max(0, qh * 60 + qm - 50)
+    tz = ZoneInfo(s.timezone)
+    try:
+        scheduler.reschedule_job("quiz_prepare", trigger=CronTrigger(hour=prep // 60, minute=prep % 60, timezone=tz))
+    except Exception:  # noqa: BLE001
+        log.exception("quiz_prepare vazifasini qayta rejalashtirib bo'lmadi")
 
 
 def scheduler_jobs() -> list[dict]:

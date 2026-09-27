@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Adminlar{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Adminlar</h1>
+  <p>Panel va botni boshqaradigan adminlar ro'yxati. Bu yerda qo'shilgan adminlar boshqa hamma bo'limda (suhbatlar, e'lonlar,
+    xarajatlar va h.k.) asosiy adminlar bilan bir xil, to'liq huquqqa ega bo'ladi.</p></div></div>
+{% include "_notice.html" %}
+
+<section class="card form-card">
+  <h2>{{ icon('user-plus', 18) }} Yangi admin qo'shish</h2>
+  <form hx-post="/admins/add" hx-target="#ast" hx-swap="innerHTML">
+    <div class="grid2" style="margin:0">
+      <div><label>Telegram ID</label><input name="tg_id" inputmode="numeric" placeholder="Masalan: 123456789" required></div>
+      <div><label>Ism familiya</label><input name="name" placeholder="Masalan: Malika Aliyeva" required></div>
+    </div>
+    <div class="row" style="margin-top:16px"><button type="submit">{{ icon('plus', 17) }} Qo'shish</button><span id="ast"></span></div>
+    <div class="muted small" style="margin-top:8px">Telegram ID'ni <a href="https://t.me/userinfobot" target="_blank" rel="noopener">@userinfobot</a>
+      orqali bilib olishingiz mumkin. Qo'shilgan kishi avval botga kamida bir marta <code>/start</code> yuborgan bo'lishi kerak,
+      aks holda panelga kirish kodini ololmaydi (u start bosgach avtomatik ishlay boshlaydi).</div>
+  </form>
+</section>
+
+<section class="card table-wrap">
+  <h2 style="padding:20px 20px 0">{{ icon('shield', 18) }} Panel orqali qo'shilgan adminlar</h2>
+  <table>
+    <thead><tr><th>Ism familiya</th><th>Telegram ID</th><th>Qo'shilgan</th><th></th></tr></thead>
+    {% for a in admins %}
+    <tr>
+      <td>
+        <form hx-post="/admins/{{ a.id }}/edit" hx-target="#est{{ a.id }}" hx-swap="innerHTML" class="row" style="gap:6px">
+          <input name="name" value="{{ a.name }}" style="max-width:220px" required>
+          <button class="sm ghost" type="submit">{{ icon('save', 14) }}</button><span id="est{{ a.id }}"></span>
+        </form>
+      </td>
+      <td class="num">{{ a.tg_id }}</td>
+      <td class="muted small">{{ a.created_at | local('%d.%m.%Y') }}</td>
+      <td class="acts" style="justify-content:flex-end">
+        <button class="sm danger" hx-post="/admins/{{ a.id }}/delete" hx-confirm="{{ a.name }} adminlikdan o'chirilsinmi?">{{ icon('trash', 15) }}</button>
+      </td>
+    </tr>
+    {% else %}<tr><td colspan="4" class="muted">Panel orqali hali admin qo'shilmagan</td></tr>{% endfor %}
+  </table>
+</section>
+
+<section class="card table-wrap">
+  <h2 style="padding:20px 20px 0">{{ icon('cap', 18) }} Asosiy adminlar (.env)</h2>
+  <table>
+    <thead><tr><th>Ism familiya</th><th>Telegram ID</th><th></th></tr></thead>
+    {% for a in env_admins %}
+    <tr><td><b>{{ a.name }}</b></td><td class="num">{{ a.tg_id }}</td>
+      <td class="acts" style="justify-content:flex-end"><span class="tag ok">asosiy</span></td></tr>
+    {% endfor %}
+  </table>
+  <p class="muted small" style="padding:12px 20px 20px">Bu ro'yxat kompyuteringizdagi <code>.env</code> faylidagi <code>ADMIN_IDS</code>
+    qatoridan olinadi va faqat shu faylni tahrirlab o'zgartiriladi (xavfsizlik uchun panel orqali o'chirib bo'lmaydi).</p>
+</section>
+{% endblock %}

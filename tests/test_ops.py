@@ -413,3 +413,81 @@ async def test_billing_cache_avoids_repeated_requests(ctx, monkeypatch):
     billing.clear_cache()
     await billing.fetch(30)
     assert len(calls) == 4
+
+
+# ------------------------------------------------------------------ kunlik test vaqti (panel orqali)
+async def test_quiz_settings_save(web, ctx):  # noqa: F811
+    csrf = await login(web, ctx)
+    h = {"X-CSRF-Token": csrf}
+    page = await web.get("/quiz")
+    assert page.status_code == 200 and "Test vaqti va sozlamalari" in page.text
+    r = await web.post("/quiz/settings", headers=h,
+                       data={"start": "08:00", "end": "08:40", "size": "8", "days": ["1", "2", "3", "4", "5"]})
+    assert "HX-Redirect" in r.headers
+    assert ctx.settings.quiz_start == (8, 0) and ctx.settings.quiz_end == (8, 40)
+    assert ctx.settings.quiz_size == 8 and ctx.settings.quiz_days == frozenset({1, 2, 3, 4, 5})
+    assert (await ctx.db.get_kv("quiz_size")) == "8"
+    now = dt(2026, 9, 1, 8, 15)                                    # seshanba, yangi 08:00-08:40 oynasida
+    assert await quiz.tick(now) == 0                                # hali tasdiqlangan xodim yo'q, lekin xato bermaydi
+    for bad in ({"start": "09:00", "end": "08:00", "size": "5", "days": ["1"]},
+                {"start": "08:00", "end": "08:40", "size": "0", "days": ["1"]},
+                {"start": "08:00", "end": "08:40", "size": "5"},
+                {"start": "xx", "end": "08:40", "size": "5", "days": ["1"]}):
+        assert "err" in (await web.post("/quiz/settings", headers=h, data=bad)).text
+    assert ctx.settings.quiz_size == 8                             # xato so'rovlar eskisini o'zgartirmadi
+
+
+# ------------------------------------------------------------------ adminlarni boshqarish
+NEW_ADMIN = 3000
+
+
+async def test_admins_page_lists_env_and_form(web, ctx):  # noqa: F811
+    await login(web, ctx)
+    r = await web.get("/admins")
+    assert r.status_code == 200 and "Yangi admin qo'shish" in r.text and str(ADMIN) in r.text
+
+
+async def test_admins_add_edit_delete_flow(web, ctx):  # noqa: F811
+    csrf = await login(web, ctx)
+    h = {"X-CSRF-Token": csrf}
+    r = await web.post("/admins/add", headers=h, data={"tg_id": str(NEW_ADMIN), "name": "Malika Aliyeva"})
+    assert "HX-Redirect" in r.headers
+    assert NEW_ADMIN in ctx.settings.admin_ids
+    assert ctx.settings.admin_name(NEW_ADMIN) == "Malika Aliyeva"
+    assert "admin huquqi berildi" in ctx.session.texts_to(NEW_ADMIN)[0]
+    r = await web.post("/admins/add", headers=h, data={"tg_id": str(NEW_ADMIN), "name": "Boshqa"})
+    assert "err" in r.text                                         # dublikat tg_id
+
+    # yangi admin panelga kira oladi va suhbatlarni ko'ra oladi, lekin adminlarni boshqara olmaydi
+    csrf2 = await login(web, ctx, tg_id=NEW_ADMIN)
+    assert (await web.get("/chats")).status_code == 200
+    assert (await web.get("/admins", headers={"X-CSRF-Token": csrf2})).status_code == 403
+    assert (await web.post("/admins/add", headers={"X-CSRF-Token": csrf2},
+                           data={"tg_id": "4000", "name": "Ism Familiya"})).status_code == 403
+
+    # asosiy admin sifatida qaytadan kirib davom etamiz (sessiya endi NEW_ADMIN'niki edi)
+    csrf = await login(web, ctx)
+    h = {"X-CSRF-Token": csrf}
+    row = (await ctx.db.list_admins())[0]
+    r = await web.post(f"/admins/{row['id']}/edit", headers=h, data={"name": "Malika A."})
+    assert "HX-Redirect" in r.headers
+    assert ctx.settings.admin_name(NEW_ADMIN) == "Malika A."
+    assert "err" in (await web.post(f"/admins/{row['id']}/edit", headers=h, data={"name": "M"})).text
+
+    await web.post(f"/admins/{row['id']}/delete", headers=h)
+    assert NEW_ADMIN not in ctx.settings.admin_ids
+    assert "bekor qilindi" in ctx.session.texts_to(NEW_ADMIN)[-1]
+
+    from app.web.app import _codes as codes                        # o'chirilgan admin uchun endi login kodi yuborilmaydi
+    codes.pop(NEW_ADMIN, None)
+    await web.post("/login/request", data={"tg_id": str(NEW_ADMIN)})
+    assert NEW_ADMIN not in codes
+
+
+async def test_admins_add_validation(web, ctx):  # noqa: F811
+    csrf = await login(web, ctx)
+    h = {"X-CSRF-Token": csrf}
+    assert "err" in (await web.post("/admins/add", headers=h, data={"tg_id": "abc", "name": "Ism Familiya"})).text
+    assert "err" in (await web.post("/admins/add", headers=h, data={"tg_id": "5555", "name": "A"})).text
+    assert "err" in (await web.post("/admins/add", headers=h, data={"tg_id": str(ADMIN), "name": "Ism Familiya"})).text
+    assert ADMIN not in [a["tg_id"] for a in await ctx.db.list_admins()]

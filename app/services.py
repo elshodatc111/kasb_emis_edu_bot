@@ -170,6 +170,37 @@ async def load_worktime() -> None:
         (_hol_yearly if h["recurring"] else _hol_exact)[h["day"]] = h["name"]
 
 
+async def load_admins() -> None:
+    """Panelda qo'shilgan adminlarni .env dagi asosiy adminlar bilan birlashtirib xotiraga yuklaydi
+    (ishga tushganda va admin qo'shilgan/tahrirlangan/o'chirilganda chaqiriladi)."""
+    c = get_ctx()
+    s = c.settings
+    ids = list(s.env_admin_ids)
+    names = dict(s.env_admin_names)
+    for a in await c.db.list_admins():
+        if a["tg_id"] not in ids:
+            ids.append(a["tg_id"])
+        names[a["tg_id"]] = a["name"]
+    s.admin_ids = ids
+    s.admin_names = names
+
+
+async def load_quiz_settings() -> None:
+    """Panelda saqlangan kunlik test vaqti/soni/kunlarini xotiraga yuklaydi (ishga tushganda va saqlanganda chaqiriladi)."""
+    c = get_ctx()
+    s = c.settings
+    s.quiz_start = _parse_hm(await c.db.get_kv("quiz_start"), s.quiz_start)
+    s.quiz_end = _parse_hm(await c.db.get_kv("quiz_end"), s.quiz_end)
+    size = (await c.db.get_kv("quiz_size") or "").strip()
+    if size.isdigit() and int(size) > 0:
+        s.quiz_size = int(size)
+    days = (await c.db.get_kv("quiz_days") or "").strip()
+    if days:
+        parsed = frozenset(int(x) for x in days.split(",") if x.strip().isdigit() and 1 <= int(x) <= 7)
+        if parsed:
+            s.quiz_days = parsed
+
+
 def holiday_name(day) -> str | None:
     return _hol_exact.get(day.strftime("%Y-%m-%d")) or _hol_yearly.get(day.strftime("%m-%d"))
 

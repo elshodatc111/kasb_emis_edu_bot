@@ -49,6 +49,13 @@ CREATE TABLE IF NOT EXISTS holidays (
     name TEXT NOT NULL,
     recurring INTEGER NOT NULL DEFAULT 0
 );
+CREATE TABLE IF NOT EXISTS admins (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tg_id INTEGER NOT NULL UNIQUE,                -- Telegram ID (.env dagi asosiy adminlardan alohida)
+    name TEXT NOT NULL,
+    added_by INTEGER,
+    created_at TEXT NOT NULL
+);
 """
 
 DEFAULT_HOLIDAYS = [
@@ -164,6 +171,26 @@ class OpsMixin:
         for day, name in DEFAULT_HOLIDAYS:
             await self.add_holiday(day, name, True)
         await self.set_kv("holidays_seeded", "1")
+
+    # ---------- panel orqali qo'shilgan adminlar (.env dagi asosiylardan tashqari) ----------
+    async def list_admins(self) -> list[dict]:
+        return await self._all("SELECT * FROM admins ORDER BY id")
+
+    async def get_admin(self, admin_row_id: int) -> dict | None:
+        return await self._one("SELECT * FROM admins WHERE id=?", (admin_row_id,))
+
+    async def get_admin_by_tg(self, tg_id: int) -> dict | None:
+        return await self._one("SELECT * FROM admins WHERE tg_id=?", (tg_id,))
+
+    async def add_admin(self, tg_id: int, name: str, added_by: int | None) -> int:
+        return await self._exec("INSERT INTO admins (tg_id, name, added_by, created_at) VALUES (?,?,?,?)",
+                                (tg_id, name, added_by, _ts()))
+
+    async def update_admin(self, admin_row_id: int, name: str) -> None:
+        await self._exec("UPDATE admins SET name=? WHERE id=?", (name, admin_row_id))
+
+    async def delete_admin(self, admin_row_id: int) -> None:
+        await self._exec("DELETE FROM admins WHERE id=?", (admin_row_id,))
 
     # ---------- suhbatni biriktirish ----------
     async def assign_chat(self, user_id: int, admin_id: int | None) -> None:
