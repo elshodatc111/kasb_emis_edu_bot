@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Google Cloud (yoki boshqa Ubuntu) serverda bir martalik sozlash skripti.
+# Google Cloud / Oracle Cloud (yoki boshqa Ubuntu) serverda bir martalik sozlash skripti.
 # Ishlatish: DEPLOY.md ga qarang. Bu skript hech qanday maxfiy kalitni o'zida saqlamaydi —
 # .env faylini siz alohida, qo'lda to'ldirasiz.
 set -euo pipefail
@@ -7,7 +7,7 @@ set -euo pipefail
 REPO_URL="https://github.com/elshodatc111/kasb_emis_edu_bot.git"
 APP_DIR="$HOME/kasb_emis_edu_bot"
 
-echo "== 1/4: Docker o'rnatilmoqda (agar hali yo'q bo'lsa) =="
+echo "== 1/5: Docker o'rnatilmoqda (agar hali yo'q bo'lsa) =="
 if ! command -v docker >/dev/null 2>&1; then
     curl -fsSL https://get.docker.com | sudo sh
     sudo usermod -aG docker "$USER"
@@ -17,7 +17,7 @@ else
     echo "Docker allaqachon o'rnatilgan, o'tkazib yuborildi."
 fi
 
-echo "== 2/4: 1 GB almashinuv fayli (swap) qo'shilmoqda (e2-micro'da xotira tanqis, bu xavfsizlik uchun) =="
+echo "== 2/5: 1 GB almashinuv fayli (swap) qo'shilmoqda (kichik serverlarda xotira tanqis, bu xavfsizlik uchun) =="
 if [ ! -f /swapfile ]; then
     sudo fallocate -l 1G /swapfile
     sudo chmod 600 /swapfile
@@ -29,7 +29,34 @@ else
     echo "Swap fayli allaqachon mavjud, o'tkazib yuborildi."
 fi
 
-echo "== 3/4: Loyihaning kodi olinmoqda =="
+echo "== 3/5: 80/443 portlari serverning o'z devor (firewall) darajasida ochilmoqda =="
+echo "(Oracle Cloud'da OS-darajasidagi iptables standart yopiq bo'ladi; boshqa provayderlarda bu qadam zararsiz.)"
+if command -v iptables >/dev/null 2>&1; then
+    for PORT in 80 443; do
+        if ! sudo iptables -C INPUT -p tcp --dport "$PORT" -j ACCEPT 2>/dev/null; then
+            sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport "$PORT" -j ACCEPT
+            echo "Port $PORT ochildi (iptables)."
+        else
+            echo "Port $PORT allaqachon ochiq, o'tkazib yuborildi."
+        fi
+    done
+    # Qoidalarni doimiy qilish (reboot'dan keyin ham saqlanishi uchun)
+    if command -v netfilter-persistent >/dev/null 2>&1; then
+        sudo netfilter-persistent save >/dev/null 2>&1 || true
+    elif [ -d /etc/iptables ] || command -v iptables-save >/dev/null 2>&1; then
+        if ! dpkg -s iptables-persistent >/dev/null 2>&1; then
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y iptables-persistent >/dev/null 2>&1 || true
+        fi
+        sudo mkdir -p /etc/iptables
+        sudo sh -c 'iptables-save > /etc/iptables/rules.v4' 2>/dev/null || true
+    fi
+else
+    echo "iptables topilmadi, bu qadam o'tkazib yuborildi (odatda faqat GCP'da shunday bo'ladi, muammo emas)."
+fi
+echo "Eslatma: Oracle Cloud'da bundan tashqari VCN Security List'da ham 80/443 portlarini ochishingiz"
+echo "kerak bo'ladi — DEPLOY.md'dagi '1B' bo'limiga qarang."
+
+echo "== 4/5: Loyihaning kodi olinmoqda =="
 if [ -d "$APP_DIR/.git" ]; then
     git -C "$APP_DIR" pull
 else
@@ -40,9 +67,9 @@ mkdir -p data
 
 if [ ! -f .env ]; then
     cp .env.example .env
-    echo "== 4/4: .env fayli namunadan yaratildi =="
+    echo "== 5/5: .env fayli namunadan yaratildi =="
 else
-    echo "== 4/4: .env fayli allaqachon mavjud, o'zgartirilmadi =="
+    echo "== 5/5: .env fayli allaqachon mavjud, o'zgartirilmadi =="
 fi
 
 cat <<'EOF'
